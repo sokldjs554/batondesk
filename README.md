@@ -86,6 +86,17 @@ python -m batondesk.evals retrieval --split test   # 검색 평가
 docker build -t batondesk . && docker run -p 8000:8000 batondesk
 ```
 
+## 배포
+
+`render.yaml` 과 `Dockerfile` 로 Render 무료 웹 서비스 한 개에 올린다.
+
+1. <https://render.com/deploy?repo=https://github.com/sokldjs554/batondesk> 을 열어 저장소를 Blueprint 로 연결한다.
+2. `ANTHROPIC_API_KEY` 를 입력한다. 비워 두면 서버는 "모델 호출 꺼짐"으로 뜨고 저장된 상담 기록만 보여 준다.
+3. 배포가 끝나면 저장소 변수 `PUBLIC_DEMO_URL`(Settings → Secrets and variables → Actions → Variables)에 공개 주소를 넣는다.
+   그 뒤로는 push 마다 `live-gate` 워크플로가 공개 주소가 그 커밋을 서빙하는지 확인한다.
+
+공개 데모는 하루 모델 호출 추정 비용 상한(기본 1.5달러)과 시간당 요청 수 상한이 걸려 있고, 넘으면 새 문의를 받지 않는다.
+
 ## 구성
 
 ```
