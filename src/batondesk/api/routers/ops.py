@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import time
 from typing import Any
 
@@ -59,6 +60,19 @@ async def prompt_detail(version_id: str, service: SupportService = Depends(get_s
     if version is None:
         raise ServiceError(404, "prompt_not_found", "프롬프트 버전을 찾을 수 없습니다.")
     return {**version.describe(), "system": version.system, "tool_descriptions": version.tool_descriptions}
+
+
+@router.get(
+    "/v1/evals",
+    summary="저장소에 커밋된 평가 결과 요약",
+    description="`eval_results/index.json` 을 그대로 돌려준다. 실제 모델로 돌린 평가 실행만 들어 있다.",
+)
+async def evals(service: SupportService = Depends(get_service)) -> dict[str, Any]:
+    path = service.settings.data_dir.parent / "eval_results" / "index.json"
+    if not path.exists():
+        return {"available": False, "note": "실제 모델로 돌린 평가 결과가 아직 저장소에 없습니다.", "sections": []}
+    data: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
+    return data
 
 
 @router.get("/v1/metrics/summary", summary="운영 지표")
