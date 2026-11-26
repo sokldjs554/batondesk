@@ -1,0 +1,76 @@
+"""FastAPI 앱 조립."""
+
+from __future__ import annotations
+
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI, Request
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+
+from batondesk import __version__
+from batondesk.api.routers import conversations, handoffs, knowledge, ops
+from batondesk.llm.base import LLMClient
+from batondesk.obs.logging import configure_logging, log_event
+from batondesk.service import ServiceError, SupportService
+from batondesk.settings import Settings, get_settings
+from batondesk.store.db import Database
+
+DESCRIPTION = """
+고객 상담 AI 에이전트 **BatonDesk** 의 API입니다.
+
+- 주문·고객·정책은 가상의 예시 쇼핑몰 "바통마켓"의 **예시 데이터**입니다.
+- `/example-commerce` 아래는 에이전트의 도구가 호출하는 **예시 주문 시스템**입니다(별도 문서: `/example-commerce/docs`).
+- 데모 서버라 인증이 없습니다.
+"""
+
+PAGES = {"/": "index.html", "/chat": "chat.html", "/desk": "desk.html", "/ops": "ops.html", "/embed-demo": "embed-demo.html"}
+
+
+def create_app(settings: Settings | None = None, *, llm: LLMClient | None = None, db: Database | None = None) -> FastAPI:
+    settings = settings or get_settings()
+    configure_logging()
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+        service = SupportService(settings, llm=llm, db=db)
+        recordings = settings.data_dir / "recordings"
+        loaded = service.load_recordings(recordings) if recordings.exists() else 0
+        app.state.service = service
+        app.mount("/example-commerce", service.commerce_app)
+        if settings.web_dir.exists():
+            app.mount("/static", StaticFiles(directory=settings.web_dir), name="static")
+        log_event("app.started", engine=service.engine, git_sha=settings.resolved_git_sha, recordings=loaded)
+        try:
+            yield
+        finally:
+            await service.aclose()
+
+    app = FastAPI(title="BatonDesk API", version=__version__, description=DESCRIPTION, lifespan=lifespan)
+
+    @app.exception_handler(ServiceError)
+    async def service_error(_: Request, exc: ServiceError) -> JSONResponse:
+        return JSONResponse(status_code=exc.status_code, content={"error": {"code": exc.code, "message": exc.message}})
+
+    app.include_router(conversations.router)
+    app.include_router(handoffs.router)
+    app.include_router(knowledge.router)
+    app.include_router(ops.router)
+    app.include_router(ops.demo)
+    app.include_router(ops.channels)
+
+    def page(filename: str):  # type: ignore[no-untyped-def]
+        async def serve() -> FileResponse:
+            return FileResponse(settings.web_dir / filename, headers={"Cache-Control": "no-cache"})
+
+        return serve
+
+    for route, filename in PAGES.items():
+        app.add_api_route(route, page(filename), include_in_schema=False)
+
+    return app
+
+
+def app_factory() -> FastAPI:
+    return create_app()
