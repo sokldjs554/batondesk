@@ -79,11 +79,7 @@ class KiwiTokenizer:
         self._kiwi = KiwiTokenizer._shared_kiwi
 
     def tokenize(self, text: str) -> list[str]:
-        return [
-            token.form.lower()
-            for token in self._kiwi.tokenize(text)
-            if token.tag.startswith(self._KEEP_PREFIX)
-        ]
+        return [token.form.lower() for token in self._kiwi.tokenize(text) if token.tag.startswith(self._KEEP_PREFIX)]
 
 
 def get_tokenizer() -> Tokenizer:

@@ -105,15 +105,11 @@ def create_commerce_app(store: CommerceStore) -> FastAPI:
         }
 
     @app.get("/orders/{order_id}", dependencies=[Depends(apply_fault)])
-    async def read_order(
-        order_id: str, x_customer_id: str = Header(), sb: Sandbox = Depends(get_sandbox)
-    ) -> dict[str, Any]:
+    async def read_order(order_id: str, x_customer_id: str = Header(), sb: Sandbox = Depends(get_sandbox)) -> dict[str, Any]:
         return sb.view(get_order(order_id, sb, x_customer_id))
 
     @app.get("/orders/{order_id}/shipment", dependencies=[Depends(apply_fault)])
-    async def read_shipment(
-        order_id: str, x_customer_id: str = Header(), sb: Sandbox = Depends(get_sandbox)
-    ) -> dict[str, Any]:
+    async def read_shipment(order_id: str, x_customer_id: str = Header(), sb: Sandbox = Depends(get_sandbox)) -> dict[str, Any]:
         return sb.shipment_view(get_order(order_id, sb, x_customer_id))
 
     @app.post("/orders/{order_id}/cancel", dependencies=[Depends(apply_fault)])

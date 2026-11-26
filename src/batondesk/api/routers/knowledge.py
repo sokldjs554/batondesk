@@ -81,9 +81,7 @@ async def kb_document(doc_id: str, service: SupportService = Depends(get_service
     description="답변을 주장 단위로 나눠 근거가 뒷받침하는지 판정한다. 에이전트와 무관하게 단독으로 부를 수 있다. "
     "모델을 쓸 수 없거나 `use_llm=false` 면 규칙 검사(금액·기간·날짜 대조)만 하고 `mode` 가 `rules_only` 로 온다.",
 )
-async def check_grounding(
-    body: GroundingCheckRequest, request: Request, service: SupportService = Depends(get_service)
-) -> dict[str, Any]:
+async def check_grounding(body: GroundingCheckRequest, request: Request, service: SupportService = Depends(get_service)) -> dict[str, Any]:
     if body.use_llm:
         guard_llm(service, client_key(request))
     evidence = [Evidence(id=e.id, kind=e.kind, title=e.title, text=e.text, turn_seq=0) for e in body.evidence]

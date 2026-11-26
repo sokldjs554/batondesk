@@ -28,10 +28,5 @@ def estimate_usd(model: str, input_tokens: int, output_tokens: int, cache_read: 
     price = PRICES.get(model)
     if price is None:
         return None
-    total = (
-        input_tokens * price.input
-        + output_tokens * price.output
-        + cache_read * price.cache_read
-        + cache_write * price.cache_write
-    )
+    total = input_tokens * price.input + output_tokens * price.output + cache_read * price.cache_read + cache_write * price.cache_write
     return round(total / 1_000_000, 6)

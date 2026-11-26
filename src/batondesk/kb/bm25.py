@@ -27,10 +27,7 @@ class BM25:
             for token, tf in Counter(tokens).items():
                 self.postings.setdefault(token, []).append((doc_id, tf))
 
-        self.idf = {
-            token: math.log(1.0 + (self.n_docs - len(plist) + 0.5) / (len(plist) + 0.5))
-            for token, plist in self.postings.items()
-        }
+        self.idf = {token: math.log(1.0 + (self.n_docs - len(plist) + 0.5) / (len(plist) + 0.5)) for token, plist in self.postings.items()}
 
     def scores(self, query_tokens: list[str]) -> list[float]:
         """전체 문서에 대한 BM25 점수 벡터."""

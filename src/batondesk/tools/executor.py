@@ -113,7 +113,9 @@ class ToolExecutor:
         body = {
             "query": query,
             "passages": [{"evidence_id": e.id, "title": e.title, "text": e.text} for e in found],
-            "note": "검색 결과에 답이 없으면 없다고 말하세요. 결과에 없는 내용을 지어내지 마세요." if found else "일치하는 문서가 없습니다.",
+            "note": "검색 결과에 답이 없으면 없다고 말하세요. 결과에 없는 내용을 지어내지 마세요."
+            if found
+            else "일치하는 문서가 없습니다.",
         }
         return ToolResult(
             "search_knowledge",
@@ -138,18 +140,14 @@ class ToolExecutor:
         order_id = _norm_order_id(args.get("order_id"))
         if order_id is None:
             return self._invalid("get_order", args, "주문번호 형식이 아닙니다. 형식: BM-숫자5자리 (예: BM-24011)", started)
-        outcome = await self.commerce.call(
-            "GET", f"/orders/{order_id}", sandbox_id=ctx.sandbox_id, customer_id=ctx.customer_id
-        )
+        outcome = await self.commerce.call("GET", f"/orders/{order_id}", sandbox_id=ctx.sandbox_id, customer_id=ctx.customer_id)
         return self._from_outcome("get_order", {"order_id": order_id}, outcome, ctx, started)
 
     async def _tool_track_shipment(self, args: dict[str, Any], ctx: ToolContext, started: float) -> ToolResult:
         order_id = _norm_order_id(args.get("order_id"))
         if order_id is None:
             return self._invalid("track_shipment", args, "주문번호 형식이 아닙니다. 형식: BM-숫자5자리", started)
-        outcome = await self.commerce.call(
-            "GET", f"/orders/{order_id}/shipment", sandbox_id=ctx.sandbox_id, customer_id=ctx.customer_id
-        )
+        outcome = await self.commerce.call("GET", f"/orders/{order_id}/shipment", sandbox_id=ctx.sandbox_id, customer_id=ctx.customer_id)
         return self._from_outcome("track_shipment", {"order_id": order_id}, outcome, ctx, started)
 
     # ---- 취소·반품: 확인 → (다음 턴) 실행 ----------------------------------------
@@ -167,7 +165,9 @@ class ToolExecutor:
         )
         if outcome.ok and outcome.data.get("allowed"):
             outcome.data["confirmation_code"] = self._issue(ctx, "cancel", order_id, None, None)
-            outcome.data["next_step"] = "고객에게 환불 금액을 알리고 취소할지 물어보세요. 고객이 다음 메시지에서 동의하면 execute_confirmed_action 을 부르세요."
+            outcome.data["next_step"] = (
+                "고객에게 환불 금액을 알리고 취소할지 물어보세요. 고객이 다음 메시지에서 동의하면 execute_confirmed_action 을 부르세요."
+            )
         return self._from_outcome("check_cancellation", {"order_id": order_id}, outcome, ctx, started)
 
     async def _tool_check_return(self, args: dict[str, Any], ctx: ToolContext, started: float) -> ToolResult:
@@ -188,7 +188,9 @@ class ToolExecutor:
         )
         if outcome.ok and outcome.data.get("allowed") and not outcome.data.get("needs_agent_review"):
             outcome.data["confirmation_code"] = self._issue(ctx, "return", order_id, item_id, reason)
-            outcome.data["next_step"] = "고객에게 반품 배송비와 환불 예상 금액을 알리고 접수할지 물어보세요. 고객이 다음 메시지에서 동의하면 execute_confirmed_action 을 부르세요."
+            outcome.data["next_step"] = (
+                "고객에게 반품 배송비와 환불 예상 금액을 알리고 접수할지 물어보세요. 고객이 다음 메시지에서 동의하면 execute_confirmed_action 을 부르세요."
+            )
         return self._from_outcome("check_return", clean, outcome, ctx, started)
 
     async def _tool_execute_confirmed_action(self, args: dict[str, Any], ctx: ToolContext, started: float) -> ToolResult:
@@ -196,7 +198,12 @@ class ToolExecutor:
         clean = {"confirmation_code": code}
         pending = ctx.pending.get(code)
         if pending is None or pending.used:
-            return self._denied("execute_confirmed_action", clean, "유효한 확인 코드가 아닙니다. check_cancellation 또는 check_return 으로 먼저 확인하세요.", started)
+            return self._denied(
+                "execute_confirmed_action",
+                clean,
+                "유효한 확인 코드가 아닙니다. check_cancellation 또는 check_return 으로 먼저 확인하세요.",
+                started,
+            )
         if pending.issued_turn >= ctx.turn_seq:
             return self._denied(
                 "execute_confirmed_action",
@@ -204,6 +211,7 @@ class ToolExecutor:
                 "이 코드는 방금 발급되었습니다. 고객에게 내용을 안내하고 고객의 동의 메시지를 받은 다음 턴에 실행할 수 있습니다.",
                 started,
             )
+        body: dict[str, Any]
         if pending.action == "cancel":
             path, body = f"/orders/{pending.order_id}/cancel", {"dry_run": False}
         else:
@@ -229,9 +237,7 @@ class ToolExecutor:
         ctx.pending[code] = PendingAction(code, action, order_id, item_id, reason, ctx.turn_seq)
         return code
 
-    def _from_outcome(
-        self, name: str, args: dict[str, Any], outcome: CallOutcome, ctx: ToolContext, started: float
-    ) -> ToolResult:
+    def _from_outcome(self, name: str, args: dict[str, Any], outcome: CallOutcome, ctx: ToolContext, started: float) -> ToolResult:
         if outcome.ok:
             ev = ctx.pool.add_tool_result(name, args, outcome.data, ctx.turn_seq, "ok")
             content = json.dumps({"evidence_id": ev.id, "result": outcome.data}, ensure_ascii=False)
@@ -244,9 +250,7 @@ class ToolExecutor:
             return ToolResult(name, args, content, False, "not_found", _ms(started), outcome.attempts, [ev.id])
         guide = _FAILURE_GUIDE.get(outcome.status, outcome.error or "요청이 거부되었습니다.")
         content = json.dumps({"error": outcome.status, "message": guide, "attempts": outcome.attempts}, ensure_ascii=False)
-        return ToolResult(
-            name, args, content, True, outcome.status, _ms(started), outcome.attempts, detail={"error": outcome.error}
-        )
+        return ToolResult(name, args, content, True, outcome.status, _ms(started), outcome.attempts, detail={"error": outcome.error})
 
     def _invalid(self, name: str, args: Any, message: str, started: float, status: str = "invalid") -> ToolResult:
         content = json.dumps({"error": status, "message": message}, ensure_ascii=False)

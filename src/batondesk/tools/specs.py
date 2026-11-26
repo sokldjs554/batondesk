@@ -31,19 +31,15 @@ DEFAULT_DESCRIPTIONS: dict[str, str] = {
         "쓰였을 법한 핵심어로 쓴다(예: '물건이 안 와요' → '배송 지연 출고 지연 기준')."
     ),
     "list_my_orders": (
-        "지금 대화 중인 고객의 최근 주문 목록을 가져온다. 고객이 주문번호를 말하지 않았고 "
-        "어느 주문인지 알아야 할 때 부른다."
+        "지금 대화 중인 고객의 최근 주문 목록을 가져온다. 고객이 주문번호를 말하지 않았고 어느 주문인지 알아야 할 때 부른다."
     ),
     "get_order": (
         "주문 한 건의 상태·상품·결제 금액·환불·반품 접수 정보를 가져온다. 특정 주문에 관한 질문에는 "
         "기억이나 추측이 아니라 이 결과로 답한다. 이 고객의 주문이 아니거나 없는 번호면 not_found 가 온다."
     ),
-    "track_shipment": (
-        "주문의 운송장 이동 기록을 가져온다. 배송 위치, 도착 예정, 배송이 멈춘 것 같다는 문의에 부른다."
-    ),
+    "track_shipment": ("주문의 운송장 이동 기록을 가져온다. 배송 위치, 도착 예정, 배송이 멈춘 것 같다는 문의에 부른다."),
     "check_cancellation": (
-        "주문을 취소할 수 있는지와 환불 금액을 미리 확인한다(실제 취소는 하지 않는다). "
-        "취소가 가능하면 confirmation_code 가 함께 온다."
+        "주문을 취소할 수 있는지와 환불 금액을 미리 확인한다(실제 취소는 하지 않는다). 취소가 가능하면 confirmation_code 가 함께 온다."
     ),
     "check_return": (
         "주문 상품을 반품할 수 있는지, 반품 배송비와 환불 예상 금액을 미리 확인한다(실제 접수는 하지 "
@@ -73,14 +69,9 @@ def tool_definitions(descriptions: dict[str, str] | None = None) -> list[dict[st
                 "reason": {"type": "string", "enum": RETURN_REASONS},
             }
         ),
-        "execute_confirmed_action": _obj(
-            {"confirmation_code": {"type": "string", "description": "이전 턴의 확인 결과로 받은 코드"}}
-        ),
+        "execute_confirmed_action": _obj({"confirmation_code": {"type": "string", "description": "이전 턴의 확인 결과로 받은 코드"}}),
     }
-    return [
-        {"name": name, "description": desc[name], "strict": True, "input_schema": schema}
-        for name, schema in schemas.items()
-    ]
+    return [{"name": name, "description": desc[name], "strict": True, "input_schema": schema} for name, schema in schemas.items()]
 
 
 TOOL_NAMES: tuple[str, ...] = tuple(DEFAULT_DESCRIPTIONS)

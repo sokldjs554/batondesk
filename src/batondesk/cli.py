@@ -27,7 +27,7 @@ def main() -> None:
 
     registry = PromptRegistry(get_settings().prompts_dir)
     if args.action == "list":
-        for version in registry.list():
+        for version in registry.all_versions():
             active = "*" if registry.active[version.kind] == version.id else " "
             print(f"{active} {version.id:16s} {version.sha256[:12]}  {version.summary}")
     elif args.action == "lock":

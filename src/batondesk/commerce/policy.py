@@ -42,12 +42,7 @@ def items_total(order: dict[str, Any]) -> int:
 
 
 def paid_total(order: dict[str, Any]) -> int:
-    return (
-        items_total(order)
-        + int(order.get("shipping_fee", 0))
-        + int(order.get("remote_fee", 0))
-        - int(order.get("discount", 0))
-    )
+    return items_total(order) + int(order.get("shipping_fee", 0)) + int(order.get("remote_fee", 0)) - int(order.get("discount", 0))
 
 
 def decide_cancel(order: dict[str, Any]) -> Decision:
@@ -62,9 +57,7 @@ def decide_cancel(order: dict[str, Any]) -> Decision:
             {"status": status},
         )
     if any(i.get("category") == "custom" and i.get("production_started") for i in order["items"]):
-        return Decision(
-            False, "custom_in_production", "주문제작 상품은 제작을 시작한 뒤에는 취소할 수 없습니다."
-        )
+        return Decision(False, "custom_in_production", "주문제작 상품은 제작을 시작한 뒤에는 취소할 수 없습니다.")
     refund = 0 if status == "awaiting_payment" else paid_total(order)
     return Decision(
         True,
@@ -74,9 +67,7 @@ def decide_cancel(order: dict[str, Any]) -> Decision:
     )
 
 
-def decide_return(
-    order: dict[str, Any], item_id: str, reason: ReturnReason, now: datetime, delivered_at: datetime | None
-) -> Decision:
+def decide_return(order: dict[str, Any], item_id: str, reason: ReturnReason, now: datetime, delivered_at: datetime | None) -> Decision:
     item = next((i for i in order["items"] if i["item_id"] == item_id), None)
     if item is None:
         return Decision(False, "item_not_found", "이 주문에 해당 상품이 없습니다.")

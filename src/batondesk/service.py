@@ -70,9 +70,7 @@ class SupportService:
         if settings.commerce_url:
             self._http = httpx.AsyncClient(base_url=settings.commerce_url)
         else:
-            self._http = httpx.AsyncClient(
-                transport=httpx.ASGITransport(app=self.commerce_app), base_url="http://example-commerce"
-            )
+            self._http = httpx.AsyncClient(transport=httpx.ASGITransport(app=self.commerce_app), base_url="http://example-commerce")
         self.commerce = CommerceClient(self._http, timeout_s=settings.tool_timeout_s, retries=settings.tool_retries)
         self.executor = ToolExecutor(self.kb, self.commerce)
 
@@ -426,7 +424,9 @@ class SupportService:
             "상담원에게 대화를 넘겼습니다. 대화 내용과 확인한 근거가 함께 전달되었습니다.",
             {"kind": "handoff_opened", "handoff_id": handoff["id"], "reason": reason, "reason_label": snapshot["reason_label"]},
         )
-        self._event("handoff.created", conversation_id, {"handoff_id": handoff["id"], "reason": reason, "source": source, "turn_seq": turn_seq})
+        self._event(
+            "handoff.created", conversation_id, {"handoff_id": handoff["id"], "reason": reason, "source": source, "turn_seq": turn_seq}
+        )
         return handoff
 
     async def request_handoff(self, conversation_id: str) -> dict[str, Any]:
@@ -499,7 +499,9 @@ class SupportService:
         else:
             self.repo.update_conversation(conversation_id, status="closed")
             notice = "상담원이 상담을 종료했습니다. 이용해 주셔서 감사합니다."
-        self.repo.add_message(conversation_id, "system", notice, {"kind": "handoff_resolved", "handoff_id": handoff_id, "return_to_ai": return_to_ai})
+        self.repo.add_message(
+            conversation_id, "system", notice, {"kind": "handoff_resolved", "handoff_id": handoff_id, "return_to_ai": return_to_ai}
+        )
         self._event("handoff.resolved", conversation_id, {"handoff_id": handoff_id, "agent": agent_name, "return_to_ai": return_to_ai})
         return self.handoff_view(handoff_id)
 
@@ -526,11 +528,7 @@ class SupportService:
         task.add_done_callback(self._background.discard)
 
     def transcript(self, conversation_id: str) -> list[dict[str, str]]:
-        return [
-            {"role": ROLE_LABEL[m["role"]], "text": m["text"]}
-            for m in self.repo.messages(conversation_id)
-            if m["role"] in ROLE_LABEL
-        ]
+        return [{"role": ROLE_LABEL[m["role"]], "text": m["text"]} for m in self.repo.messages(conversation_id) if m["role"] in ROLE_LABEL]
 
     async def update_resolution(self, conversation_id: str) -> ResolutionResult:
         conv = self._require(conversation_id)
@@ -552,7 +550,11 @@ class SupportService:
                 result, steps = ResolutionResult(status="unknown", reason=str(exc)[:200]), []
             for step in steps:
                 if step["type"] == "llm":
-                    self._event("llm.call", conversation_id, {k: step[k] for k in ("purpose", "latency_ms", "attempts", "usage", "cost_usd", "model")})
+                    self._event(
+                        "llm.call",
+                        conversation_id,
+                        {k: step[k] for k in ("purpose", "latency_ms", "attempts", "usage", "cost_usd", "model")},
+                    )
         stored = {**result.model_dump(), "source": source, "updated_at": utcnow()}
         self.repo.update_conversation(conversation_id, resolution=stored)
         return result

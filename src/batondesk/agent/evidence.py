@@ -33,9 +33,7 @@ class Evidence(BaseModel):
 class EvidencePool:
     def __init__(self, items: list[Evidence] | None = None) -> None:
         self._items: dict[str, Evidence] = {e.id: e for e in (items or [])}
-        self._by_chunk: dict[str, str] = {
-            e.meta["chunk_id"]: e.id for e in self._items.values() if e.kind == "kb"
-        }
+        self._by_chunk: dict[str, str] = {e.meta["chunk_id"]: e.id for e in self._items.values() if e.kind == "kb"}
 
     def __len__(self) -> int:
         return len(self._items)
@@ -71,8 +69,7 @@ class EvidencePool:
                 "doc_type": chunk.doc_type,
                 "effective_from": chunk.effective_from.isoformat(),
                 "effective_to": chunk.effective_to.isoformat() if chunk.effective_to else None,
-                "in_effect": chunk.effective_from <= today
-                and (chunk.effective_to is None or today <= chunk.effective_to),
+                "in_effect": chunk.effective_from <= today and (chunk.effective_to is None or today <= chunk.effective_to),
                 "query": query,
                 "score": round(score, 5),
             },
@@ -81,9 +78,7 @@ class EvidencePool:
         self._by_chunk[chunk.chunk_id] = ev.id
         return ev
 
-    def add_tool_result(
-        self, tool: str, args: dict[str, Any], result: dict[str, Any], turn_seq: int, status: str
-    ) -> Evidence:
+    def add_tool_result(self, tool: str, args: dict[str, Any], result: dict[str, Any], turn_seq: int, status: str) -> Evidence:
         arg_text = ", ".join(f"{k}={v}" for k, v in args.items()) or "인자 없음"
         ev = Evidence(
             id=self._next_id("T"),

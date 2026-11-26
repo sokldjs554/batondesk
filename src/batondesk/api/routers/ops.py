@@ -25,24 +25,21 @@ async def healthz() -> dict[str, str]:
 
 @router.get("/v1/release", summary="배포된 코드·프롬프트·모델 정보")
 async def release(service: SupportService = Depends(get_service)) -> dict[str, Any]:
-    active = {kind: service.prompts.get(kind) for kind in ("agent", "grounding", "resolution")}  # type: ignore[arg-type]
-    overrides = {
-        "agent": service.settings.agent_prompt,
-        "grounding": service.settings.grounding_prompt,
-        "resolution": service.settings.resolution_prompt,
+    settings = service.settings
+    in_use = {
+        "agent": service.prompts.get("agent", settings.agent_prompt),
+        "grounding": service.prompts.get("grounding", settings.grounding_prompt),
+        "resolution": service.prompts.get("resolution", settings.resolution_prompt),
     }
     return {
         "name": "batondesk",
         "version": __version__,
-        "git_sha": service.settings.resolved_git_sha,
+        "git_sha": settings.resolved_git_sha,
         "uptime_s": round(time.time() - _STARTED),
         "engine": service.engine_info(),
-        "prompts": {
-            kind: {"id": (service.prompts.get(kind, overrides[kind])).id, "sha256": service.prompts.get(kind, overrides[kind]).sha256[:12]}  # type: ignore[arg-type]
-            for kind in active
-        },
+        "prompts": {kind: {"id": version.id, "sha256": version.sha256[:12]} for kind, version in in_use.items()},
         "knowledge_base": {"documents": len(service.kb.docs), "chunks": len(service.kb.chunks)},
-        "grounding_mode": service.settings.grounding_mode,
+        "grounding_mode": settings.grounding_mode,
         "data_notice": "주문·고객·정책은 가상의 예시 쇼핑몰 '바통마켓'의 예시 데이터입니다.",
     }
 
@@ -52,7 +49,7 @@ async def prompts(service: SupportService = Depends(get_service)) -> dict[str, A
     lock = service.prompts.read_lock()
     return {
         "active": service.prompts.active,
-        "versions": [{**v.describe(), "locked": v.id in lock} for v in service.prompts.list()],
+        "versions": [{**v.describe(), "locked": v.id in lock} for v in service.prompts.all_versions()],
     }
 
 

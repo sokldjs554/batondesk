@@ -31,7 +31,12 @@ def percentile(values: list[float], q: float) -> float | None:
 
 
 def _dist(values: list[float]) -> dict[str, Any]:
-    return {"n": len(values), "p50": percentile(values, 0.5), "p95": percentile(values, 0.95), "max": round(max(values), 1) if values else None}
+    return {
+        "n": len(values),
+        "p50": percentile(values, 0.5),
+        "p95": percentile(values, 0.95),
+        "max": round(max(values), 1) if values else None,
+    }
 
 
 def compute_metrics(repo: Repo, source: str | None = None) -> dict[str, Any]:
@@ -121,9 +126,7 @@ def compute_metrics(repo: Repo, source: str | None = None) -> dict[str, Any]:
             "conversations": len(handed_off_ids),
             "rate": round(len(handed_off_ids) / len(involved), 4) if involved else None,
             "waiting": len(waiting),
-            "by_reason": [
-                {"reason": r, "label": HANDOFF_REASON_LABEL.get(r, r), "count": n} for r, n in reasons.most_common()
-            ],
+            "by_reason": [{"reason": r, "label": HANDOFF_REASON_LABEL.get(r, r), "count": n} for r, n in reasons.most_common()],
             "by_source": dict(Counter(h["source"] for h in handoffs)),
         },
         "turns": {

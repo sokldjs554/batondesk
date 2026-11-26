@@ -41,9 +41,7 @@ def _index_text(chunk: Chunk) -> str:
 
 
 class KnowledgeBase:
-    def __init__(
-        self, docs: list[KnowledgeDoc], tokenizer: Tokenizer | None = None, rrf_k: int = 60
-    ) -> None:
+    def __init__(self, docs: list[KnowledgeDoc], tokenizer: Tokenizer | None = None, rrf_k: int = 60) -> None:
         self.docs = {d.doc_id: d for d in docs}
         self.chunks: list[Chunk] = [c for d in docs for c in split_chunks(d)]
         self.tokenizer = tokenizer or get_tokenizer()

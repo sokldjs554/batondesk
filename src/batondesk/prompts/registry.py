@@ -59,12 +59,15 @@ class PromptVersion:
 
 def _load_file(path: Path, kind: PromptKind) -> PromptVersion:
     raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    for key in ("id", "created", "summary", "changes", "system"):
-        if not raw.get(key) and not (key == "changes" and raw.get("id", "").endswith("-v1")):
-            raise PromptError(f"{path}: {key} 가 비어 있습니다")
     expected = f"{kind}-{path.stem}"
-    if raw["id"] != expected:
-        raise PromptError(f"{path}: id 는 {expected!r} 여야 합니다(현재 {raw['id']!r})")
+    if raw.get("id") != expected:
+        raise PromptError(f"{path}: id 는 {expected!r} 여야 합니다(현재 {raw.get('id')!r})")
+    required = ["created", "summary", "system"]
+    if path.stem != "v1":
+        required.append("changes")  # 두 번째 버전부터는 무엇을 왜 바꿨는지 적어야 한다
+    for key in required:
+        if not raw.get(key):
+            raise PromptError(f"{path}: {key} 가 비어 있습니다")
     return PromptVersion(
         id=raw["id"],
         kind=kind,
@@ -99,7 +102,7 @@ class PromptRegistry:
             raise PromptError(f"{kind} 프롬프트 버전이 없습니다: {vid!r}")
         return version
 
-    def list(self, kind: PromptKind | None = None) -> list[PromptVersion]:
+    def all_versions(self, kind: PromptKind | None = None) -> list[PromptVersion]:
         return [v for v in self.versions.values() if kind is None or v.kind == kind]
 
     # ---- 잠금 -----------------------------------------------------------------

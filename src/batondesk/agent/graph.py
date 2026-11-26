@@ -198,10 +198,7 @@ def build_agent_graph(llm: LLMClient, executor: ToolExecutor, checker: Grounding
             "type": "retrieval",
             "query": query,
             "latency_ms": retrieval_ms,
-            "hits": [
-                {"evidence_id": e.id, "chunk_id": e.meta["chunk_id"], "title": e.title, "score": e.meta["score"]}
-                for e in fresh
-            ],
+            "hits": [{"evidence_id": e.id, "chunk_id": e.meta["chunk_id"], "title": e.title, "score": e.meta["score"]} for e in fresh],
         }
         return {
             "ctx": ctx,
@@ -394,9 +391,7 @@ def build_agent_graph(llm: LLMClient, executor: ToolExecutor, checker: Grounding
     builder.add_node("fallback", fallback)
     builder.add_edge(START, "prepare")
     builder.add_edge("prepare", "model")
-    builder.add_conditional_edges(
-        "model", after_model, {"tools": "tools", "limit": "limit", "verify": "verify", "fallback": "fallback"}
-    )
+    builder.add_conditional_edges("model", after_model, {"tools": "tools", "limit": "limit", "verify": "verify", "fallback": "fallback"})
     builder.add_edge("tools", "model")
     builder.add_edge("limit", "fallback")
     builder.add_conditional_edges("verify", after_verify, {"done": END, "revise": "revise", "give_up": "give_up"})

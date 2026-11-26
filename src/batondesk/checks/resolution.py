@@ -72,9 +72,7 @@ class ResolutionChecker:
         self.effort = effort
         self.max_tokens = max_tokens
 
-    async def check(
-        self, messages: list[dict[str, str]], *, handed_off: bool = False
-    ) -> tuple[ResolutionResult, list[dict[str, Any]]]:
+    async def check(self, messages: list[dict[str, str]], *, handed_off: bool = False) -> tuple[ResolutionResult, list[dict[str, Any]]]:
         if handed_off:
             return ResolutionResult(status="handed_off", reason="상담원에게 인계된 대화", checker={"engine": "rules"}), []
         if not any(m["role"] == "고객" for m in messages):

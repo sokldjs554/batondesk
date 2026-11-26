@@ -72,9 +72,7 @@ class CommerceClient:
         last.latency_ms = round((time.perf_counter() - started) * 1000, 1)
         return last
 
-    async def _once(
-        self, method: str, path: str, headers: dict[str, str], json_body: dict[str, Any] | None
-    ) -> CallOutcome:
+    async def _once(self, method: str, path: str, headers: dict[str, str], json_body: dict[str, Any] | None) -> CallOutcome:
         try:
             async with asyncio.timeout(self.timeout_s):
                 resp = await self._http.request(method, path, headers=headers, json=json_body)

@@ -43,12 +43,8 @@ MAX_SANDBOXES = 300
 
 class Sandbox:
     def __init__(self, seed: dict[str, Any], fixed_now: datetime | None = None) -> None:
-        self.customers: dict[str, dict[str, Any]] = {
-            c["customer_id"]: copy.deepcopy(c) for c in seed["customers"]
-        }
-        self.orders: dict[str, dict[str, Any]] = {
-            o["order_id"]: copy.deepcopy(o) for o in seed["orders"]
-        }
+        self.customers: dict[str, dict[str, Any]] = {c["customer_id"]: copy.deepcopy(c) for c in seed["customers"]}
+        self.orders: dict[str, dict[str, Any]] = {o["order_id"]: copy.deepcopy(o) for o in seed["orders"]}
         self.fixed_now = fixed_now
         self.fault: FaultMode = "none"
         self.flaky_failures_left = 1
@@ -207,10 +203,7 @@ class Sandbox:
 
     def snapshot(self) -> dict[str, Any]:
         """채점용: 주문별 현재 상태."""
-        return {
-            oid: {"status": o["status"], "has_return_request": bool(o.get("return_request"))}
-            for oid, o in self.orders.items()
-        }
+        return {oid: {"status": o["status"], "has_return_request": bool(o.get("return_request"))} for oid, o in self.orders.items()}
 
 
 class CommerceStore:

@@ -61,9 +61,7 @@ class Repo:
             where.append("source = ?")
             params.append(source)
         clause = f"WHERE {' AND '.join(where)}" if where else ""
-        return self.db.all(
-            f"SELECT * FROM conversations {clause} ORDER BY updated_at DESC LIMIT ?", (*params, limit)
-        )
+        return self.db.all(f"SELECT * FROM conversations {clause} ORDER BY updated_at DESC LIMIT ?", (*params, limit))
 
     def update_conversation(self, conversation_id: str, **fields: Any) -> None:
         if not fields:
@@ -157,9 +155,7 @@ class Repo:
         )
 
     def latest_handoff_for(self, conversation_id: str) -> dict[str, Any] | None:
-        return self.db.one(
-            "SELECT * FROM handoffs WHERE conversation_id = ? ORDER BY created_at DESC LIMIT 1", (conversation_id,)
-        )
+        return self.db.one("SELECT * FROM handoffs WHERE conversation_id = ? ORDER BY created_at DESC LIMIT 1", (conversation_id,))
 
     def list_handoffs(self, status: str | None = None, limit: int = 100) -> list[dict[str, Any]]:
         if status:
@@ -201,8 +197,7 @@ class Repo:
         hour = datetime.now(tz=UTC).strftime("%Y-%m-%dT%H")
         with self.db.tx() as conn:
             conn.execute(
-                "INSERT INTO rate (key, hour, count) VALUES (?, ?, 1)"
-                " ON CONFLICT(key, hour) DO UPDATE SET count = count + 1",
+                "INSERT INTO rate (key, hour, count) VALUES (?, ?, 1) ON CONFLICT(key, hour) DO UPDATE SET count = count + 1",
                 (key, hour),
             )
             row = conn.execute("SELECT count FROM rate WHERE key = ? AND hour = ?", (key, hour)).fetchone()

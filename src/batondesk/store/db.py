@@ -110,7 +110,16 @@ CREATE INDEX IF NOT EXISTS idx_events_type ON events (type, ts);
 CREATE INDEX IF NOT EXISTS idx_handoffs_status ON handoffs (status, created_at);
 """
 
-JSON_COLUMNS = ("evidence_json", "pending_json", "resolution_json", "meta_json", "payload_json", "detail_json", "snapshot_json", "data_json")
+JSON_COLUMNS = (
+    "evidence_json",
+    "pending_json",
+    "resolution_json",
+    "meta_json",
+    "payload_json",
+    "detail_json",
+    "snapshot_json",
+    "data_json",
+)
 
 
 def utcnow() -> str:
