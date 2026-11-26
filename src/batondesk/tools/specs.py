@@ -11,7 +11,7 @@ from typing import Any
 
 RETURN_REASONS = ["change_of_mind", "defective", "wrong_item", "damaged_in_transit"]
 
-_ORDER_ID = {"type": "string", "description": "주문번호. 예: BM-24011"}
+_ORDER_ID = {"type": "string", "description": "주문번호. BM- 뒤에 숫자 5자리"}
 
 
 def _obj(properties: dict[str, Any]) -> dict[str, Any]:

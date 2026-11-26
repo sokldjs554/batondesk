@@ -48,6 +48,12 @@ on:
       agent_prompt:
         description: "에이전트 프롬프트 버전 (비우면 manifest 의 active)"
         default: ""
+      grounding_prompt:
+        description: "근거 판정 프롬프트 버전 (비우면 active)"
+        default: ""
+      resolution_prompt:
+        description: "해결 판정 프롬프트 버전 (비우면 active)"
+        default: ""
       agent_model:
         description: "에이전트 모델"
         default: "claude-haiku-5-5"
@@ -83,6 +89,8 @@ env:
   ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
   BATONDESK_GIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
   BATONDESK_AGENT_PROMPT: ${{ inputs.agent_prompt }}
+  BATONDESK_GROUNDING_PROMPT: ${{ inputs.grounding_prompt }}
+  BATONDESK_RESOLUTION_PROMPT: ${{ inputs.resolution_prompt }}
   BATONDESK_AGENT_MODEL: ${{ inputs.agent_model || 'claude-haiku-5-5' }}
   BATONDESK_JUDGE_MODEL: ${{ inputs.judge_model || 'claude-haiku-5-5' }}
   BATONDESK_AGENT_EFFORT: ${{ inputs.agent_effort || 'low' }}

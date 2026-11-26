@@ -58,6 +58,9 @@ class GroundingCheckRequest(BaseModel):
     conversation: list[TranscriptMessage] = Field(default_factory=list)
     use_llm: bool = Field(default=True, description="false 면 규칙 검사만 한다(모델 호출 없음)")
     today: date | None = Field(default=None, description="답변이 날짜를 계산해 말할 때 기준이 되는 날. 예: 2026-11-20")
+    customer_name: str | None = Field(
+        default=None, description="답변이 부르는 고객 이름(알려 주지 않으면 이름을 부른 것이 근거 없음으로 잡힐 수 있다)"
+    )
 
 
 class ResolutionCheckRequest(BaseModel):

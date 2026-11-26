@@ -89,7 +89,9 @@ async def check_grounding(body: GroundingCheckRequest, request: Request, service
     evidence = [Evidence(id=e.id, kind=e.kind, title=e.title, text=e.text, turn_seq=0) for e in body.evidence]
     conversation = [m.model_dump() for m in body.conversation]
     today = datetime.combine(body.today, datetime.min.time(), tzinfo=KST) if body.today else None
-    result, _ = await service.grounding_checker().check(body.answer, evidence, conversation, use_llm=body.use_llm, today=today)
+    result, _ = await service.grounding_checker().check(
+        body.answer, evidence, conversation, use_llm=body.use_llm, today=today, customer_name=body.customer_name
+    )
     return result.model_dump()
 
 

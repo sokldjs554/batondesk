@@ -15,7 +15,7 @@ from typing import Any
 
 from batondesk.agent.evidence import Evidence
 from batondesk.checks.facts import check_facts
-from batondesk.checks.grounding import GroundingChecker
+from batondesk.checks.grounding import GroundingChecker, session_text
 from batondesk.checks.resolution import RESOLVED, ResolutionChecker
 from batondesk.evals.data import EVAL_NOW, read_jsonl, suite_path
 from batondesk.evals.graders import normalize
@@ -146,7 +146,10 @@ async def eval_grounding(
         flags = check_facts(
             item["answer"],
             [(f"{e.title}\n{e.text}", e.kind == "tool") for e in evidence],
-            extra_context="\n".join(m["text"] for m in item["conversation"] if m["role"] == "고객") + "\n2026-11-20 11월 20일",
+            # 실제 파이프라인(GroundingChecker.check)과 같은 것을 "이미 아는 값"으로 준다: 고객이 한 말 + 상담 정보.
+            extra_context="\n".join(m["text"] for m in item["conversation"] if m["role"] == "고객")
+            + "\n"
+            + session_text(EVAL_NOW, item.get("customer_name")),
         )
         row: dict[str, Any] = {
             "id": item["id"],
@@ -159,7 +162,9 @@ async def eval_grounding(
         }
         if use_llm:
             async with semaphore:
-                result, steps = await checker.check(item["answer"], evidence, item["conversation"], use_llm=True, today=EVAL_NOW)
+                result, steps = await checker.check(
+                    item["answer"], evidence, item["conversation"], use_llm=True, today=EVAL_NOW, customer_name=item.get("customer_name")
+                )
             all_steps.extend(steps)
             if result.mode != "llm+rules":
                 errors.append(

@@ -9,7 +9,11 @@ filter="${1:-}"
 git fetch -q origin eval-runs
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
-git archive FETCH_HEAD runs recordings 2>/dev/null | tar -x -C "$work" || git archive FETCH_HEAD runs | tar -x -C "$work"
+if git cat-file -e FETCH_HEAD:recordings 2>/dev/null; then
+  git archive FETCH_HEAD runs recordings | tar -x -C "$work"
+else
+  git archive FETCH_HEAD runs | tar -x -C "$work"
+fi
 mkdir -p eval_results/runs
 for dir in "$work"/runs/*/; do
   name=$(basename "$dir")

@@ -33,7 +33,17 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 SPLITS = ("dev", "test")
 NEAR_DUPLICATE_JACCARD = 0.8
 
-GROUNDED_KINDS = ("faithful", "paraphrase", "computed", "multi_evidence", "negative", "expired_handled")
+GROUNDED_KINDS = (
+    "faithful",
+    "paraphrase",
+    "computed",
+    "multi_evidence",
+    "negative",
+    "expired_handled",
+    # 실제 에이전트 출력에서 판정기가 잘못 막던 유형(2026-11-26 추가)
+    "process_statement",
+    "session_context",
+)
 UNGROUNDED_KINDS = (
     "number_swap",
     "period_swap",
@@ -43,6 +53,9 @@ UNGROUNDED_KINDS = (
     "expired_applied",
     "wrong_order_fact",
     "partial",
+    # 상담 진행 발화처럼 보이지만 결과·혜택·시한을 약속하는 말, 시스템이 확정하지 않은 값을 확정처럼 말하는 답(2026-11-26 추가)
+    "outcome_promise",
+    "unconfirmed_as_confirmed",
 )
 RESOLUTION_LABELS = ("resolved_confirmed", "resolved_assumed", "unresolved", "pending_customer", "not_applicable")
 RETRIEVAL_KINDS = ("direct", "paraphrase", "colloquial", "typo_spacing", "multi_doc")
@@ -53,6 +66,8 @@ FIELDS: dict[str, tuple[str, ...]] = {
     "resolution": ("id", "split", "label", "messages", "kind", "note"),
     "retrieval": ("id", "split", "query", "gold_docs", "gold_chunks", "kind", "note"),
 }
+# 있어도 되고 없어도 되는 필드. customer_name 은 답변이 고객 이름을 부를 때 판정기에 함께 주는 상담 정보다.
+OPTIONAL_FIELDS: dict[str, tuple[str, ...]] = {"grounding": ("customer_name",)}
 ID_PREFIX = {"grounding": "G", "resolution": "R", "retrieval": "S"}
 EVIDENCE_FIELDS = ("id", "kind", "title", "text")
 
@@ -103,7 +118,7 @@ def _check_common(name: str, split: str, rows: list[dict[str, Any]], seen: set[s
     usable = []
     for index, row in enumerate(rows, start=1):
         where = f"{name}/{split}.jsonl #{index} ({row.get('id', '?')})"
-        missing, unknown = expected - set(row), set(row) - expected
+        missing, unknown = expected - set(row), set(row) - expected - set(OPTIONAL_FIELDS.get(name, ()))
         if missing:
             problems.append(f"{where}: 빠진 필드 {sorted(missing)}")
         if unknown:
@@ -162,6 +177,9 @@ def _check_grounding(row: dict[str, Any], chunk_texts: set[str], problems: list[
     if label == "ungrounded" and (not isinstance(span, str) or not span.strip() or span not in answer):
         problems.append(f"{where}: ungrounded 문항의 wrong_span 은 답변 안의 구절이어야 합니다")
     _check_messages(where, row["conversation"], problems, minimum=1, maximum=None)
+    name = row.get("customer_name")
+    if name is not None and (not isinstance(name, str) or not name.strip()):
+        problems.append(f"{where}: customer_name 은 비어 있지 않은 문자열이어야 합니다")
 
     evidence = row["evidence"]
     if not isinstance(evidence, list) or not 1 <= len(evidence) <= 4:

@@ -147,9 +147,10 @@ async def test_today_is_given_to_the_judge_and_to_the_rules(prompts: PromptRegis
 
     today = datetime(2026, 11, 20, 10, 0, tzinfo=KST)
     llm = QueueLLM([fake_final({"claims": []})])
-    await _checker(llm, prompts).check("오늘 기준으로 4일 남았습니다.", [ORDER], today=today)
-    assert "<오늘>2026-11-20 (금) 11월 20일</오늘>" in llm.requests[0].messages[0]["content"]
-    flags = check_facts("오늘 11월 20일 기준으로 안내드립니다.", [], extra_context="2026-11-20 (금) 11월 20일")
+    await _checker(llm, prompts).check("김하늘 고객님, 오늘 기준으로 4일 남았습니다.", [ORDER], today=today, customer_name="김하늘")
+    sent = llm.requests[0].messages[0]["content"]
+    assert "<상담_정보>지금: 2026-11-20 (금) 10:00 KST, 11월 20일 · 고객 이름: 김하늘 (로그인한 고객)</상담_정보>" in sent
+    flags = check_facts("오늘 11월 20일 오전 10시 기준으로 안내드립니다.", [], extra_context="지금: 2026-11-20 (금) 10:00 KST, 11월 20일")
     assert flags == []
 
 
