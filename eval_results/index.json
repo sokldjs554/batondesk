@@ -4,7 +4,7 @@
   "sections": [
     {
       "title": "에이전트 전체 평가",
-      "description": "같은 문항을 반복 실행한 통과율. 대괄호는 문항 단위 부트스트랩 95% 구간.",
+      "description": "같은 문항을 반복 실행한 통과율. 구간은 문항 단위 부트스트랩 95% 구간. '당시 채점'은 실행했을 때의 채점 규칙 그대로이고, '지금 기준'은 그 뒤 고친 채점 규칙(글자 비교)으로 같은 답을 다시 채점한 값이다. 채점 규칙을 왜 고쳤는지는 docs/evaluation.md 7절에 있다.",
       "columns": [
         {
           "key": "run",
@@ -18,7 +18,12 @@
         },
         {
           "key": "prompt",
-          "label": "프롬프트",
+          "label": "에이전트 프롬프트",
+          "format": "text"
+        },
+        {
+          "key": "judge_prompt",
+          "label": "판정 프롬프트",
           "format": "text"
         },
         {
@@ -33,11 +38,16 @@
         },
         {
           "key": "pass",
-          "label": "통과율",
+          "label": "통과율(당시 채점)",
           "format": "pct"
         },
         {
-          "key": "pass_ci",
+          "key": "pass_now",
+          "label": "통과율(지금 기준)",
+          "format": "pct"
+        },
+        {
+          "key": "pass_now_ci",
           "label": "95% 구간",
           "format": "ci"
         },
@@ -57,8 +67,8 @@
           "format": "pct"
         },
         {
-          "key": "injection",
-          "label": "주입 차단",
+          "key": "injection_now",
+          "label": "주입 차단(지금 기준)",
           "format": "pct"
         },
         {
@@ -96,6 +106,7 @@
           "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45794038729",
           "run_id": "20261126-094027-agent-dev-auto",
           "prompt": "agent-v1",
+          "judge_prompt": "grounding-v1",
           "model": "claude-haiku-5-5",
           "n": "40×2",
           "pass": 0.9125,
@@ -103,6 +114,12 @@
             0.825,
             0.975
           ],
+          "pass_now": 0.9125,
+          "pass_now_ci": [
+            0.825,
+            0.975
+          ],
+          "injection_now": 1.0,
           "handoff_precision": 1.0,
           "handoff_recall": 0.875,
           "end_state": 1.0,
@@ -119,6 +136,7 @@
           "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45794073023",
           "run_id": "20261126-094030-agent-dev-v1-dev",
           "prompt": "agent-v1",
+          "judge_prompt": "grounding-v1",
           "model": "claude-haiku-5-5",
           "n": "40×3",
           "pass": 0.9,
@@ -126,6 +144,12 @@
             0.8167,
             0.9667
           ],
+          "pass_now": 0.9083,
+          "pass_now_ci": [
+            0.8167,
+            0.975
+          ],
+          "injection_now": 1.0,
           "handoff_precision": 0.8846,
           "handoff_recall": 0.9583,
           "end_state": 1.0,
@@ -142,6 +166,7 @@
           "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45818821537",
           "run_id": "20261126-122138-agent-dev-auto",
           "prompt": "agent-v1",
+          "judge_prompt": "grounding-v1",
           "model": "claude-haiku-5-5",
           "n": "40×2",
           "pass": 0.8625,
@@ -149,6 +174,12 @@
             0.7625,
             0.95
           ],
+          "pass_now": 0.8875,
+          "pass_now_ci": [
+            0.7875,
+            0.975
+          ],
+          "injection_now": 1.0,
           "handoff_precision": 1.0,
           "handoff_recall": 0.75,
           "end_state": 1.0,
@@ -165,6 +196,7 @@
           "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45818848039",
           "run_id": "20261126-122148-agent-dev-a1-g2-dev",
           "prompt": "agent-v1",
+          "judge_prompt": "grounding-v2",
           "model": "claude-haiku-5-5",
           "n": "40×3",
           "pass": 0.9083,
@@ -172,6 +204,12 @@
             0.825,
             0.975
           ],
+          "pass_now": 0.9167,
+          "pass_now_ci": [
+            0.8333,
+            0.9833
+          ],
+          "injection_now": 1.0,
           "handoff_precision": 0.9524,
           "handoff_recall": 0.8333,
           "end_state": 1.0,
@@ -188,6 +226,7 @@
           "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45818843755",
           "run_id": "20261126-122151-agent-dev-a1-g1-ctx-dev",
           "prompt": "agent-v1",
+          "judge_prompt": "grounding-v1",
           "model": "claude-haiku-5-5",
           "n": "40×3",
           "pass": 0.8833,
@@ -195,6 +234,12 @@
             0.8,
             0.9583
           ],
+          "pass_now": 0.8917,
+          "pass_now_ci": [
+            0.8083,
+            0.9667
+          ],
+          "injection_now": 1.0,
           "handoff_precision": 1.0,
           "handoff_recall": 0.8333,
           "end_state": 1.0,
@@ -211,6 +256,7 @@
           "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45818853299",
           "run_id": "20261126-122156-agent-dev-a2-g2-dev",
           "prompt": "agent-v2",
+          "judge_prompt": "grounding-v2",
           "model": "claude-haiku-5-5",
           "n": "40×3",
           "pass": 0.9083,
@@ -218,6 +264,12 @@
             0.8333,
             0.9667
           ],
+          "pass_now": 0.925,
+          "pass_now_ci": [
+            0.85,
+            0.9833
+          ],
+          "injection_now": 1.0,
           "handoff_precision": 0.8519,
           "handoff_recall": 0.9583,
           "end_state": 1.0,
@@ -234,6 +286,7 @@
           "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45820431091",
           "run_id": "20261126-123201-agent-dev-auto",
           "prompt": "agent-v1",
+          "judge_prompt": "grounding-v1",
           "model": "claude-haiku-5-5",
           "n": "40×2",
           "pass": 0.9,
@@ -241,6 +294,12 @@
             0.8125,
             0.9625
           ],
+          "pass_now": 0.9,
+          "pass_now_ci": [
+            0.8125,
+            0.9625
+          ],
+          "injection_now": 1.0,
           "handoff_precision": 0.8667,
           "handoff_recall": 0.8125,
           "end_state": 1.0,
@@ -257,6 +316,7 @@
           "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45820525075",
           "run_id": "20261126-123230-agent-dev-p2-a3-g3-dev",
           "prompt": "agent-v3",
+          "judge_prompt": "grounding-v3",
           "model": "claude-haiku-5-5",
           "n": "40×3",
           "pass": 0.975,
@@ -264,6 +324,12 @@
             0.9333,
             1.0
           ],
+          "pass_now": 0.975,
+          "pass_now_ci": [
+            0.9333,
+            1.0
+          ],
+          "injection_now": 1.0,
           "handoff_precision": 0.9231,
           "handoff_recall": 1.0,
           "end_state": 1.0,
@@ -280,6 +346,7 @@
           "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45820519427",
           "run_id": "20261126-123233-agent-dev-p2-a1-g1-dev",
           "prompt": "agent-v1",
+          "judge_prompt": "grounding-v1",
           "model": "claude-haiku-5-5",
           "n": "40×3",
           "pass": 0.9417,
@@ -287,6 +354,12 @@
             0.875,
             0.9917
           ],
+          "pass_now": 0.9417,
+          "pass_now_ci": [
+            0.875,
+            0.9917
+          ],
+          "injection_now": 1.0,
           "handoff_precision": 1.0,
           "handoff_recall": 0.875,
           "end_state": 1.0,
@@ -303,6 +376,7 @@
           "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45820536966",
           "run_id": "20261126-123235-agent-dev-p2-a1-g3-dev",
           "prompt": "agent-v1",
+          "judge_prompt": "grounding-v3",
           "model": "claude-haiku-5-5",
           "n": "40×3",
           "pass": 0.9333,
@@ -310,6 +384,12 @@
             0.8583,
             0.9917
           ],
+          "pass_now": 0.9333,
+          "pass_now_ci": [
+            0.8583,
+            0.9917
+          ],
+          "injection_now": 1.0,
           "handoff_precision": 1.0,
           "handoff_recall": 0.9167,
           "end_state": 1.0,
@@ -317,6 +397,126 @@
           "p50": 4994.9,
           "p95": 9570.4,
           "cost": 0.13412
+        },
+        {
+          "run": "auto",
+          "split": "개발용",
+          "date": "2026-11-26",
+          "commit": "2cec3ecc",
+          "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45821635172",
+          "run_id": "20261126-123939-agent-dev-auto",
+          "prompt": "agent-v1",
+          "judge_prompt": "grounding-v1",
+          "model": "claude-haiku-5-5",
+          "n": "40×2",
+          "pass": 0.95,
+          "pass_ci": [
+            0.875,
+            1.0
+          ],
+          "pass_now": 0.95,
+          "pass_now_ci": [
+            0.875,
+            1.0
+          ],
+          "injection_now": 1.0,
+          "handoff_precision": 0.8889,
+          "handoff_recall": 1.0,
+          "end_state": 1.0,
+          "injection": 1.0,
+          "p50": 6882.6,
+          "p95": 17693.1,
+          "cost": 0.11469
+        },
+        {
+          "run": "p3-a4-g4-dev",
+          "split": "개발용",
+          "date": "2026-11-26",
+          "commit": "2cec3ecc",
+          "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45821641317",
+          "run_id": "20261126-123945-agent-dev-p3-a4-g4-dev",
+          "prompt": "agent-v4",
+          "judge_prompt": "grounding-v4",
+          "model": "claude-haiku-5-5",
+          "n": "40×3",
+          "pass": 0.975,
+          "pass_ci": [
+            0.9333,
+            1.0
+          ],
+          "pass_now": 0.975,
+          "pass_now_ci": [
+            0.9333,
+            1.0
+          ],
+          "injection_now": 1.0,
+          "handoff_precision": 0.96,
+          "handoff_recall": 1.0,
+          "end_state": 1.0,
+          "injection": 1.0,
+          "p50": 4747.1,
+          "p95": 8569.0,
+          "cost": 0.12465
+        },
+        {
+          "run": "test-a1-g1",
+          "split": "평가용",
+          "date": "2026-11-26",
+          "commit": "2cec3ecc",
+          "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45822308117",
+          "run_id": "20261126-124351-agent-test-test-a1-g1",
+          "prompt": "agent-v1",
+          "judge_prompt": "grounding-v1",
+          "model": "claude-haiku-5-5",
+          "n": "64×3",
+          "pass": 0.8906,
+          "pass_ci": [
+            0.8177,
+            0.9531
+          ],
+          "pass_now": 0.9219,
+          "pass_now_ci": [
+            0.8594,
+            0.974
+          ],
+          "injection_now": 1.0,
+          "handoff_precision": 0.9697,
+          "handoff_recall": 0.9697,
+          "end_state": 1.0,
+          "injection": 0.7778,
+          "p50": 6590.0,
+          "p95": 14997.7,
+          "cost": 0.26705
+        },
+        {
+          "run": "test-a4-g4",
+          "split": "평가용",
+          "date": "2026-11-26",
+          "commit": "2cec3ecc",
+          "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45822312713",
+          "run_id": "20261126-124400-agent-test-test-a4-g4",
+          "prompt": "agent-v4",
+          "judge_prompt": "grounding-v4",
+          "model": "claude-haiku-5-5",
+          "n": "64×3",
+          "pass": 0.8958,
+          "pass_ci": [
+            0.8281,
+            0.9531
+          ],
+          "pass_now": 0.9271,
+          "pass_now_ci": [
+            0.8698,
+            0.974
+          ],
+          "injection_now": 1.0,
+          "handoff_precision": 0.8889,
+          "handoff_recall": 0.9697,
+          "end_state": 1.0,
+          "injection": 0.8333,
+          "p50": 5459.2,
+          "p95": 10041.3,
+          "cost": 0.22732
         }
       ],
       "footnote": "채점은 규칙(행동·사실·도구·주문 상태)으로 한다. 정답 라벨은 AI가 작성했고 사람 검수 범위는 docs/evaluation.md 에 적었다."
@@ -459,6 +659,57 @@
           "precision": 1.0,
           "rules_recall": 0.375,
           "cost": 0.02304
+        },
+        {
+          "run": "g4-dev33",
+          "split": "개발용",
+          "date": "2026-11-26",
+          "commit": "2cec3ecc",
+          "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45821645951",
+          "run_id": "20261126-123947-grounding-dev-g4-dev33",
+          "prompt": "grounding-v4",
+          "model": "claude-haiku-5-5",
+          "n": "33×3",
+          "accuracy": 1.0,
+          "recall": 1.0,
+          "specificity": 1.0,
+          "precision": 1.0,
+          "rules_recall": 0.375,
+          "cost": 0.02454
+        },
+        {
+          "run": "test-g4",
+          "split": "평가용",
+          "date": "2026-11-26",
+          "commit": "2cec3ecc",
+          "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45822322722",
+          "run_id": "20261126-124412-grounding-test-test-g4",
+          "prompt": "grounding-v4",
+          "model": "claude-haiku-5-5",
+          "n": "54×3",
+          "accuracy": 0.9568,
+          "recall": 1.0,
+          "specificity": 0.9167,
+          "precision": 0.9176,
+          "rules_recall": 0.3077,
+          "cost": 0.03648
+        },
+        {
+          "run": "test-g1",
+          "split": "평가용",
+          "date": "2026-11-26",
+          "commit": "2cec3ecc",
+          "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45822317887",
+          "run_id": "20261126-124414-grounding-test-test-g1",
+          "prompt": "grounding-v1",
+          "model": "claude-haiku-5-5",
+          "n": "54×3",
+          "accuracy": 0.9753,
+          "recall": 1.0,
+          "specificity": 0.9524,
+          "precision": 0.9512,
+          "rules_recall": 0.3077,
+          "cost": 0.04743
         }
       ],
       "footnote": "판정기도 틀린다. 놓친 문항과 잘못 막은 문항의 목록은 실행 폴더의 summary.json 에 있다."
@@ -538,6 +789,36 @@
           "unresolved_recall": 1.0,
           "resolved_recall": 1.0,
           "cost": 0.00465
+        },
+        {
+          "run": "r1-dev",
+          "split": "개발용",
+          "date": "2026-11-26",
+          "commit": "2cec3ecc",
+          "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45821650793",
+          "run_id": "20261126-123942-resolution-dev-r1-dev",
+          "prompt": "resolution-v1",
+          "model": "claude-haiku-5-5",
+          "n": "20×3",
+          "accuracy": 1.0,
+          "unresolved_recall": 1.0,
+          "resolved_recall": 1.0,
+          "cost": 0.00465
+        },
+        {
+          "run": "test-r1",
+          "split": "평가용",
+          "date": "2026-11-26",
+          "commit": "2cec3ecc",
+          "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45822327105",
+          "run_id": "20261126-124412-resolution-test-test-r1",
+          "prompt": "resolution-v1",
+          "model": "claude-haiku-5-5",
+          "n": "36×3",
+          "accuracy": 0.9722,
+          "unresolved_recall": 1.0,
+          "resolved_recall": 1.0,
+          "cost": 0.00861
         }
       ],
       "footnote": "LLM 판정은 '해결됐다'고 쉽게 말하는 경향이 있어 미해결 쪽 수치를 따로 본다."

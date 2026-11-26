@@ -1998,6 +1998,12 @@ table.data th.r {
   white-space: nowrap;
 }
 
+/* 열이 많은 표(평가 결과): 칸 안에서 줄을 바꾸지 않고, 넘치면 표 안에서 가로로 민다. */
+table.data.wide th,
+table.data.wide td {
+  white-space: nowrap;
+}
+
 table.data.kv td:first-child {
   width: 58%;
 }

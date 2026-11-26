@@ -2,7 +2,7 @@
   "note": "평가용(test) 자료의 동결 기록. 바꾸려면 docs/evaluation.md 의 변경 기록에 이유를 남긴다.",
   "files": {
     "agent/test.jsonl": {
-      "sha256": "7d5c0e244dc61daddc3c7dddf0813c2aecaef717ea4701e2500df9164ed910c5",
+      "sha256": "3f4286ddcf87141b2390620d6a72e065ddd07fa608671676106e39ce45829b22",
       "items": 64
     },
     "grounding/test.jsonl": {

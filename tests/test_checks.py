@@ -10,6 +10,8 @@ from batondesk.llm.base import LLMError, LLMRequest, LLMResponse
 from batondesk.llm.scripted import QueueLLM, fake_final, fake_response
 from batondesk.prompts.registry import PromptRegistry
 
+from .conftest import ACTIVE
+
 POLICY = Evidence(
     id="K1", kind="kb", title="반품 정책", turn_seq=1,
     text="상품을 받은 날부터 7일 이내에 반품을 신청할 수 있습니다. 처음에 배송비를 낸 주문은 3,000원(편도)입니다.",
@@ -79,7 +81,7 @@ async def test_verdict_is_computed_from_claim_labels(prompts: PromptRegistry) ->
     assert result.verdict == "ungrounded" and result.mode == "llm+rules"
     assert (result.unsupported, result.contradicted) == (1, 0)
     assert result.problems == ["근거에 없음: 무료로 회수 — 근거 없음"]
-    assert result.checker["prompt"] == "grounding-v1" and steps[0]["purpose"] == "grounding"
+    assert result.checker["prompt"] == ACTIVE["grounding"] and steps[0]["purpose"] == "grounding"
     request: LLMRequest = llm.requests[0]
     assert "<근거>" in request.messages[0]["content"] and request.output_schema is not None
 

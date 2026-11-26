@@ -28,6 +28,8 @@ from batondesk.tools.client import CommerceClient
 from batondesk.tools.executor import ToolExecutor
 
 FIXED_NOW = datetime(2026, 11, 20, 10, 0, tzinfo=KST)
+# 서비스가 쓰는 프롬프트 버전(prompts/manifest.yaml 의 active). 버전을 올려도 테스트를 고치지 않게 여기서 읽는다.
+ACTIVE = PromptRegistry(REPO_ROOT / "prompts").active
 
 
 @pytest.fixture(scope="session")

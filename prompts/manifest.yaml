@@ -1,5 +1,5 @@
 # 서비스가 실제로 쓰는 프롬프트 버전. 바꾸면 CI의 평가 게이트가 다시 돈다.
 active:
-  agent: agent-v1
-  grounding: grounding-v1
+  agent: agent-v4
+  grounding: grounding-v4
   resolution: resolution-v1

@@ -259,7 +259,16 @@ def check_agent_gate(run_dir: Path, gate: dict[str, Any]) -> list[str]:
 # ---- 운영 화면용 색인 ------------------------------------------------------------
 
 
-def build_index(runs_dir: Path) -> dict[str, Any]:
+def _regraded_columns(run_dir: Path, cases: list[AgentCase]) -> dict[str, Any]:
+    """지금의 채점 기준으로 다시 본 통과율과 주입 차단율(실행 뒤에 채점 규칙을 고친 경우 당시 값과 다르다)."""
+    _, _, rows = _load_run(run_dir)
+    by_id = {c.id: c for c in cases}
+    again = [regrade_text_checks(by_id[r["case_id"]], r) for r in rows if not r.get("skipped") and r["case_id"] in by_id]
+    overall, injection = cluster_ci(_by_case(again)), cluster_ci(_by_case(again, "injection_blocked"))
+    return {"pass_now": overall["mean"], "pass_now_ci": [overall["lo"], overall["hi"]], "injection_now": injection["mean"]}
+
+
+def build_index(runs_dir: Path, cases_by_split: dict[str, list[AgentCase]] | None = None) -> dict[str, Any]:
     """운영 화면의 '프롬프트·평가' 탭이 읽는 파일. 실제 모델로 돌린 실행만 싣는다."""
     runs = []
     for path in sorted(runs_dir.glob("*/manifest.json")):
@@ -289,10 +298,12 @@ def build_index(runs_dir: Path) -> dict[str, Any]:
                 {
                     **base(name, m),
                     "prompt": cfg["agent_prompt"]["id"],
+                    "judge_prompt": cfg["grounding_prompt"]["id"],
                     "model": cfg["agent_model"],
                     "n": f"{s['cases']}×{s['reps']}",
                     "pass": s["pass"]["mean"],
                     "pass_ci": [s["pass"]["lo"], s["pass"]["hi"]],
+                    **(_regraded_columns(runs_dir / name, cases_by_split[m["split"]]) if cases_by_split else {}),
                     "handoff_precision": s["handoff"]["precision"],
                     "handoff_recall": s["handoff"]["recall"],
                     "end_state": s["grades"]["end_state_ok"]["mean"],
@@ -339,19 +350,23 @@ def build_index(runs_dir: Path) -> dict[str, Any]:
         sections.append(
             {
                 "title": "에이전트 전체 평가",
-                "description": "같은 문항을 반복 실행한 통과율. 대괄호는 문항 단위 부트스트랩 95% 구간.",
+                "description": "같은 문항을 반복 실행한 통과율. 구간은 문항 단위 부트스트랩 95% 구간. "
+                "'당시 채점'은 실행했을 때의 채점 규칙 그대로이고, '지금 기준'은 그 뒤 고친 채점 규칙(글자 비교)으로 같은 답을 다시 채점한 값이다. "
+                "채점 규칙을 왜 고쳤는지는 docs/evaluation.md 7절에 있다.",
                 "columns": [
                     {"key": "run", "label": "실행", "format": "text"},
                     {"key": "split", "label": "자료", "format": "text"},
-                    {"key": "prompt", "label": "프롬프트", "format": "text"},
+                    {"key": "prompt", "label": "에이전트 프롬프트", "format": "text"},
+                    {"key": "judge_prompt", "label": "판정 프롬프트", "format": "text"},
                     {"key": "model", "label": "모델", "format": "text"},
                     {"key": "n", "label": "문항×반복", "format": "text"},
-                    {"key": "pass", "label": "통과율", "format": "pct"},
-                    {"key": "pass_ci", "label": "95% 구간", "format": "ci"},
+                    {"key": "pass", "label": "통과율(당시 채점)", "format": "pct"},
+                    {"key": "pass_now", "label": "통과율(지금 기준)", "format": "pct"},
+                    {"key": "pass_now_ci", "label": "95% 구간", "format": "ci"},
                     {"key": "handoff_precision", "label": "인계 정밀도", "format": "pct"},
                     {"key": "handoff_recall", "label": "인계 재현율", "format": "pct"},
                     {"key": "end_state", "label": "주문 상태 일치", "format": "pct"},
-                    {"key": "injection", "label": "주입 차단", "format": "pct"},
+                    {"key": "injection_now", "label": "주입 차단(지금 기준)", "format": "pct"},
                     {"key": "p50", "label": "지연 p50", "format": "ms"},
                     {"key": "p95", "label": "지연 p95", "format": "ms"},
                     {"key": "cost", "label": "추정 비용", "format": "usd"},

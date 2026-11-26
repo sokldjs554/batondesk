@@ -14,6 +14,7 @@ const BASE = process.env.BASE || "http://localhost:8811";
 const OUT = path.resolve(process.env.SHOTS_DIR || path.join(__dirname, "..", "..", "var", "ui-shots"));
 require("fs").mkdirSync(OUT, { recursive: true });
 const SCALE = Number(process.env.SCALE || 1);
+let ACTIVE_AGENT = null;
 const VIEWPORTS = { desktop: { width: 1440, height: 900 }, mobile: { width: 390, height: 844 } };
 const only = process.argv[2];
 
@@ -81,7 +82,7 @@ async function run(name, viewport) {
     return h1.top < window.innerHeight && document.querySelectorAll(".try-steps li").length === 3;
   }));
   check(L("첫 화면: 엔진 배지"), (await page.textContent("#engine-slot")).includes("규칙 엔진 (LLM 아님)"));
-  check(L("첫 화면: 바닥글에 커밋·프롬프트"), (await page.textContent("#footer-prompt")) === "agent-v1" && (await page.textContent("#footer-sha")).length > 0);
+  check(L("첫 화면: 바닥글에 커밋·프롬프트"), (await page.textContent("#footer-prompt")) === ACTIVE_AGENT && (await page.textContent("#footer-sha")).length > 0);
   check(L("첫 화면: 진입 카드 3개·흐름 7단계·구분 3개"), (await page.locator(".entry").count()) === 3 && (await page.locator(".flow li").count()) === 7 && (await page.locator(".legend .panel").count()) === 3);
   await noHScroll(page, L("첫 화면"));
   await smallTargets(page, L("첫 화면"));
@@ -244,10 +245,13 @@ async function run(name, viewport) {
   await shot(ops, "16-ops-review");
   await ops.click('#tabs [data-tab="prompts"]');
   await ops.waitForSelector("#prompt-list .prompt-item");
-  await ops.click('#prompt-list [data-prompt="agent-v1"]');
+  await ops.click(`#prompt-list [data-prompt="${ACTIVE_AGENT}"]`);
   await ops.waitForSelector("#prompt-list pre.code");
   check(L("(e) 프롬프트 버전 목록과 본문 보기"), (await ops.locator("#prompt-list .prompt-item").count()) >= 3 && (await ops.textContent("#prompt-list pre.code")).includes("바통마켓"));
-  check(L("(e) 평가 결과 없음 안내(/v1/evals 404)"), (await ops.textContent("#eval-section")).length > 20);
+  // 저장소에 실제 모델 평가 결과(eval_results/index.json)가 있으면 표로, 없으면 없다는 안내로 보인다.
+  const evalTables = await ops.locator("#eval-section table.data").count();
+  const evalText = await ops.textContent("#eval-section");
+  check(L("(e) 평가 결과: 표 또는 없음 안내"), evalTables >= 1 ? evalText.includes("통과율") && evalText.includes("개발용") : evalText.length > 20);
   await shot(ops, "17-ops-prompts");
   await noHScroll(ops, L("운영 화면 프롬프트"));
   await ops.click('#tabs [data-tab="logs"]');
@@ -292,6 +296,8 @@ async function run(name, viewport) {
 }
 
 (async () => {
+  // 서비스가 쓰는 프롬프트 버전은 서버에 묻는다(버전을 올려도 이 점검을 고치지 않게).
+  ACTIVE_AGENT = (await (await fetch(`${BASE}/v1/release`)).json()).prompts.agent.id;
   for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     if (only && only !== name) continue;
     try {

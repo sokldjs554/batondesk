@@ -13,6 +13,8 @@ from batondesk.llm.scripted import QueueLLM, agent_payload, fake_final, fake_res
 from batondesk.service import SupportService
 from batondesk.settings import Settings
 
+from .conftest import ACTIVE
+
 SUPPORTED = {"claims": [{"claim": "c", "label": "supported", "evidence_ids": ["K1"], "reason": "일치"}]}
 RESOLVED = {"status": "resolved_assumed", "customer_signal": "none", "reason": "답변 후 종료"}
 
@@ -45,7 +47,7 @@ def test_answer_with_sources_and_trace(client: TestClient, llm: QueueLLM) -> Non
     view = client.get(f"/v1/conversations/{cid}?trace=true").json()
     assert view["resolution"]["status"] == "resolved_assumed" and view["resolution"]["source"] == "judge"
     turn = view["turns"][0]
-    assert turn["prompt_id"] == "agent-v1" and len(turn["prompt_sha"]) == 12
+    assert turn["prompt_id"] == ACTIVE["agent"] and len(turn["prompt_sha"]) == 12
     assert [s["type"] for s in turn["detail"]["steps"]] == ["retrieval", "llm", "llm", "grounding"]
     assert client.get(f"/v1/conversations/{cid}?after_seq=1").json()["messages"][0]["role"] == "ai"
 
@@ -148,7 +150,7 @@ def test_metrics_follow_the_definitions(client: TestClient, llm: QueueLLM) -> No
     assert m["handoff"]["conversations"] == 1 and m["handoff"]["rate"] == round(1 / 3, 4) and m["handoff"]["waiting"] == 1
     assert m["grounding"]["blocked_drafts"] == 1 and m["grounding"]["turns_with_revision"] == 1
     assert m["turns"]["total"] == 2 and m["turns"]["latency_ms"]["p50"] is not None
-    assert m["llm"]["calls"] == 6 and m["llm"]["by_prompt"] == {"agent-v1": 2}
+    assert m["llm"]["calls"] == 6 and m["llm"]["by_prompt"] == {ACTIVE["agent"]: 2}
     assert m["flagged"][0]["conversation_id"] == b and "14일" in m["flagged"][0]["blocked"][0]["message"]
     assert client.get("/v1/metrics/summary?source=recorded").json()["conversations"]["total"] == 0
     events = client.get("/v1/events?type=grounding.blocked").json()["events"]
@@ -209,7 +211,7 @@ def test_check_apis_work_without_a_conversation(client: TestClient, llm: QueueLL
 
     llm.push(fake_final({"claims": [{"claim": "14일 이내", "label": "contradicted", "evidence_ids": ["K1"], "reason": "7일"}]}))
     judged = client.post("/v1/checks/grounding", json={**body, "use_llm": True}).json()
-    assert judged["mode"] == "llm+rules" and judged["contradicted"] == 1 and judged["checker"]["prompt"] == "grounding-v1"
+    assert judged["mode"] == "llm+rules" and judged["contradicted"] == 1 and judged["checker"]["prompt"] == ACTIVE["grounding"]
 
     llm.push(fake_final({"status": "unresolved", "customer_signal": "negative", "reason": "고객이 반박"}))
     resolution = client.post("/v1/checks/resolution", json={"messages": [{"role": "고객", "text": "아닌데요"}]}).json()
@@ -225,9 +227,9 @@ def test_knowledge_and_ops_endpoints(client: TestClient) -> None:
     assert {d["doc_id"]: d["in_effect"] for d in docs}["notice-2025-yearend-returns"] is False
     assert client.get("/v1/kb/documents/return-policy").json()["sections"][0]["chunk_id"] == "return-policy#1"
     release = client.get("/v1/release").json()
-    assert release["prompts"]["agent"]["id"] == "agent-v1" and release["engine"]["engine"] == "scripted"
+    assert release["prompts"]["agent"]["id"] == ACTIVE["agent"] and release["engine"]["engine"] == "scripted"
     prompt_list = client.get("/v1/prompts").json()
-    assert prompt_list["active"]["agent"] == "agent-v1"
+    assert prompt_list["active"]["agent"] == ACTIVE["agent"]
     assert "근거" in client.get("/v1/prompts/agent-v1").json()["system"]
     customers = client.get("/v1/demo/customers").json()["customers"]
     assert customers[0]["orders"][0]["order_id"].startswith("BM-")
@@ -270,7 +272,7 @@ async def test_recordings_are_read_only_and_reported_separately(service: Support
 
     view = service.conversation_view(rid, with_trace=True)
     assert view["source"] == "recorded" and view["meta"]["title"] == "반품 기한 문의"
-    assert [m["role"] for m in view["messages"]] == ["customer", "ai"] and view["turns"][0]["prompt_id"] == "agent-v1"
+    assert [m["role"] for m in view["messages"]] == ["customer", "ai"] and view["turns"][0]["prompt_id"] == ACTIVE["agent"]
     with pytest.raises(Exception, match="저장된 상담 기록"):
         await service.handle_customer_message(rid, "더 물어볼게요")
     from batondesk.obs.metrics import compute_metrics

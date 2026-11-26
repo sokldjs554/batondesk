@@ -1,0 +1,94 @@
+{
+  "split": "dev",
+  "items": 33,
+  "reps": 3,
+  "labels": {
+    "grounded": 17,
+    "ungrounded": 16
+  },
+  "rows_scored": 99,
+  "rows_errored": 0,
+  "rules_hard_only": {
+    "tp": 18,
+    "fp": 6,
+    "fn": 30,
+    "tn": 45,
+    "accuracy": 0.6364,
+    "precision": 0.75,
+    "recall": 0.375,
+    "specificity": 0.8824,
+    "f1": 0.5
+  },
+  "rules_any_flag": {
+    "tp": 21,
+    "fp": 9,
+    "fn": 27,
+    "tn": 42,
+    "accuracy": 0.6364,
+    "precision": 0.7,
+    "recall": 0.4375,
+    "specificity": 0.8235,
+    "f1": 0.5385
+  },
+  "wall_clock_s": 37.7,
+  "judge": {
+    "tp": 48,
+    "fp": 0,
+    "fn": 0,
+    "tn": 51,
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "specificity": 1.0,
+    "f1": 1.0,
+    "accuracy_ci": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 33,
+      "rows": 99
+    },
+    "accuracy_by_kind": {
+      "computed": 1.0,
+      "expired_applied": 1.0,
+      "expired_handled": 1.0,
+      "faithful": 1.0,
+      "invented_policy": 1.0,
+      "multi_evidence": 1.0,
+      "negation_flip": 1.0,
+      "negative": 1.0,
+      "number_swap": 1.0,
+      "outcome_promise": 1.0,
+      "paraphrase": 1.0,
+      "partial": 1.0,
+      "period_swap": 1.0,
+      "process_statement": 1.0,
+      "session_context": 1.0,
+      "unconfirmed_as_confirmed": 1.0,
+      "unsupported_promise": 1.0,
+      "wrong_order_fact": 1.0
+    },
+    "wrong_span_located": 0.9375,
+    "items_with_same_verdict_every_rep": 1.0,
+    "wrong_items": [],
+    "missed_ungrounded": [],
+    "false_alarms": []
+  },
+  "usage": {
+    "calls": 99,
+    "input_tokens": 61281,
+    "output_tokens": 27824,
+    "cost_usd": 0.02454,
+    "latency_ms_p50": 1338.8,
+    "latency_ms_p95": 2409.3,
+    "models_served": {
+      "claude-haiku-5-5": 99
+    }
+  },
+  "checker": {
+    "model": "claude-haiku-5-5",
+    "prompt": "grounding-v4",
+    "prompt_sha256": "0edca4226cf3",
+    "effort": "low"
+  }
+}

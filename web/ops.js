@@ -401,7 +401,7 @@ function evalTable(section) {
       { class: "table-wrap" },
       el(
         "table",
-        { class: "data" },
+        { class: "data wide" },
         el("thead", {}, el("tr", {}, columns.map((col) => el("th", { class: numeric(col.format) ? "r" : null, text: col.label })))),
         el("tbody", {}, (section.rows || []).map((row) => el("tr", {}, columns.map((col) => el("td", { class: numeric(col.format) ? "r" : null, text: formatCell(row[col.key], col.format) }))))),
       ),

@@ -278,7 +278,7 @@ def cmd_check_frozen(_: argparse.Namespace) -> int:
 
 
 def cmd_index(args: argparse.Namespace) -> int:
-    index = report.build_index(Path(args.runs))
+    index = report.build_index(Path(args.runs), {split: load_agent_cases(DATA, split) for split in ("dev", "test")})
     Path(args.out).write_text(json.dumps(index, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"{args.out}: 섹션 {len(index['sections'])}개")
     return 0

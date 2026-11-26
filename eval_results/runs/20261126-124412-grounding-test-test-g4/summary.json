@@ -1,0 +1,102 @@
+{
+  "split": "test",
+  "items": 54,
+  "reps": 3,
+  "labels": {
+    "grounded": 28,
+    "ungrounded": 26
+  },
+  "rows_scored": 162,
+  "rows_errored": 0,
+  "rules_hard_only": {
+    "tp": 24,
+    "fp": 6,
+    "fn": 54,
+    "tn": 78,
+    "accuracy": 0.6296,
+    "precision": 0.8,
+    "recall": 0.3077,
+    "specificity": 0.9286,
+    "f1": 0.4444
+  },
+  "rules_any_flag": {
+    "tp": 27,
+    "fp": 24,
+    "fn": 51,
+    "tn": 60,
+    "accuracy": 0.537,
+    "precision": 0.5294,
+    "recall": 0.3462,
+    "specificity": 0.7143,
+    "f1": 0.4186
+  },
+  "wall_clock_s": 57.7,
+  "judge": {
+    "tp": 78,
+    "fp": 7,
+    "fn": 0,
+    "tn": 77,
+    "accuracy": 0.9568,
+    "precision": 0.9176,
+    "recall": 1.0,
+    "specificity": 0.9167,
+    "f1": 0.9571,
+    "accuracy_ci": {
+      "mean": 0.9568,
+      "lo": 0.9012,
+      "hi": 1.0,
+      "cases": 54,
+      "rows": 162
+    },
+    "accuracy_by_kind": {
+      "computed": 0.8333,
+      "expired_applied": 1.0,
+      "expired_handled": 0.6667,
+      "faithful": 1.0,
+      "invented_policy": 1.0,
+      "multi_evidence": 0.7778,
+      "negation_flip": 1.0,
+      "negative": 1.0,
+      "number_swap": 1.0,
+      "outcome_promise": 1.0,
+      "paraphrase": 1.0,
+      "partial": 1.0,
+      "period_swap": 1.0,
+      "process_statement": 1.0,
+      "session_context": 1.0,
+      "unconfirmed_as_confirmed": 1.0,
+      "unsupported_promise": 1.0,
+      "wrong_order_fact": 1.0
+    },
+    "wrong_span_located": 0.9744,
+    "items_with_same_verdict_every_rep": 0.963,
+    "wrong_items": [
+      "G-T-009",
+      "G-T-013",
+      "G-T-020"
+    ],
+    "missed_ungrounded": [],
+    "false_alarms": [
+      "G-T-009",
+      "G-T-013",
+      "G-T-020"
+    ]
+  },
+  "usage": {
+    "calls": 162,
+    "input_tokens": 93045,
+    "output_tokens": 44295,
+    "cost_usd": 0.03648,
+    "latency_ms_p50": 1230.5,
+    "latency_ms_p95": 2072.0,
+    "models_served": {
+      "claude-haiku-5-5": 162
+    }
+  },
+  "checker": {
+    "model": "claude-haiku-5-5",
+    "prompt": "grounding-v4",
+    "prompt_sha256": "0edca4226cf3",
+    "effort": "low"
+  }
+}
