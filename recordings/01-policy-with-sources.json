@@ -1,0 +1,1160 @@
+{
+ "title": "정책 문의 — 근거 문서와 함께 답변",
+ "provenance": {
+  "kind": "실제 모델 호출 기록",
+  "recorded_at": "2026-11-26T12:57:59+00:00",
+  "agent_model": "claude-haiku-5-5",
+  "judge_model": "claude-haiku-5-5",
+  "agent_prompt": "agent-v4",
+  "agent_prompt_sha256": "8fbbd864a03e",
+  "git_sha": "f22724ea69dc4d9cae4e432db478472b67053ed8",
+  "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45824425001",
+  "example_clock": "2026-11-20T10:00:00+09:00",
+  "order_system_fault": "none",
+  "customer_messages": "스크립트에 정해 둔 글",
+  "agent_messages": "없음"
+ },
+ "export": {
+  "conversation": {
+   "id": "conv_f95ec099e225",
+   "customer_id": "C-1001",
+   "customer_name": "김하늘",
+   "channel": "web",
+   "sandbox_id": "record-01-policy-with-sources",
+   "status": "open",
+   "source": "live",
+   "created_at": "2026-11-26T12:57:43.524+00:00",
+   "updated_at": "2026-11-26T12:57:59.529+00:00",
+   "turn_count": 3,
+   "evidence": [
+    {
+     "id": "K1",
+     "kind": "kb",
+     "title": "반품 정책 › 단순변심 반품 배송비 (정책 · 현행 (2026-03-01부터))",
+     "text": "단순변심으로 반품하면 반품 배송비는 고객이 부담합니다. 처음에 배송비를 낸 주문은 3,000원(편도), 무료배송으로 받은 주문은 6,000원(왕복)이며 환불 금액에서 뺍니다. 처음에 낸 배송비는 돌려드리지 않습니다.",
+     "turn_seq": 1,
+     "meta": {
+      "chunk_id": "return-policy#2",
+      "doc_id": "return-policy",
+      "doc_title": "반품 정책",
+      "heading": "단순변심 반품 배송비",
+      "doc_type": "policy",
+      "effective_from": "2026-03-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "무료배송으로 받은 상품인데 단순변심으로 반품할 수 있나요?",
+      "score": 0.03279,
+      "expanded_from": null,
+      "cited": true
+     }
+    },
+    {
+     "id": "K2",
+     "kind": "kb",
+     "title": "반품이 안 되는 경우 › 반품할 수 없는 상품 (정책 · 현행 (2026-03-01부터))",
+     "text": "다음 경우에는 단순변심 반품을 받지 않습니다. 주문제작 상품, 밀봉 스티커를 뗀 화장품·위생용품, 신선식품, 사용하거나 세탁한 흔적이 있는 상품, 조립·설치를 마친 가구, 구성품이나 사은품이 빠진 상품.",
+     "turn_seq": 1,
+     "meta": {
+      "chunk_id": "return-exclusions#1",
+      "doc_id": "return-exclusions",
+      "doc_title": "반품이 안 되는 경우",
+      "heading": "반품할 수 없는 상품",
+      "doc_type": "policy",
+      "effective_from": "2026-03-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "무료배송으로 받은 상품인데 단순변심으로 반품할 수 있나요?",
+      "score": 0.03105,
+      "expanded_from": null,
+      "cited": true
+     }
+    },
+    {
+     "id": "K3",
+     "kind": "kb",
+     "title": "가구 설치배송 안내 › 가구 반품 (정책 · 현행 (2026-03-01부터))",
+     "text": "가구는 조립·설치 전에만 단순변심 반품을 받습니다. 반품할 때는 회수비 30,000원을 환불 금액에서 뺍니다. 조립·설치를 마친 가구는 하자가 있는 경우에만 반품할 수 있습니다.",
+     "turn_seq": 1,
+     "meta": {
+      "chunk_id": "furniture-delivery#2",
+      "doc_id": "furniture-delivery",
+      "doc_title": "가구 설치배송 안내",
+      "heading": "가구 반품",
+      "doc_type": "policy",
+      "effective_from": "2026-03-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "무료배송으로 받은 상품인데 단순변심으로 반품할 수 있나요?",
+      "score": 0.03102,
+      "expanded_from": null
+     }
+    },
+    {
+     "id": "K4",
+     "kind": "kb",
+     "title": "신선식품 주문 안내 › 반품 기준 (정책 · 현행 (2026-03-01부터))",
+     "text": "신선식품은 단순변심으로 반품할 수 없습니다.",
+     "turn_seq": 1,
+     "meta": {
+      "chunk_id": "fresh-food#1",
+      "doc_id": "fresh-food",
+      "doc_title": "신선식품 주문 안내",
+      "heading": "반품 기준",
+      "doc_type": "policy",
+      "effective_from": "2026-03-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "무료배송으로 받은 상품인데 단순변심으로 반품할 수 있나요?",
+      "score": 0.03062,
+      "expanded_from": null
+     }
+    },
+    {
+     "id": "K5",
+     "kind": "kb",
+     "title": "제주·도서산간 배송 › 반품할 때 (정책 · 현행 (2026-03-01부터))",
+     "text": "제주·도서산간 지역에서 단순변심으로 반품하면 반품 배송비에 추가 배송비가 편도 기준으로 한 번 더 붙습니다.",
+     "turn_seq": 1,
+     "meta": {
+      "chunk_id": "shipping-remote#3",
+      "doc_id": "shipping-remote",
+      "doc_title": "제주·도서산간 배송",
+      "heading": "반품할 때",
+      "doc_type": "policy",
+      "effective_from": "2026-03-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "무료배송으로 받은 상품인데 단순변심으로 반품할 수 있나요?",
+      "score": 0.02903,
+      "expanded_from": null,
+      "cited": true
+     }
+    },
+    {
+     "id": "K6",
+     "kind": "kb",
+     "title": "반품 정책 › 상품 하자·오배송 반품 (정책 · 현행 (2026-03-01부터))",
+     "text": "상품에 하자가 있거나 주문과 다른 상품이 온 경우 반품 배송비는 바통마켓이 부담하고, 처음에 낸 배송비도 함께 환불합니다. 이 경우에는 상품을 받은 날부터 3개월 이내, 그 사실을 안 날부터 30일 이내에 신청할 수 있습니다.",
+     "turn_seq": 2,
+     "meta": {
+      "chunk_id": "return-policy#3",
+      "doc_id": "return-policy",
+      "doc_title": "반품 정책",
+      "heading": "상품 하자·오배송 반품",
+      "doc_type": "policy",
+      "effective_from": "2026-03-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "그럼 배송비는 얼마 내야 해요?",
+      "score": 0.03125,
+      "expanded_from": null
+     }
+    },
+    {
+     "id": "K7",
+     "kind": "kb",
+     "title": "제주·도서산간 배송 › 추가 배송비 (정책 · 현행 (2026-03-01부터))",
+     "text": "제주 지역은 3,000원, 그 밖의 도서산간 지역은 5,000원의 추가 배송비가 붙습니다. 무료배송 조건을 채운 주문에도 추가 배송비는 따로 부과합니다.",
+     "turn_seq": 2,
+     "meta": {
+      "chunk_id": "shipping-remote#1",
+      "doc_id": "shipping-remote",
+      "doc_title": "제주·도서산간 배송",
+      "heading": "추가 배송비",
+      "doc_type": "policy",
+      "effective_from": "2026-03-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "그럼 배송비는 얼마 내야 해요?",
+      "score": 0.03105,
+      "expanded_from": null
+     }
+    },
+    {
+     "id": "K8",
+     "kind": "kb",
+     "title": "환불 정책 › 환불 금액 계산 (정책 · 현행 (2026-03-01부터))",
+     "text": "단순변심 반품은 상품 결제금액에서 반품 배송비를 뺀 금액을 환불합니다. 하자·오배송 반품은 상품 결제금액과 처음에 낸 배송비를 모두 환불합니다.",
+     "turn_seq": 2,
+     "meta": {
+      "chunk_id": "refund-policy#4",
+      "doc_id": "refund-policy",
+      "doc_title": "환불 정책",
+      "heading": "환불 금액 계산",
+      "doc_type": "policy",
+      "effective_from": "2026-03-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "그럼 배송비는 얼마 내야 해요?",
+      "score": 0.03062,
+      "expanded_from": null,
+      "cited": true
+     }
+    },
+    {
+     "id": "K9",
+     "kind": "kb",
+     "title": "배송 정책 › 배송비와 무료배송 기준 (정책 · 현행 (2026-03-01부터))",
+     "text": "기본 배송비는 주문 1건당 3,000원입니다. 한 주문의 상품 결제금액 합계가 50,000원 이상이면 배송비가 무료입니다. 쿠폰·적립금으로 할인받은 금액은 합계에서 빼고 계산합니다.",
+     "turn_seq": 2,
+     "meta": {
+      "chunk_id": "shipping-policy#2",
+      "doc_id": "shipping-policy",
+      "doc_title": "배송 정책",
+      "heading": "배송비와 무료배송 기준",
+      "doc_type": "policy",
+      "effective_from": "2026-03-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "그럼 배송비는 얼마 내야 해요?",
+      "score": 0.03058,
+      "expanded_from": null
+     }
+    },
+    {
+     "id": "K10",
+     "kind": "kb",
+     "title": "[공지] 2025 연말 감사 행사 — 반품 기간 연장 › 적용 범위 (공지 · 적용 종료 (2026-01-15까지))",
+     "text": "행사 기간 밖에 결제한 주문에는 적용하지 않으며, 기본 반품 정책을 따릅니다. 반품 배송비와 반품할 수 없는 상품 기준은 기본 정책과 같습니다.",
+     "turn_seq": 3,
+     "meta": {
+      "chunk_id": "notice-2025-yearend-returns#2",
+      "doc_id": "notice-2025-yearend-returns",
+      "doc_title": "[공지] 2025 연말 감사 행사 — 반품 기간 연장",
+      "heading": "적용 범위",
+      "doc_type": "notice",
+      "effective_from": "2025-12-01",
+      "effective_to": "2026-01-15",
+      "in_effect": false,
+      "query": "아 그렇군요, 감사합니다.",
+      "score": 0.03279,
+      "expanded_from": null
+     }
+    },
+    {
+     "id": "K11",
+     "kind": "kb",
+     "title": "[공지] 2025 연말 감사 행사 — 반품 기간 연장 › 행사 내용 (공지 · 적용 종료 (2026-01-15까지))",
+     "text": "2025년 12월 1일부터 2026년 1월 15일 사이에 결제한 주문에 한해, 반품 신청 기간을 상품을 받은 날부터 14일로 늘립니다.",
+     "turn_seq": 3,
+     "meta": {
+      "chunk_id": "notice-2025-yearend-returns#1",
+      "doc_id": "notice-2025-yearend-returns",
+      "doc_title": "[공지] 2025 연말 감사 행사 — 반품 기간 연장",
+      "heading": "행사 내용",
+      "doc_type": "notice",
+      "effective_from": "2025-12-01",
+      "effective_to": "2026-01-15",
+      "in_effect": false,
+      "query": "아 그렇군요, 감사합니다.",
+      "score": 0.03226,
+      "expanded_from": null
+     }
+    },
+    {
+     "id": "K12",
+     "kind": "kb",
+     "title": "반품 정책 › 반품 절차 (정책 · 현행 (2026-03-01부터))",
+     "text": "반품 신청 → 택배 기사 회수(1~3영업일) → 상품 검수(1~2영업일) → 환불 순서로 진행합니다. 회수 일정은 신청 다음 영업일에 문자로 안내합니다.",
+     "turn_seq": 3,
+     "meta": {
+      "chunk_id": "return-policy#5",
+      "doc_id": "return-policy",
+      "doc_title": "반품 정책",
+      "heading": "반품 절차",
+      "doc_type": "policy",
+      "effective_from": "2026-03-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "아 그렇군요, 감사합니다.",
+      "score": 0.01587,
+      "expanded_from": null
+     }
+    },
+    {
+     "id": "K13",
+     "kind": "kb",
+     "title": "배송 정책 › 배송 기간 (정책 · 현행 (2026-03-01부터))",
+     "text": "출고 후 1~3영업일 안에 도착합니다. 택배사는 한빛택배이며, 운송장 번호는 출고 당일 문자로 안내합니다.",
+     "turn_seq": 3,
+     "meta": {
+      "chunk_id": "shipping-policy#4",
+      "doc_id": "shipping-policy",
+      "doc_title": "배송 정책",
+      "heading": "배송 기간",
+      "doc_type": "policy",
+      "effective_from": "2026-03-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "아 그렇군요, 감사합니다.",
+      "score": 0.01562,
+      "expanded_from": null
+     }
+    },
+    {
+     "id": "K14",
+     "kind": "kb",
+     "title": "배송 정책 › 출고 시점 (정책 · 현행 (2026-03-01부터))",
+     "text": "평일 오후 2시 이전에 결제가 끝난 주문은 당일 출고합니다. 오후 2시 이후 주문과 주말·공휴일 주문은 다음 영업일에 출고합니다. 주문제작 상품과 가구는 별도 일정으로 출고합니다.",
+     "turn_seq": 3,
+     "meta": {
+      "chunk_id": "shipping-policy#3",
+      "doc_id": "shipping-policy",
+      "doc_title": "배송 정책",
+      "heading": "출고 시점",
+      "doc_type": "policy",
+      "effective_from": "2026-03-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "아 그렇군요, 감사합니다.",
+      "score": 0.01538,
+      "expanded_from": null
+     }
+    }
+   ],
+   "pending": {},
+   "resolution": {
+    "status": "resolved_confirmed",
+    "customer_signal": "positive",
+    "reason": "고객의 반품 가능 여부와 배송비 문의에 AI가 정책 근거와 함께 답했고, 고객이 '아 그렇군요, 감사합니다'라고 이해와 만족을 표현했습니다.",
+    "checker": {
+     "engine": "anthropic",
+     "model": "claude-haiku-5-5",
+     "prompt": "resolution-v1",
+     "prompt_sha256": "0a4797d8768a",
+     "latency_ms": 1070.0,
+     "cost_usd": 0.000135
+    },
+    "source": "judge",
+    "updated_at": "2026-11-26T12:57:59.529+00:00"
+   },
+   "feedback": null,
+   "meta": {}
+  },
+  "messages": [
+   {
+    "seq": 1,
+    "role": "customer",
+    "text": "무료배송으로 받은 상품인데 단순변심으로 반품할 수 있나요?",
+    "payload": {},
+    "created_at": "2026-11-26T12:57:43.524+00:00"
+   },
+   {
+    "seq": 2,
+    "role": "ai",
+    "text": "무료배송으로 받은 상품도 단순변심으로 반품할 수 있습니다. 다만 반품 배송비 6,000원(왕복)이 환불 금액에서 차감되며, 처음에 낸 배송비는 돌려드리지 않습니다.\n\n아래에 해당하는 상품은 단순변심 반품을 받지 않습니다: 주문제작 상품, 밀봉 스티커를 뗀 화장품·위생용품, 신선식품, 사용하거나 세탁한 흔적이 있는 상품, 조립·설치를 마친 가구, 구성품이나 사은품이 빠진 상품.\n\n반품하실 주문이 있으면 주문번호를 알려주세요. 해당 상품의 반품 가능 여부와 예상 환불 금액을 확인해 드리겠습니다.",
+    "payload": {
+     "turn_seq": 1,
+     "action": "answer",
+     "citations": [
+      {
+       "id": "K1",
+       "kind": "kb",
+       "title": "반품 정책 › 단순변심 반품 배송비 (정책 · 현행 (2026-03-01부터))",
+       "text": "단순변심으로 반품하면 반품 배송비는 고객이 부담합니다. 처음에 배송비를 낸 주문은 3,000원(편도), 무료배송으로 받은 주문은 6,000원(왕복)이며 환불 금액에서 뺍니다. 처음에 낸 배송비는 돌려드리지 않습니다.",
+       "turn_seq": 1,
+       "meta": {
+        "chunk_id": "return-policy#2",
+        "doc_id": "return-policy",
+        "doc_title": "반품 정책",
+        "heading": "단순변심 반품 배송비",
+        "doc_type": "policy",
+        "effective_from": "2026-03-01",
+        "effective_to": null,
+        "in_effect": true,
+        "query": "무료배송으로 받은 상품인데 단순변심으로 반품할 수 있나요?",
+        "score": 0.03279,
+        "expanded_from": null,
+        "cited": true
+       }
+      },
+      {
+       "id": "K2",
+       "kind": "kb",
+       "title": "반품이 안 되는 경우 › 반품할 수 없는 상품 (정책 · 현행 (2026-03-01부터))",
+       "text": "다음 경우에는 단순변심 반품을 받지 않습니다. 주문제작 상품, 밀봉 스티커를 뗀 화장품·위생용품, 신선식품, 사용하거나 세탁한 흔적이 있는 상품, 조립·설치를 마친 가구, 구성품이나 사은품이 빠진 상품.",
+       "turn_seq": 1,
+       "meta": {
+        "chunk_id": "return-exclusions#1",
+        "doc_id": "return-exclusions",
+        "doc_title": "반품이 안 되는 경우",
+        "heading": "반품할 수 없는 상품",
+        "doc_type": "policy",
+        "effective_from": "2026-03-01",
+        "effective_to": null,
+        "in_effect": true,
+        "query": "무료배송으로 받은 상품인데 단순변심으로 반품할 수 있나요?",
+        "score": 0.03105,
+        "expanded_from": null,
+        "cited": true
+       }
+      }
+     ],
+     "handoff_reason": null,
+     "engine": "anthropic",
+     "grounding": "grounded"
+    },
+    "created_at": "2026-11-26T12:57:48.738+00:00"
+   },
+   {
+    "seq": 3,
+    "role": "customer",
+    "text": "그럼 배송비는 얼마 내야 해요?",
+    "payload": {},
+    "created_at": "2026-11-26T12:57:49.770+00:00"
+   },
+   {
+    "seq": 4,
+    "role": "ai",
+    "text": "단순변심으로 반품하고 처음에 무료배송으로 받으셨다면 반품 배송비는 왕복 6,000원입니다. 이 금액은 환불 금액에서 차감되며, 처음에 낸 배송비는 돌려드리지 않습니다. 제주나 도서산간 지역이면 추가 배송비가 편도 기준으로 한 번 더 붙습니다.\n\n정확한 금액은 주문과 배송지에 따라 달라질 수 있으니, 반품하실 주문번호를 알려주시면 반품 가능 여부와 예상 환불 금액을 확인해 드리겠습니다.",
+    "payload": {
+     "turn_seq": 2,
+     "action": "answer",
+     "citations": [
+      {
+       "id": "K1",
+       "kind": "kb",
+       "title": "반품 정책 › 단순변심 반품 배송비 (정책 · 현행 (2026-03-01부터))",
+       "text": "단순변심으로 반품하면 반품 배송비는 고객이 부담합니다. 처음에 배송비를 낸 주문은 3,000원(편도), 무료배송으로 받은 주문은 6,000원(왕복)이며 환불 금액에서 뺍니다. 처음에 낸 배송비는 돌려드리지 않습니다.",
+       "turn_seq": 1,
+       "meta": {
+        "chunk_id": "return-policy#2",
+        "doc_id": "return-policy",
+        "doc_title": "반품 정책",
+        "heading": "단순변심 반품 배송비",
+        "doc_type": "policy",
+        "effective_from": "2026-03-01",
+        "effective_to": null,
+        "in_effect": true,
+        "query": "무료배송으로 받은 상품인데 단순변심으로 반품할 수 있나요?",
+        "score": 0.03279,
+        "expanded_from": null,
+        "cited": true
+       }
+      },
+      {
+       "id": "K5",
+       "kind": "kb",
+       "title": "제주·도서산간 배송 › 반품할 때 (정책 · 현행 (2026-03-01부터))",
+       "text": "제주·도서산간 지역에서 단순변심으로 반품하면 반품 배송비에 추가 배송비가 편도 기준으로 한 번 더 붙습니다.",
+       "turn_seq": 1,
+       "meta": {
+        "chunk_id": "shipping-remote#3",
+        "doc_id": "shipping-remote",
+        "doc_title": "제주·도서산간 배송",
+        "heading": "반품할 때",
+        "doc_type": "policy",
+        "effective_from": "2026-03-01",
+        "effective_to": null,
+        "in_effect": true,
+        "query": "무료배송으로 받은 상품인데 단순변심으로 반품할 수 있나요?",
+        "score": 0.02903,
+        "expanded_from": null,
+        "cited": true
+       }
+      },
+      {
+       "id": "K8",
+       "kind": "kb",
+       "title": "환불 정책 › 환불 금액 계산 (정책 · 현행 (2026-03-01부터))",
+       "text": "단순변심 반품은 상품 결제금액에서 반품 배송비를 뺀 금액을 환불합니다. 하자·오배송 반품은 상품 결제금액과 처음에 낸 배송비를 모두 환불합니다.",
+       "turn_seq": 2,
+       "meta": {
+        "chunk_id": "refund-policy#4",
+        "doc_id": "refund-policy",
+        "doc_title": "환불 정책",
+        "heading": "환불 금액 계산",
+        "doc_type": "policy",
+        "effective_from": "2026-03-01",
+        "effective_to": null,
+        "in_effect": true,
+        "query": "그럼 배송비는 얼마 내야 해요?",
+        "score": 0.03062,
+        "expanded_from": null,
+        "cited": true
+       }
+      }
+     ],
+     "handoff_reason": null,
+     "engine": "anthropic",
+     "grounding": "grounded"
+    },
+    "created_at": "2026-11-26T12:57:53.847+00:00"
+   },
+   {
+    "seq": 5,
+    "role": "customer",
+    "text": "아 그렇군요, 감사합니다.",
+    "payload": {},
+    "created_at": "2026-11-26T12:57:54.792+00:00"
+   },
+   {
+    "seq": 6,
+    "role": "ai",
+    "text": "네, 감사합니다. 반품하실 주문이 생기면 주문번호를 알려주세요. 반품 가능 여부와 예상 환불 금액을 확인해 드리겠습니다.",
+    "payload": {
+     "turn_seq": 3,
+     "action": "answer",
+     "citations": [
+      {
+       "id": "K1",
+       "kind": "kb",
+       "title": "반품 정책 › 단순변심 반품 배송비 (정책 · 현행 (2026-03-01부터))",
+       "text": "단순변심으로 반품하면 반품 배송비는 고객이 부담합니다. 처음에 배송비를 낸 주문은 3,000원(편도), 무료배송으로 받은 주문은 6,000원(왕복)이며 환불 금액에서 뺍니다. 처음에 낸 배송비는 돌려드리지 않습니다.",
+       "turn_seq": 1,
+       "meta": {
+        "chunk_id": "return-policy#2",
+        "doc_id": "return-policy",
+        "doc_title": "반품 정책",
+        "heading": "단순변심 반품 배송비",
+        "doc_type": "policy",
+        "effective_from": "2026-03-01",
+        "effective_to": null,
+        "in_effect": true,
+        "query": "무료배송으로 받은 상품인데 단순변심으로 반품할 수 있나요?",
+        "score": 0.03279,
+        "expanded_from": null,
+        "cited": true
+       }
+      }
+     ],
+     "handoff_reason": null,
+     "engine": "anthropic",
+     "grounding": "grounded"
+    },
+    "created_at": "2026-11-26T12:57:57.168+00:00"
+   }
+  ],
+  "turns": [
+   {
+    "id": 1,
+    "conversation_id": "conv_f95ec099e225",
+    "turn_seq": 1,
+    "started_at": "2026-11-26T12:57:43.590+00:00",
+    "latency_ms": 5148.4,
+    "outcome": "answered",
+    "handoff_reason": null,
+    "handoff_source": null,
+    "grounding_verdict": "grounded",
+    "revisions": 0,
+    "blocked_count": 0,
+    "engine": "anthropic",
+    "model": "claude-haiku-5-5",
+    "prompt_id": "agent-v4",
+    "prompt_sha": "8fbbd864a03e",
+    "llm_calls": 2,
+    "input_tokens": 1993,
+    "output_tokens": 1164,
+    "cache_read_tokens": 8386,
+    "cost_usd": 0.000865,
+    "tool_calls": 0,
+    "tool_errors": 0,
+    "error": null,
+    "kb_issue": null,
+    "detail": {
+     "steps": [
+      {
+       "type": "retrieval",
+       "query": "무료배송으로 받은 상품인데 단순변심으로 반품할 수 있나요?",
+       "latency_ms": 1.0,
+       "hits": [
+        {
+         "evidence_id": "K1",
+         "chunk_id": "return-policy#2",
+         "title": "반품 정책 › 단순변심 반품 배송비 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.03279
+        },
+        {
+         "evidence_id": "K2",
+         "chunk_id": "return-exclusions#1",
+         "title": "반품이 안 되는 경우 › 반품할 수 없는 상품 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.03105
+        },
+        {
+         "evidence_id": "K3",
+         "chunk_id": "furniture-delivery#2",
+         "title": "가구 설치배송 안내 › 가구 반품 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.03102
+        },
+        {
+         "evidence_id": "K4",
+         "chunk_id": "fresh-food#1",
+         "title": "신선식품 주문 안내 › 반품 기준 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.03062
+        },
+        {
+         "evidence_id": "K5",
+         "chunk_id": "shipping-remote#3",
+         "title": "제주·도서산간 배송 › 반품할 때 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.02903
+        }
+       ]
+      },
+      {
+       "type": "llm",
+       "purpose": "agent",
+       "engine": "anthropic",
+       "model": "claude-haiku-5-5",
+       "stop_reason": "tool_use",
+       "latency_ms": 3283.9,
+       "attempts": 1,
+       "usage": {
+        "input_tokens": 912,
+        "output_tokens": 592,
+        "cache_read_input_tokens": 5284,
+        "cache_creation_input_tokens": 0
+       },
+       "cost_usd": 0.00044,
+       "request_id": "req_011ChRaVBXnVJsAkTVQDo32f",
+       "tool_calls": [
+        {
+         "name": "respond",
+         "input": {
+          "action": "answer",
+          "message": "무료배송으로 받은 상품도 단순변심으로 반품할 수 있습니다. 다만 반품 배송비 6,000원(왕복)이 환불 금액에서 차감되며, 처음에 낸 배송비는 돌려드리지 않습니다.\n\n아래에 해당하는 상품은 단순변심 반품을 받지 않습니다: 주문제작 상품, 밀봉 스티커를 뗀 화장품·위생용품, 신선식품, 사용하거나 세탁한 흔적이 있는 상품, 조립·설치를 마친 가구, 구성품이나 사은품이 빠진 상품.\n\n반품하실 주문이 있으면 주문번호를 알려주세요. 해당 상품의 반품 가능 여부와 예상 환불 금액을 확인해 드리겠습니다.",
+          "citations": [
+           "K1",
+           "K2"
+          ],
+          "handoff_reason": "none",
+          "handoff_summary": "",
+          "kb_issue": ""
+         }
+        }
+       ]
+      },
+      {
+       "type": "llm",
+       "purpose": "grounding",
+       "engine": "anthropic",
+       "model": "claude-haiku-5-5",
+       "stop_reason": "end_turn",
+       "latency_ms": 1858.4,
+       "attempts": 1,
+       "usage": {
+        "input_tokens": 1081,
+        "output_tokens": 572,
+        "cache_read_input_tokens": 3102,
+        "cache_creation_input_tokens": 0
+       },
+       "cost_usd": 0.000425,
+       "request_id": "req_011ChRaVRTC2vpmUKMZxiBdF",
+       "tool_calls": []
+      },
+      {
+       "type": "grounding",
+       "verdict": "grounded",
+       "mode": "llm+rules",
+       "contradicted": 0,
+       "unsupported": 0,
+       "problems": [],
+       "fact_flags": []
+      }
+     ],
+     "blocked": [],
+     "grounding": {
+      "verdict": "grounded",
+      "mode": "llm+rules",
+      "claims": [
+       {
+        "claim": "무료배송으로 받은 상품도 단순변심으로 반품할 수 있습니다",
+        "label": "supported",
+        "evidence_ids": [
+         "K1"
+        ],
+        "reason": ""
+       },
+       {
+        "claim": "반품 배송비 6,000원(왕복)이 환불 금액에서 차감됩니다",
+        "label": "supported",
+        "evidence_ids": [
+         "K1"
+        ],
+        "reason": ""
+       },
+       {
+        "claim": "처음에 낸 배송비는 돌려드리지 않습니다",
+        "label": "supported",
+        "evidence_ids": [
+         "K1"
+        ],
+        "reason": ""
+       },
+       {
+        "claim": "주문제작 상품은 단순변심 반품을 받지 않습니다",
+        "label": "supported",
+        "evidence_ids": [
+         "K2"
+        ],
+        "reason": ""
+       },
+       {
+        "claim": "밀봉 스티커를 뗀 화장품·위생용품은 단순변심 반품을 받지 않습니다",
+        "label": "supported",
+        "evidence_ids": [
+         "K2"
+        ],
+        "reason": ""
+       },
+       {
+        "claim": "신선식품은 단순변심 반품을 받지 않습니다",
+        "label": "supported",
+        "evidence_ids": [
+         "K2",
+         "K4"
+        ],
+        "reason": ""
+       },
+       {
+        "claim": "사용하거나 세탁한 흔적이 있는 상품은 단순변심 반품을 받지 않습니다",
+        "label": "supported",
+        "evidence_ids": [
+         "K2"
+        ],
+        "reason": ""
+       },
+       {
+        "claim": "조립·설치를 마친 가구는 단순변심 반품을 받지 않습니다",
+        "label": "supported",
+        "evidence_ids": [
+         "K2",
+         "K3"
+        ],
+        "reason": ""
+       },
+       {
+        "claim": "구성품이나 사은품이 빠진 상품은 단순변심 반품을 받지 않습니다",
+        "label": "supported",
+        "evidence_ids": [
+         "K2"
+        ],
+        "reason": ""
+       }
+      ],
+      "contradicted": 0,
+      "unsupported": 0,
+      "fact_flags": [],
+      "problems": [],
+      "checker": {
+       "engine": "anthropic",
+       "model": "claude-haiku-5-5",
+       "prompt": "grounding-v4",
+       "prompt_sha256": "0edca4226cf3",
+       "latency_ms": 1858.4,
+       "cost_usd": 0.000425
+      }
+     },
+     "stage_latency_ms": {
+      "retrieval": 1.0,
+      "llm_agent": 3283.9,
+      "llm_checks": 1858.4,
+      "tools": 0.0
+     },
+     "fresh_evidence_ids": [
+      "K1",
+      "K2",
+      "K3",
+      "K4",
+      "K5"
+     ],
+     "cited": [
+      "K1",
+      "K2"
+     ]
+    }
+   },
+   {
+    "id": 2,
+    "conversation_id": "conv_f95ec099e225",
+    "turn_seq": 2,
+    "started_at": "2026-11-26T12:57:49.770+00:00",
+    "latency_ms": 4076.3,
+    "outcome": "answered",
+    "handoff_reason": null,
+    "handoff_source": null,
+    "grounding_verdict": "grounded",
+    "revisions": 0,
+    "blocked_count": 0,
+    "engine": "anthropic",
+    "model": "claude-haiku-5-5",
+    "prompt_id": "agent-v4",
+    "prompt_sha": "8fbbd864a03e",
+    "llm_calls": 2,
+    "input_tokens": 3563,
+    "output_tokens": 1044,
+    "cache_read_tokens": 8386,
+    "cost_usd": 0.000962,
+    "tool_calls": 0,
+    "tool_errors": 0,
+    "error": null,
+    "kb_issue": null,
+    "detail": {
+     "steps": [
+      {
+       "type": "retrieval",
+       "query": "그럼 배송비는 얼마 내야 해요? / 무료배송으로 받은 상품인데 단순변심으로 반품할 수 있나요? 그럼 배송비는 얼마 내야 해요?",
+       "latency_ms": 1.5,
+       "hits": [
+        {
+         "evidence_id": "K1",
+         "chunk_id": "return-policy#2",
+         "title": "반품 정책 › 단순변심 반품 배송비 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.03279
+        },
+        {
+         "evidence_id": "K6",
+         "chunk_id": "return-policy#3",
+         "title": "반품 정책 › 상품 하자·오배송 반품 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.03125
+        },
+        {
+         "evidence_id": "K9",
+         "chunk_id": "shipping-policy#2",
+         "title": "배송 정책 › 배송비와 무료배송 기준 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.03058
+        },
+        {
+         "evidence_id": "K7",
+         "chunk_id": "shipping-remote#1",
+         "title": "제주·도서산간 배송 › 추가 배송비 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.03105
+        },
+        {
+         "evidence_id": "K5",
+         "chunk_id": "shipping-remote#3",
+         "title": "제주·도서산간 배송 › 반품할 때 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.02903
+        },
+        {
+         "evidence_id": "K8",
+         "chunk_id": "refund-policy#4",
+         "title": "환불 정책 › 환불 금액 계산 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.03062
+        }
+       ]
+      },
+      {
+       "type": "llm",
+       "purpose": "agent",
+       "engine": "anthropic",
+       "model": "claude-haiku-5-5",
+       "stop_reason": "tool_use",
+       "latency_ms": 2886.6,
+       "attempts": 1,
+       "usage": {
+        "input_tokens": 1658,
+        "output_tokens": 747,
+        "cache_read_input_tokens": 5284,
+        "cache_creation_input_tokens": 0
+       },
+       "cost_usd": 0.000592,
+       "request_id": "req_011ChRaVdpLdxDQbE9zJwAtV",
+       "tool_calls": [
+        {
+         "name": "respond",
+         "input": {
+          "action": "answer",
+          "message": "단순변심으로 반품하고 처음에 무료배송으로 받으셨다면 반품 배송비는 왕복 6,000원입니다. 이 금액은 환불 금액에서 차감되며, 처음에 낸 배송비는 돌려드리지 않습니다. 제주나 도서산간 지역이면 추가 배송비가 편도 기준으로 한 번 더 붙습니다.\n\n정확한 금액은 주문과 배송지에 따라 달라질 수 있으니, 반품하실 주문번호를 알려주시면 반품 가능 여부와 예상 환불 금액을 확인해 드리겠습니다.",
+          "citations": [
+           "K1",
+           "K5",
+           "K8"
+          ],
+          "handoff_reason": "none",
+          "handoff_summary": "",
+          "kb_issue": ""
+         }
+        }
+       ]
+      },
+      {
+       "type": "llm",
+       "purpose": "grounding",
+       "engine": "anthropic",
+       "model": "claude-haiku-5-5",
+       "stop_reason": "end_turn",
+       "latency_ms": 1184.2,
+       "attempts": 1,
+       "usage": {
+        "input_tokens": 1905,
+        "output_tokens": 297,
+        "cache_read_input_tokens": 3102,
+        "cache_creation_input_tokens": 0
+       },
+       "cost_usd": 0.00037,
+       "request_id": "req_011ChRaVrED4tAvR9XevSsSP",
+       "tool_calls": []
+      },
+      {
+       "type": "grounding",
+       "verdict": "grounded",
+       "mode": "llm+rules",
+       "contradicted": 0,
+       "unsupported": 0,
+       "problems": [],
+       "fact_flags": []
+      }
+     ],
+     "blocked": [],
+     "grounding": {
+      "verdict": "grounded",
+      "mode": "llm+rules",
+      "claims": [
+       {
+        "claim": "단순변심으로 반품하고 처음에 무료배송으로 받으셨다면 반품 배송비는 왕복 6,000원입니다",
+        "label": "supported",
+        "evidence_ids": [
+         "K1"
+        ],
+        "reason": ""
+       },
+       {
+        "claim": "이 금액은 환불 금액에서 차감되며, 처음에 낸 배송비는 돌려드리지 않습니다",
+        "label": "supported",
+        "evidence_ids": [
+         "K1"
+        ],
+        "reason": ""
+       },
+       {
+        "claim": "제주나 도서산간 지역이면 추가 배송비가 편도 기준으로 한 번 더 붙습니다",
+        "label": "supported",
+        "evidence_ids": [
+         "K5"
+        ],
+        "reason": ""
+       },
+       {
+        "claim": "정확한 금액은 주문과 배송지에 따라 달라질 수 있습니다",
+        "label": "supported",
+        "evidence_ids": [
+         "K5"
+        ],
+        "reason": ""
+       }
+      ],
+      "contradicted": 0,
+      "unsupported": 0,
+      "fact_flags": [],
+      "problems": [],
+      "checker": {
+       "engine": "anthropic",
+       "model": "claude-haiku-5-5",
+       "prompt": "grounding-v4",
+       "prompt_sha256": "0edca4226cf3",
+       "latency_ms": 1184.2,
+       "cost_usd": 0.00037
+      }
+     },
+     "stage_latency_ms": {
+      "retrieval": 1.5,
+      "llm_agent": 2886.6,
+      "llm_checks": 1184.2,
+      "tools": 0.0
+     },
+     "fresh_evidence_ids": [
+      "K1",
+      "K6",
+      "K9",
+      "K7",
+      "K5",
+      "K8"
+     ],
+     "cited": [
+      "K1",
+      "K5",
+      "K8"
+     ]
+    }
+   },
+   {
+    "id": 3,
+    "conversation_id": "conv_f95ec099e225",
+    "turn_seq": 3,
+    "started_at": "2026-11-26T12:57:54.792+00:00",
+    "latency_ms": 2376.5,
+    "outcome": "answered",
+    "handoff_reason": null,
+    "handoff_source": null,
+    "grounding_verdict": "grounded",
+    "revisions": 0,
+    "blocked_count": 0,
+    "engine": "anthropic",
+    "model": "claude-haiku-5-5",
+    "prompt_id": "agent-v4",
+    "prompt_sha": "8fbbd864a03e",
+    "llm_calls": 2,
+    "input_tokens": 4760,
+    "output_tokens": 430,
+    "cache_read_tokens": 8386,
+    "cost_usd": 0.000775,
+    "tool_calls": 0,
+    "tool_errors": 0,
+    "error": null,
+    "kb_issue": null,
+    "detail": {
+     "steps": [
+      {
+       "type": "retrieval",
+       "query": "아 그렇군요, 감사합니다. / 그럼 배송비는 얼마 내야 해요? 아 그렇군요, 감사합니다.",
+       "latency_ms": 1.2,
+       "hits": [
+        {
+         "evidence_id": "K10",
+         "chunk_id": "notice-2025-yearend-returns#2",
+         "title": "[공지] 2025 연말 감사 행사 — 반품 기간 연장 › 적용 범위 (공지 · 적용 종료 (2026-01-15까지))",
+         "score": 0.03279
+        },
+        {
+         "evidence_id": "K1",
+         "chunk_id": "return-policy#2",
+         "title": "반품 정책 › 단순변심 반품 배송비 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.03279
+        },
+        {
+         "evidence_id": "K11",
+         "chunk_id": "notice-2025-yearend-returns#1",
+         "title": "[공지] 2025 연말 감사 행사 — 반품 기간 연장 › 행사 내용 (공지 · 적용 종료 (2026-01-15까지))",
+         "score": 0.03226
+        },
+        {
+         "evidence_id": "K12",
+         "chunk_id": "return-policy#5",
+         "title": "반품 정책 › 반품 절차 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.01587
+        },
+        {
+         "evidence_id": "K6",
+         "chunk_id": "return-policy#3",
+         "title": "반품 정책 › 상품 하자·오배송 반품 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.03125
+        },
+        {
+         "evidence_id": "K13",
+         "chunk_id": "shipping-policy#4",
+         "title": "배송 정책 › 배송 기간 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.01562
+        },
+        {
+         "evidence_id": "K8",
+         "chunk_id": "refund-policy#4",
+         "title": "환불 정책 › 환불 금액 계산 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.03062
+        }
+       ]
+      },
+      {
+       "type": "llm",
+       "purpose": "agent",
+       "engine": "anthropic",
+       "model": "claude-haiku-5-5",
+       "stop_reason": "tool_use",
+       "latency_ms": 1045.6,
+       "attempts": 1,
+       "usage": {
+        "input_tokens": 2118,
+        "output_tokens": 236,
+        "cache_read_input_tokens": 5284,
+        "cache_creation_input_tokens": 0
+       },
+       "cost_usd": 0.000383,
+       "request_id": "req_011ChRaW1HRdN7t8Qqkj97BE",
+       "tool_calls": [
+        {
+         "name": "respond",
+         "input": {
+          "action": "answer",
+          "message": "네, 감사합니다. 반품하실 주문이 생기면 주문번호를 알려주세요. 반품 가능 여부와 예상 환불 금액을 확인해 드리겠습니다.",
+          "citations": [
+           "K1"
+          ],
+          "handoff_reason": "none",
+          "handoff_summary": "",
+          "kb_issue": ""
+         }
+        }
+       ]
+      },
+      {
+       "type": "llm",
+       "purpose": "grounding",
+       "engine": "anthropic",
+       "model": "claude-haiku-5-5",
+       "stop_reason": "end_turn",
+       "latency_ms": 1325.5,
+       "attempts": 1,
+       "usage": {
+        "input_tokens": 2642,
+        "output_tokens": 194,
+        "cache_read_input_tokens": 3102,
+        "cache_creation_input_tokens": 0
+       },
+       "cost_usd": 0.000392,
+       "request_id": "req_011ChRaW5nHVj7oGxLhBgrPM",
+       "tool_calls": []
+      },
+      {
+       "type": "grounding",
+       "verdict": "grounded",
+       "mode": "llm+rules",
+       "contradicted": 0,
+       "unsupported": 0,
+       "problems": [],
+       "fact_flags": []
+      }
+     ],
+     "blocked": [],
+     "grounding": {
+      "verdict": "grounded",
+      "mode": "llm+rules",
+      "claims": [
+       {
+        "claim": "반품하실 주문이 생기면 주문번호를 알려주세요.",
+        "label": "not_factual",
+        "evidence_ids": [],
+        "reason": "상담 진행에 관한 말이라 사실 주장이 아닙니다."
+       },
+       {
+        "claim": "반품 가능 여부와 예상 환불 금액을 확인해 드리겠습니다.",
+        "label": "not_factual",
+        "evidence_ids": [],
+        "reason": "상담을 이어 가는 절차에 관한 말이며 결과나 혜택을 약속하지 않습니다."
+       }
+      ],
+      "contradicted": 0,
+      "unsupported": 0,
+      "fact_flags": [],
+      "problems": [],
+      "checker": {
+       "engine": "anthropic",
+       "model": "claude-haiku-5-5",
+       "prompt": "grounding-v4",
+       "prompt_sha256": "0edca4226cf3",
+       "latency_ms": 1325.5,
+       "cost_usd": 0.000392
+      }
+     },
+     "stage_latency_ms": {
+      "retrieval": 1.2,
+      "llm_agent": 1045.6,
+      "llm_checks": 1325.5,
+      "tools": 0.0
+     },
+     "fresh_evidence_ids": [
+      "K10",
+      "K1",
+      "K11",
+      "K12",
+      "K6",
+      "K13",
+      "K8"
+     ],
+     "cited": [
+      "K1"
+     ]
+    }
+   }
+  ],
+  "handoffs": []
+ }
+}
