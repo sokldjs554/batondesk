@@ -1,0 +1,48 @@
+{
+  "suite": "grounding",
+  "split": "dev",
+  "label": "g3-dev33",
+  "engine": "live",
+  "quality_numbers": true,
+  "started_at": "2026-11-26T12:32:44+00:00",
+  "git_sha": "0bb549c62c27c133914c7ccf1e28ba197f55210b",
+  "github_run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45820530852",
+  "environment": "github-actions ubuntu",
+  "dataset": {
+    "path": "data/evals/grounding/dev.jsonl",
+    "sha256": "56348f06e0bc713b6cf80cde7713e8e590f33285bd0187127d5b04e5d3d75dff",
+    "items": 33
+  },
+  "config": {
+    "agent_model": "claude-haiku-5-5",
+    "judge_model": "claude-haiku-5-5",
+    "agent_effort": "low",
+    "judge_effort": "low",
+    "agent_prompt": {
+      "id": "agent-v1",
+      "sha256": "801f5dbecc70599fda69c6a3531ef48d89e76bf9a9d623d3cb86f64c88b47dc3"
+    },
+    "grounding_prompt": {
+      "id": "grounding-v3",
+      "sha256": "37a35fabdfcbe8712cb13560469a1f3a424e32d29a56e17e8c916f51432c2631"
+    },
+    "resolution_prompt": {
+      "id": "resolution-v1",
+      "sha256": "0a4797d8768a043f859ff256ff7c5fe48da285f4715d790b5b1df1f1bfb5ea1e"
+    },
+    "grounding_mode": "block",
+    "max_revisions": 1,
+    "retrieval_k": 5,
+    "tool_timeout_s": 2.5,
+    "tool_retries": 1
+  },
+  "reps": 3,
+  "concurrency": 4,
+  "clock": "2026-11-20T10:00:00+09:00",
+  "runtime": {
+    "python": "3.12.16",
+    "anthropic": "2.14.0",
+    "langgraph": "1.2.24"
+  },
+  "finished_at": "2026-11-26T12:33:25+00:00"
+}
