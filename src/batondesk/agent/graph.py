@@ -136,12 +136,17 @@ def _history_messages(history: list[HistoryItem]) -> list[dict[str, Any]]:
     return messages
 
 
-def retrieval_query(history: list[HistoryItem], text: str) -> str:
-    """첫 검색 질의. 짧거나 지시어로 시작하는 후속 질문에는 직전 고객 메시지를 붙인다."""
+def retrieval_queries(history: list[HistoryItem], text: str) -> list[str]:
+    """첫 검색에 쓸 질의들.
+
+    짧거나 지시어로 시작하는 메시지는 앞 대화에 기대는 후속 질문일 수 있어, 직전 고객 메시지를
+    붙인 질의를 하나 더 만든다. 원래 메시지만으로 한 검색도 그대로 둔다 — 고객이 화제를 바꾼
+    경우 앞 메시지가 검색을 엉뚱한 곳으로 끌고 가기 때문이다.
+    """
     previous = next((h.text for h in reversed(history) if h.role == "customer"), None)
     if previous and (len(text) < 20 or _FOLLOWUP_HINT.match(text.strip())):
-        return f"{previous} {text}"
-    return text
+        return [text, f"{previous} {text}"]
+    return [text]
 
 
 def conversation_for_check(history: list[HistoryItem], customer_text: str) -> list[dict[str, str]]:
@@ -168,10 +173,18 @@ def build_agent_graph(llm: LLMClient, executor: ToolExecutor, checker: Grounding
         carried_all = turn.pool.all()
         carried = [e for e in carried_all if e.kind == "tool"][-MAX_CARRIED_TOOL:]
         carried += [e for e in carried_all if e.kind == "kb" and e.meta.get("cited")][-MAX_CARRIED_KB:]
-        query = retrieval_query(turn.history, turn.customer_text)
+        queries = retrieval_queries(turn.history, turn.customer_text)
         started = time.perf_counter()
-        fresh = executor.search(query, ctx)
+        per_query = [executor.search(q, ctx) for q in queries]
         retrieval_ms = round((time.perf_counter() - started) * 1000, 1)
+        # 질의가 둘이면 순위를 번갈아 섞어, 어느 한쪽의 상위 결과가 밀려나지 않게 한다.
+        fresh: list[Evidence] = []
+        for rank in range(config.retrieval_k):
+            for found in per_query:
+                if rank < len(found) and found[rank].id not in {e.id for e in fresh}:
+                    fresh.append(found[rank])
+        fresh = fresh[: config.retrieval_k + (2 if len(queries) > 1 else 0)]
+        query = " / ".join(queries)
         carried_ids = {e.id for e in carried}
         fresh_new = [e for e in fresh if e.id not in carried_ids]
         messages = _history_messages(turn.history)

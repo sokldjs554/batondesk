@@ -72,7 +72,10 @@ class KiwiTokenizer:
         from kiwipiepy import Kiwi
 
         if KiwiTokenizer._shared_kiwi is None:
-            kiwi = Kiwi()
+            # 기본 설정은 상주 메모리를 약 510MB 쓴다(무료 호스팅 한도 512MB). 위키 표제어 위주의
+            # 다어절 사전과 오타 교정 사전을 빼면 약 330MB로 줄고, 이 저장소의 검색 평가 수치는
+            # 그대로였다(docs/design-decisions.md "검색" 항목의 측정값).
+            kiwi = Kiwi(num_workers=1, load_typo_dict=False, load_multi_dict=False)
             for word in DOMAIN_WORDS:
                 kiwi.add_user_word(word, "NNG", 5.0)
             KiwiTokenizer._shared_kiwi = kiwi

@@ -1,0 +1,207 @@
+{
+  "split": "test",
+  "items": 40,
+  "modes": {
+    "hybrid": {
+      "chunk_hit@1": 0.475,
+      "chunk_hit@3": 0.7,
+      "chunk_hit@5": 0.775,
+      "doc_hit@5": 0.85,
+      "chunk_mrr@10": 0.5998,
+      "gold_chunk_recall@5": 0.775,
+      "chunk_hit@5_by_kind": {
+        "colloquial": 0.7,
+        "direct": 1.0,
+        "multi_doc": 0.75,
+        "paraphrase": 0.6667,
+        "typo_spacing": 0.75
+      }
+    },
+    "hybrid_no_synonyms": {
+      "chunk_hit@1": 0.45,
+      "chunk_hit@3": 0.675,
+      "chunk_hit@5": 0.775,
+      "doc_hit@5": 0.85,
+      "chunk_mrr@10": 0.5769,
+      "gold_chunk_recall@5": 0.75,
+      "chunk_hit@5_by_kind": {
+        "colloquial": 0.7,
+        "direct": 1.0,
+        "multi_doc": 0.75,
+        "paraphrase": 0.6667,
+        "typo_spacing": 0.75
+      }
+    },
+    "bm25": {
+      "chunk_hit@1": 0.5,
+      "chunk_hit@3": 0.65,
+      "chunk_hit@5": 0.675,
+      "doc_hit@5": 0.75,
+      "chunk_mrr@10": 0.585,
+      "gold_chunk_recall@5": 0.6625,
+      "chunk_hit@5_by_kind": {
+        "colloquial": 0.6,
+        "direct": 1.0,
+        "multi_doc": 0.5,
+        "paraphrase": 0.5,
+        "typo_spacing": 0.75
+      }
+    },
+    "ngram": {
+      "chunk_hit@1": 0.45,
+      "chunk_hit@3": 0.625,
+      "chunk_hit@5": 0.725,
+      "doc_hit@5": 0.8,
+      "chunk_mrr@10": 0.5654,
+      "gold_chunk_recall@5": 0.7125,
+      "chunk_hit@5_by_kind": {
+        "colloquial": 0.6,
+        "direct": 1.0,
+        "multi_doc": 0.5,
+        "paraphrase": 0.6667,
+        "typo_spacing": 0.75
+      }
+    }
+  },
+  "misses": [
+    {
+      "id": "S-T-014",
+      "kind": "paraphrase",
+      "query": "사이즈가 작아서 큰 걸로 바꾸려는데 원하는 게 다 팔렸으면 어떻게 되나요",
+      "gold": [
+        "exchange-policy#3"
+      ],
+      "top5": [
+        "faq-shipping-fee#1",
+        "exchange-policy#1",
+        "order-change#2",
+        "payment-methods#3",
+        "faq-general#1"
+      ]
+    },
+    {
+      "id": "S-T-016",
+      "kind": "paraphrase",
+      "query": "아이디 없이 산 건데 내역은 뭘로 찾아요",
+      "gold": [
+        "guest-orders#1"
+      ],
+      "top5": [
+        "shipping-remote#1",
+        "shipping-delay#1",
+        "shipping-remote#2",
+        "payment-methods#3",
+        "payment-methods#2"
+      ]
+    },
+    {
+      "id": "S-T-019",
+      "kind": "paraphrase",
+      "query": "산 지 열 달 된 청소기가 멈췄는데 공짜로 고쳐주나요",
+      "gold": [
+        "warranty#1"
+      ],
+      "top5": [
+        "faq-shipping-fee#1",
+        "coupons#2",
+        "shipping-policy#1",
+        "order-cancel#3",
+        "shipping-policy#2"
+      ]
+    },
+    {
+      "id": "S-T-022",
+      "kind": "paraphrase",
+      "query": "계정을 없애면 모아둔 혜택은 어떻게 돼요",
+      "gold": [
+        "guest-orders#3"
+      ],
+      "top5": [
+        "faq-shipping-fee#1",
+        "faq-general#1",
+        "return-exclusions#3",
+        "payment-methods#3",
+        "return-exclusions#2"
+      ]
+    },
+    {
+      "id": "S-T-027",
+      "kind": "colloquial",
+      "query": "새벽에 물어봐도 답해줘요?",
+      "gold": [
+        "cs-hours#2",
+        "cs-hours#3"
+      ],
+      "top5": []
+    },
+    {
+      "id": "S-T-030",
+      "kind": "colloquial",
+      "query": "이어폰 한쪽이 안 나와요 산 지 며칠 안 됐어요",
+      "gold": [
+        "defective-items#2",
+        "defective-items#1"
+      ],
+      "top5": [
+        "faq-general#1",
+        "shipping-policy#4",
+        "return-exclusions#3",
+        "faq-shipping-fee#1",
+        "payment-methods#3"
+      ]
+    },
+    {
+      "id": "S-T-031",
+      "kind": "colloquial",
+      "query": "요즘 택배 좀 늦는다던데 맞아요?",
+      "gold": [
+        "notice-2026-winter-shipping#1"
+      ],
+      "top5": [
+        "notice-2026-winter-shipping#2",
+        "defective-items#1",
+        "shipping-policy#4",
+        "return-policy#5",
+        "return-exclusions#2"
+      ]
+    },
+    {
+      "id": "S-T-034",
+      "kind": "typo_spacing",
+      "query": "주문 최소 하고싶은데요 배송전이에요",
+      "gold": [
+        "order-cancel#1"
+      ],
+      "top5": [
+        "coupons#1",
+        "shipping-policy#5",
+        "order-change#3",
+        "shipping-policy#1",
+        "shipping-policy#2"
+      ]
+    },
+    {
+      "id": "S-T-040",
+      "kind": "multi_doc",
+      "query": "지금 주문하면 평소보다 얼마나 더 걸려요? 원래는 며칠인데요?",
+      "gold": [
+        "shipping-policy#4",
+        "notice-2026-winter-shipping#1"
+      ],
+      "top5": [
+        "notice-2026-winter-shipping#1",
+        "faq-shipping-fee#2",
+        "order-change#1",
+        "order-cancel#4",
+        "guest-orders#3"
+      ]
+    }
+  ],
+  "kinds": {
+    "direct": 10,
+    "paraphrase": 12,
+    "colloquial": 10,
+    "typo_spacing": 4,
+    "multi_doc": 4
+  }
+}

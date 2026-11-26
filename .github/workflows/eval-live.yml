@@ -1,0 +1,185 @@
+# 실제 모델로 돌리는 평가. 저장소 시크릿 ANTHROPIC_API_KEY 를 쓴다.
+#
+# 언제 도는가
+#   - 프롬프트·에이전트·판정기·도구·지식 문서·평가 자료가 바뀐 push / PR
+#       → 개발용 에이전트 평가(2회 반복)를 돌리고 게이트(eval_results/gate.json)를 통과해야 한다.
+#   - 수동 실행(workflow_dispatch)
+#       → 고른 평가를 고른 프롬프트 버전·모델·반복 횟수로 돌린다. 버전 비교와 평가용(test) 측정에 쓴다.
+#
+# 결과는 어디에 남는가
+#   - 실행 요약: 이 실행의 Summary 탭
+#   - 원자료(문항별 채점·대화·실행 기록): 아티팩트 + `eval-runs` 브랜치의 runs/<실행 id>/
+#     main 의 eval_results/ 에는 그중 보고서에 인용한 실행만 옮겨 둔다.
+name: eval-live
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "prompts/**"
+      - "kb/**"
+      - "data/evals/**"
+      - "src/batondesk/agent/**"
+      - "src/batondesk/checks/**"
+      - "src/batondesk/tools/**"
+      - "src/batondesk/llm/**"
+      - "src/batondesk/kb/**"
+      - "src/batondesk/evals/**"
+      - ".github/workflows/eval-live.yml"
+  pull_request:
+    paths:
+      - "prompts/**"
+      - "kb/**"
+      - "src/batondesk/agent/**"
+      - "src/batondesk/checks/**"
+      - "src/batondesk/tools/**"
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: "어떤 평가를 돌릴지"
+        type: choice
+        options: [agent, grounding, resolution, judges, all, smoke-only, record-demo]
+        default: agent
+      split:
+        description: "자료"
+        type: choice
+        options: [dev, test, both]
+        default: dev
+      agent_prompt:
+        description: "에이전트 프롬프트 버전 (비우면 manifest 의 active)"
+        default: ""
+      agent_model:
+        description: "에이전트 모델"
+        default: "claude-haiku-5-5"
+      judge_model:
+        description: "판정 모델"
+        default: "claude-haiku-5-5"
+      agent_effort:
+        description: "에이전트 effort"
+        type: choice
+        options: [low, medium, high]
+        default: low
+      reps:
+        description: "반복 횟수"
+        default: "3"
+      grounding_mode:
+        description: "근거 검사 방식"
+        type: choice
+        options: [block, flag, "off"]
+        default: block
+      label:
+        description: "실행 이름(결과 폴더와 표에 쓰인다)"
+        default: "manual"
+
+concurrency:
+  group: eval-live-${{ github.ref }}-${{ github.event_name }}-${{ inputs.label || 'auto' }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+  BATONDESK_GIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BATONDESK_AGENT_PROMPT: ${{ inputs.agent_prompt }}
+  BATONDESK_AGENT_MODEL: ${{ inputs.agent_model || 'claude-haiku-5-5' }}
+  BATONDESK_JUDGE_MODEL: ${{ inputs.judge_model || 'claude-haiku-5-5' }}
+  BATONDESK_AGENT_EFFORT: ${{ inputs.agent_effort || 'low' }}
+  BATONDESK_GROUNDING_MODE: ${{ inputs.grounding_mode || 'block' }}
+  SUITE: ${{ inputs.suite || 'agent' }}
+  SPLIT: ${{ inputs.split || 'dev' }}
+  REPS: ${{ inputs.reps || '2' }}
+  LABEL: ${{ inputs.label || 'auto' }}
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[dev]"
+
+      - name: 키 확인
+        id: key
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::ANTHROPIC_API_KEY 시크릿이 없어 실제 모델 평가를 건너뜁니다."
+            echo "### 건너뜀: ANTHROPIC_API_KEY 시크릿 없음" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 모델 호출 점검
+        if: steps.key.outputs.present == 'true'
+        run: python scripts/llm_smoke.py
+
+      - name: 평가 실행
+        if: steps.key.outputs.present == 'true' && env.SUITE != 'smoke-only' && env.SUITE != 'record-demo'
+        run: |
+          splits="$SPLIT"; [ "$SPLIT" = "both" ] && splits="dev test"
+          for split in $splits; do
+            case "$SUITE" in
+              agent)      python -m batondesk.evals agent --split "$split" --reps "$REPS" --label "$LABEL" ;;
+              grounding)  python -m batondesk.evals grounding --split "$split" --reps "$REPS" --label "$LABEL" ;;
+              resolution) python -m batondesk.evals resolution --split "$split" --reps "$REPS" --label "$LABEL" ;;
+              judges)     python -m batondesk.evals grounding --split "$split" --reps "$REPS" --label "$LABEL"
+                          python -m batondesk.evals resolution --split "$split" --reps "$REPS" --label "$LABEL" ;;
+              all)        python -m batondesk.evals agent --split "$split" --reps "$REPS" --label "$LABEL"
+                          python -m batondesk.evals grounding --split "$split" --reps "$REPS" --label "$LABEL"
+                          python -m batondesk.evals resolution --split "$split" --reps "$REPS" --label "$LABEL" ;;
+            esac
+          done
+
+      - name: 데모용 상담 기록 생성
+        if: steps.key.outputs.present == 'true' && env.SUITE == 'record-demo'
+        run: |
+          python scripts/record_demo.py --out eval_results/recordings
+
+      - name: 게이트 (자동 실행일 때만)
+        if: steps.key.outputs.present == 'true' && github.event_name != 'workflow_dispatch'
+        run: |
+          run_dir=$(ls -d eval_results/runs/*-agent-dev-* | tail -1)
+          python -m batondesk.evals gate "$run_dir" --gate eval_results/gate.json
+
+      - name: 원자료 아티팩트
+        if: always() && steps.key.outputs.present == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-${{ env.LABEL }}-${{ github.run_id }}
+          path: |
+            eval_results/runs/
+            eval_results/recordings/
+          if-no-files-found: ignore
+          retention-days: 90
+
+      - name: eval-runs 브랜치에 결과 남기기
+        if: always() && steps.key.outputs.present == 'true' && github.event_name != 'pull_request'
+        run: |
+          if [ ! -d eval_results/runs ] && [ ! -d eval_results/recordings ]; then echo "남길 결과 없음"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          work=$(mktemp -d)
+          if git ls-remote --exit-code origin eval-runs >/dev/null 2>&1; then
+            git fetch --depth 1 origin eval-runs
+            git worktree add "$work" FETCH_HEAD
+            (cd "$work" && git switch -C eval-runs)
+          else
+            git worktree add --detach "$work"
+            (cd "$work" && git switch --orphan eval-runs)
+          fi
+          mkdir -p "$work/runs" "$work/recordings"
+          [ -d eval_results/runs ] && cp -r eval_results/runs/. "$work/runs/"
+          [ -d eval_results/recordings ] && cp -r eval_results/recordings/. "$work/recordings/"
+          cd "$work"
+          git add -A
+          git commit -m "eval: $SUITE/$SPLIT/$LABEL @ ${BATONDESK_GIT_SHA:0:8} (run $GITHUB_RUN_ID)" || { echo "변경 없음"; exit 0; }
+          for attempt in 1 2 3; do
+            git push origin eval-runs && break
+            git pull --rebase origin eval-runs
+          done

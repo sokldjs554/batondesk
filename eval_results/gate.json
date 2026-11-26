@@ -1,0 +1,13 @@
+{
+  "note": "CI가 넘어야 하는 기준. 값은 실측 결과에서 한 단계 낮춰 잡았다(회귀 감지용). 정한 근거는 docs/evaluation.md 에 있다.",
+  "retrieval": {
+    "dev": {
+      "chunk_hit@5": 0.85,
+      "chunk_mrr@10": 0.7
+    },
+    "test": {
+      "chunk_hit@5": 0.75,
+      "chunk_mrr@10": 0.55
+    }
+  }
+}

@@ -227,7 +227,9 @@ def text_for_compare(result: dict[str, Any]) -> str:
 def check_agent_gate(run_dir: Path, gate: dict[str, Any]) -> list[str]:
     """프롬프트·에이전트 변경이 넘어야 하는 기준. 기준 값은 eval_results/gate.json 에 둔다."""
     manifest, summary, _ = _load_run(run_dir)
-    rules = gate["agent"][manifest["split"]]
+    rules = gate.get("agent", {}).get(manifest["split"])
+    if not rules:
+        return []  # 아직 기준을 정하지 않았다(첫 실측 전)
     problems = []
     if summary["rows_errored"] > rules.get("max_errored_rows", 0):
         problems.append(f"인프라 오류로 채점하지 못한 실행 {summary['rows_errored']}건 (허용 {rules.get('max_errored_rows', 0)})")

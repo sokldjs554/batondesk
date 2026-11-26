@@ -1,0 +1,109 @@
+{
+  "split": "dev",
+  "items": 20,
+  "modes": {
+    "hybrid": {
+      "chunk_hit@1": 0.65,
+      "chunk_hit@3": 0.85,
+      "chunk_hit@5": 0.9,
+      "doc_hit@5": 1.0,
+      "chunk_mrr@10": 0.7483,
+      "gold_chunk_recall@5": 0.8917,
+      "chunk_hit@5_by_kind": {
+        "colloquial": 1.0,
+        "direct": 1.0,
+        "multi_doc": 0.0,
+        "paraphrase": 1.0,
+        "typo_spacing": 1.0
+      }
+    },
+    "hybrid_no_synonyms": {
+      "chunk_hit@1": 0.4,
+      "chunk_hit@3": 0.55,
+      "chunk_hit@5": 0.75,
+      "doc_hit@5": 0.95,
+      "chunk_mrr@10": 0.5213,
+      "gold_chunk_recall@5": 0.6833,
+      "chunk_hit@5_by_kind": {
+        "colloquial": 0.4,
+        "direct": 1.0,
+        "multi_doc": 0.5,
+        "paraphrase": 0.8333,
+        "typo_spacing": 1.0
+      }
+    },
+    "bm25": {
+      "chunk_hit@1": 0.45,
+      "chunk_hit@3": 0.55,
+      "chunk_hit@5": 0.6,
+      "doc_hit@5": 0.85,
+      "chunk_mrr@10": 0.531,
+      "gold_chunk_recall@5": 0.6167,
+      "chunk_hit@5_by_kind": {
+        "colloquial": 0.4,
+        "direct": 1.0,
+        "multi_doc": 0.0,
+        "paraphrase": 0.6667,
+        "typo_spacing": 0.5
+      }
+    },
+    "ngram": {
+      "chunk_hit@1": 0.3,
+      "chunk_hit@3": 0.45,
+      "chunk_hit@5": 0.55,
+      "doc_hit@5": 0.8,
+      "chunk_mrr@10": 0.4131,
+      "gold_chunk_recall@5": 0.5333,
+      "chunk_hit@5_by_kind": {
+        "colloquial": 0.4,
+        "direct": 1.0,
+        "multi_doc": 0.5,
+        "paraphrase": 0.1667,
+        "typo_spacing": 1.0
+      }
+    }
+  },
+  "misses": [
+    {
+      "id": "S-D-019",
+      "kind": "multi_doc",
+      "query": "제주도에서 단순변심으로 반품하면 배송비가 총 얼마 나와요?",
+      "gold": [
+        "return-policy#2",
+        "shipping-remote#3",
+        "shipping-remote#1"
+      ],
+      "top5": [
+        "return-policy#2",
+        "shipping-remote#3",
+        "fresh-food#1",
+        "exchange-policy#2",
+        "refund-policy#4"
+      ]
+    },
+    {
+      "id": "S-D-020",
+      "kind": "multi_doc",
+      "query": "카드로 산 거 반품 보내면 환불까지 전부 며칠 걸려요?",
+      "gold": [
+        "return-policy#5",
+        "refund-policy#1",
+        "refund-policy#2"
+      ],
+      "top5": [
+        "notice-2026-winter-shipping#2",
+        "shipping-policy#3",
+        "shipping-policy#4",
+        "refund-policy#2",
+        "refund-policy#1"
+      ]
+    }
+  ],
+  "kinds": {
+    "direct": 5,
+    "paraphrase": 6,
+    "colloquial": 5,
+    "typo_spacing": 2,
+    "multi_doc": 2
+  }
+}

@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 
 from batondesk.agent.evidence import EvidencePool
-from batondesk.agent.graph import HistoryItem, TurnConfig, TurnInput, build_agent_graph, retrieval_query, run_turn
+from batondesk.agent.graph import HistoryItem, TurnConfig, TurnInput, build_agent_graph, retrieval_queries, run_turn
 from batondesk.checks.grounding import GroundingChecker
 from batondesk.commerce.store import CommerceStore
 from batondesk.llm.base import LLMError, LLMRequest, LLMResponse
@@ -223,9 +223,20 @@ async def test_injected_draft_must_pass_the_same_check(run, llm: QueueLLM) -> No
     assert [s["type"] for s in result.steps].count("eval_injection") == 1, "주입은 첫 초안에만 한 번"
 
 
-def test_followup_query_includes_the_previous_customer_message() -> None:
+def test_followup_adds_a_second_query_with_the_previous_message() -> None:
     history = [HistoryItem("customer", "무료배송으로 받은 가습기 반품하려고요"), HistoryItem("ai", "안내드립니다")]
-    assert retrieval_query(history, "그럼 비용은요?") == "무료배송으로 받은 가습기 반품하려고요 그럼 비용은요?"
+    assert retrieval_queries(history, "그럼 비용은요?") == ["그럼 비용은요?", "무료배송으로 받은 가습기 반품하려고요 그럼 비용은요?"]
     long_question = "카드로 결제한 주문을 취소하면 환불은 며칠 뒤에 들어오나요?"
-    assert retrieval_query(history, long_question) == long_question
-    assert retrieval_query([], "그럼 비용은요?") == "그럼 비용은요?"
+    assert retrieval_queries(history, long_question) == [long_question]
+    assert retrieval_queries([], "그럼 비용은요?") == ["그럼 비용은요?"]
+
+
+async def test_topic_switch_still_retrieves_for_the_new_question(run, llm: QueueLLM) -> None:  # type: ignore[no-untyped-def]
+    """짧은 새 질문에 앞 메시지를 붙이기만 하면 앞 화제의 문서가 검색을 차지한다."""
+    llm.push(fake_final(agent_payload("제주는 3,000원이 추가됩니다.", citations=["K1"])), fake_final(SUPPORTED))
+    history = [HistoryItem("customer", "단순변심 반품 배송비는 누가 내나요?"), HistoryItem("ai", "고객님이 부담하십니다.")]
+    result = await run("제주 추가 배송비는요?", history=history)
+    hits = result.steps[0]["hits"]
+    assert hits[0]["chunk_id"].startswith("shipping-remote"), "새 질문만으로 한 검색의 1위가 맨 앞에 온다"
+    assert any(h["chunk_id"].startswith("return-policy") for h in hits), "앞 화제를 붙인 검색 결과도 함께 준다"
+    assert len(hits) <= 7

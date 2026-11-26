@@ -1,0 +1,73 @@
+# 코드에 대한 판정. 모델을 부르지 않으므로 키 없이, 모든 push·PR에서 돈다.
+#   checks : 린트 → 타입 → 테스트 → 프롬프트 잠금 → 평가 자료 검증·동결 → 무행동 기준선 → 검색 품질 게이트
+#   image  : 배포에 쓰는 이미지를 빌드해 띄우고 상태·배포 정보·화면이 응답하는지 확인
+# 실제 모델로 답변 품질을 재는 평가는 eval-live.yml 에 따로 있다(비용이 들고 비결정적이라 분리).
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - run: ruff check src tests scripts
+      - run: ruff format --check src tests scripts
+      - run: mypy
+      - name: 단위·통합 테스트 (모델 대역 사용)
+        run: pytest
+      - name: 프롬프트 — 잠긴 버전이 바뀌지 않았는지
+        run: batondesk prompts check
+      - name: 평가 자료 — 형식·중복·근거 원문 일치
+        run: python scripts/validate_eval_data.py
+      - name: 평가 자료 — 평가용(test) 동결 확인
+        run: python -m batondesk.evals check-frozen
+      - name: 채점 — 아무 일도 하지 않는 정책이 통과하지 못하는지
+        run: |
+          python -m batondesk.evals baselines --split dev
+          python -m batondesk.evals baselines --split test
+      - name: 검색 품질 게이트 (모델 호출 없음)
+        run: |
+          python -m batondesk.evals retrieval --split dev --gate eval_results/gate.json
+          python -m batondesk.evals retrieval --split test --gate eval_results/gate.json
+
+  image:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: 배포 이미지 빌드
+        run: docker build -t batondesk:ci --build-arg GIT_SHA=${{ github.sha }} .
+      - name: 띄워서 확인
+        run: |
+          docker run -d --name app -p 8000:8000 batondesk:ci
+          for i in $(seq 1 30); do curl -fsS localhost:8000/healthz && break || sleep 2; done
+          curl -fsS localhost:8000/v1/release | tee release.json
+          python3 - <<'PY'
+          import json, os
+          release = json.load(open("release.json"))
+          assert release["git_sha"] == os.environ["GITHUB_SHA"], release["git_sha"]
+          assert release["engine"]["engine"] == "off", "키가 없으면 모델 호출이 꺼진 상태로 떠야 한다"
+          assert release["knowledge_base"]["documents"] >= 20
+          PY
+          for page in / /chat /desk /ops /embed-demo /docs /example-commerce/docs; do
+            curl -fsS -o /dev/null -w "%{http_code} $page\n" "localhost:8000$page"
+          done
+          curl -fsS -X POST localhost:8000/v1/kb/search -H 'content-type: application/json' -d '{"query":"반품 배송비"}' | head -c 300
+          docker logs app | tail -5

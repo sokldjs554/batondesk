@@ -1,0 +1,30 @@
+# Render 블루프린트 — 공개 데모 배포.
+# 무료 웹 서비스 한 개. 데이터베이스(SQLite)는 컨테이너 안에 있어 재배포하면 초기화되고,
+# 시작할 때 저장된 상담 기록(data/recordings)을 다시 싣는다. 15분 동안 접속이 없으면 잠들고
+# 다음 접속에 30초~1분쯤 걸려 깨어난다(docs/limitations.md).
+services:
+  - type: web
+    name: batondesk
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      # 실제 모델 호출 키. 대시보드에서 직접 넣는다(저장소에 두지 않는다).
+      # 비워 두면 서버는 "모델 호출 꺼짐"으로 뜨고 저장된 상담 기록만 보여 준다.
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: BATONDESK_AGENT_MODEL
+        value: claude-haiku-5-5
+      - key: BATONDESK_JUDGE_MODEL
+        value: claude-haiku-5-5
+      # 공개 데모 보호: 하루 추정 비용 상한(USD)과 시간당 요청 수
+      - key: BATONDESK_DAILY_USD_CAP
+        value: "1.5"
+      - key: BATONDESK_RATE_LIMIT_PER_HOUR
+        value: "40"
+      - key: PORT
+        value: "8000"

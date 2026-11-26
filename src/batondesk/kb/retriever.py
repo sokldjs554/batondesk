@@ -14,6 +14,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Literal
 
+import yaml
+
 from batondesk.kb.bm25 import BM25
 from batondesk.kb.charngram import CharNgramIndex
 from batondesk.kb.loader import load_docs, split_chunks
@@ -41,7 +43,13 @@ def _index_text(chunk: Chunk) -> str:
 
 
 class KnowledgeBase:
-    def __init__(self, docs: list[KnowledgeDoc], tokenizer: Tokenizer | None = None, rrf_k: int = 60) -> None:
+    def __init__(
+        self,
+        docs: list[KnowledgeDoc],
+        tokenizer: Tokenizer | None = None,
+        rrf_k: int = 60,
+        synonyms: list[tuple[tuple[str, ...], str]] | None = None,
+    ) -> None:
         self.docs = {d.doc_id: d for d in docs}
         self.chunks: list[Chunk] = [c for d in docs for c in split_chunks(d)]
         self.tokenizer = tokenizer or get_tokenizer()
@@ -50,10 +58,16 @@ class KnowledgeBase:
         self._bm25 = BM25([self.tokenizer.tokenize(t) for t in texts])
         self._ngram = CharNgramIndex(texts)
         self._by_id = {c.chunk_id: c for c in self.chunks}
+        self.synonyms = synonyms or []
 
     @classmethod
     def from_dir(cls, kb_dir: Path, tokenizer: Tokenizer | None = None) -> KnowledgeBase:
-        return cls(load_docs(kb_dir), tokenizer=tokenizer)
+        return cls(load_docs(kb_dir), tokenizer=tokenizer, synonyms=load_synonyms(kb_dir / "synonyms.yaml"))
+
+    def expand(self, query: str) -> str:
+        """고객 표현을 문서 표현으로 이어 주는 단어를 질의 뒤에 붙인다."""
+        added = [add for triggers, add in self.synonyms if any(t in query for t in triggers)]
+        return f"{query} {' '.join(added)}" if added else query
 
     def get_chunk(self, chunk_id: str) -> Chunk | None:
         return self._by_id.get(chunk_id)
@@ -61,12 +75,14 @@ class KnowledgeBase:
     def chunks_of(self, doc_id: str) -> list[Chunk]:
         return [c for c in self.chunks if c.doc_id == doc_id]
 
-    def search(self, query: str, k: int = 5, mode: SearchMode = "hybrid") -> list[SearchHit]:
-        """mode 는 평가·디버깅을 위해 단일 랭커도 노출한다."""
+    def search(self, query: str, k: int = 5, mode: SearchMode = "hybrid", *, expand: bool = True) -> list[SearchHit]:
+        """mode 와 expand 는 평가·디버깅을 위해 따로 끌 수 있게 노출한다."""
         if k < 1:
             raise ValueError(f"k는 1 이상이어야 합니다: {k}")
         if not self.chunks or not query.strip():
             return []
+        if expand:
+            query = self.expand(query)
         k = min(k, len(self.chunks))
         depth = k * CANDIDATE_MULTIPLIER
 
@@ -96,3 +112,10 @@ class KnowledgeBase:
             )
             for i, score in top
         ]
+
+
+def load_synonyms(path: Path) -> list[tuple[tuple[str, ...], str]]:
+    if not path.exists():
+        return []
+    raw = yaml.safe_load(path.read_text(encoding="utf-8")) or []
+    return [(tuple(str(t) for t in item["when"]), str(item["add"])) for item in raw]

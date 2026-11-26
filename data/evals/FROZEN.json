@@ -1,0 +1,21 @@
+{
+  "note": "평가용(test) 자료의 동결 기록. 바꾸려면 docs/evaluation.md 의 변경 기록에 이유를 남긴다.",
+  "files": {
+    "agent/test.jsonl": {
+      "sha256": "b0b6ea2f5e605f1e841f766ab124234f7e208c51d70f6292e7ac99327f94b027",
+      "items": 64
+    },
+    "grounding/test.jsonl": {
+      "sha256": "3946c2a199e42e63cce465e9593119975c07ffe8c17e6d6a6212c0b21725a5f8",
+      "items": 40
+    },
+    "resolution/test.jsonl": {
+      "sha256": "f187f8955000309af858672a682005f7f85204d6eb631486be7df84dd436bb09",
+      "items": 36
+    },
+    "retrieval/test.jsonl": {
+      "sha256": "b72053fce311617d0d1a44ebe41a7a1aedc7026db5dcf1e856a7f01d666dbe28",
+      "items": 40
+    }
+  }
+}

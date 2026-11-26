@@ -28,26 +28,42 @@ from batondesk.obs.metrics import percentile
 
 
 def eval_retrieval(kb: KnowledgeBase, root: Path, split: str, *, k_max: int = 10) -> dict[str, Any]:
+    """구성별 검색 품질. 'hybrid' 가 서비스가 쓰는 구성(두 랭커 융합 + 유의어 확장)이다.
+
+    적중 기준: 보통 질의는 정답 청크 중 하나가 k위 안에 있으면 적중, multi_doc 질의는 정답 청크가
+    전부 k위 안에 있어야 적중이다.
+    """
     items = read_jsonl(suite_path(root, "retrieval", split))
     out: dict[str, Any] = {"split": split, "items": len(items), "modes": {}, "misses": []}
-    modes: tuple[SearchMode, ...] = ("hybrid", "bm25", "ngram")
-    for mode in modes:
+    configs: tuple[tuple[str, SearchMode, bool], ...] = (
+        ("hybrid", "hybrid", True),
+        ("hybrid_no_synonyms", "hybrid", False),
+        ("bm25", "bm25", False),
+        ("ngram", "ngram", False),
+    )
+    for name, mode, expand in configs:
         ranks_chunk: list[int | None] = []
         ranks_doc: list[int | None] = []
         full_recall5: list[float] = []
         by_kind: dict[str, list[float]] = defaultdict(list)
         for item in items:
-            hits = kb.search(item["query"], k=k_max, mode=mode)
+            hits = kb.search(item["query"], k=k_max, mode=mode, expand=expand)
             chunk_ids = [h.chunk.chunk_id for h in hits]
             doc_ids = [h.chunk.doc_id for h in hits]
-            chunk_rank = next((i for i, c in enumerate(chunk_ids, start=1) if c in item["gold_chunks"]), None)
+            positions = [chunk_ids.index(g) + 1 if g in chunk_ids else None for g in item["gold_chunks"]]
+            found = [p for p in positions if p is not None]
+            if item["kind"] == "multi_doc":
+                # 여러 문서를 함께 봐야 답할 수 있는 질의: 정답 청크가 "모두" 들어온 순위를 센다.
+                chunk_rank = max(found) if len(found) == len(positions) else None
+            else:
+                chunk_rank = min(found) if found else None
             doc_rank = next((i for i, d in enumerate(doc_ids, start=1) if d in item["gold_docs"]), None)
             ranks_chunk.append(chunk_rank)
             ranks_doc.append(doc_rank)
             full_recall5.append(len(set(chunk_ids[:5]) & set(item["gold_chunks"])) / len(item["gold_chunks"]))
             hit5 = float(chunk_rank is not None and chunk_rank <= 5)
             by_kind[item["kind"]].append(hit5)
-            if mode == "hybrid" and not hit5:
+            if name == "hybrid" and not hit5:
                 out["misses"].append(
                     {"id": item["id"], "kind": item["kind"], "query": item["query"], "gold": item["gold_chunks"], "top5": chunk_ids[:5]}
                 )
@@ -55,7 +71,7 @@ def eval_retrieval(kb: KnowledgeBase, root: Path, split: str, *, k_max: int = 10
         def hit_at(ranks: list[int | None], k: int) -> float:
             return round(sum(1 for r in ranks if r is not None and r <= k) / len(ranks), 4)
 
-        out["modes"][mode] = {
+        out["modes"][name] = {
             "chunk_hit@1": hit_at(ranks_chunk, 1),
             "chunk_hit@3": hit_at(ranks_chunk, 3),
             "chunk_hit@5": hit_at(ranks_chunk, 5),
