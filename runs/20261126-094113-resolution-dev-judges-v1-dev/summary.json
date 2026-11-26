@@ -1,0 +1,90 @@
+{
+  "split": "dev",
+  "items": 20,
+  "reps": 3,
+  "labels": {
+    "resolved_confirmed": 4,
+    "resolved_assumed": 4,
+    "unresolved": 6,
+    "pending_customer": 3,
+    "not_applicable": 3
+  },
+  "rows_scored": 60,
+  "rows_errored": 0,
+  "accuracy_5class": {
+    "mean": 1.0,
+    "lo": 1.0,
+    "hi": 1.0,
+    "cases": 20,
+    "rows": 60
+  },
+  "confusion": {
+    "resolved_confirmed": {
+      "resolved_confirmed": 12,
+      "resolved_assumed": 0,
+      "unresolved": 0,
+      "pending_customer": 0,
+      "not_applicable": 0
+    },
+    "resolved_assumed": {
+      "resolved_confirmed": 0,
+      "resolved_assumed": 12,
+      "unresolved": 0,
+      "pending_customer": 0,
+      "not_applicable": 0
+    },
+    "unresolved": {
+      "resolved_confirmed": 0,
+      "resolved_assumed": 0,
+      "unresolved": 18,
+      "pending_customer": 0,
+      "not_applicable": 0
+    },
+    "pending_customer": {
+      "resolved_confirmed": 0,
+      "resolved_assumed": 0,
+      "unresolved": 0,
+      "pending_customer": 9,
+      "not_applicable": 0
+    },
+    "not_applicable": {
+      "resolved_confirmed": 0,
+      "resolved_assumed": 0,
+      "unresolved": 0,
+      "pending_customer": 0,
+      "not_applicable": 9
+    }
+  },
+  "resolved_vs_unresolved": {
+    "tp": 18,
+    "fp": 0,
+    "fn": 0,
+    "tn": 24,
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "specificity": 1.0,
+    "f1": 1.0
+  },
+  "said_resolved_when_unresolved": [],
+  "wrong_items": [],
+  "items_with_same_verdict_every_rep": 1.0,
+  "usage": {
+    "calls": 60,
+    "input_tokens": 7767,
+    "output_tokens": 6324,
+    "cost_usd": 0.00465,
+    "latency_ms_p50": 1250.8,
+    "latency_ms_p95": 1672.5,
+    "models_served": {
+      "claude-haiku-5-5": 60
+    }
+  },
+  "checker": {
+    "model": "claude-haiku-5-5",
+    "prompt": "resolution-v1",
+    "prompt_sha256": "0a4797d8768a",
+    "effort": "low"
+  },
+  "wall_clock_s": 18.9
+}
