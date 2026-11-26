@@ -1,0 +1,711 @@
+{
+ "title": "정책 밖 요청 — 사람의 판단이 필요해 인계",
+ "provenance": {
+  "kind": "실제 모델 호출 기록",
+  "recorded_at": "2026-11-26T12:58:51+00:00",
+  "agent_model": "claude-haiku-5-5",
+  "judge_model": "claude-haiku-5-5",
+  "agent_prompt": "agent-v4",
+  "agent_prompt_sha256": "8fbbd864a03e",
+  "git_sha": "f22724ea69dc4d9cae4e432db478472b67053ed8",
+  "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45824425001",
+  "example_clock": "2026-11-20T10:00:00+09:00",
+  "order_system_fault": "none",
+  "customer_messages": "스크립트에 정해 둔 글",
+  "agent_messages": "사람이 아니라 스크립트가 넣은 글"
+ },
+ "export": {
+  "conversation": {
+   "id": "conv_da9f7a920648",
+   "customer_id": "C-1003",
+   "customer_name": "박서연",
+   "channel": "web",
+   "sandbox_id": "record-07-policy-exception",
+   "status": "closed",
+   "source": "live",
+   "created_at": "2026-11-26T12:58:43.989+00:00",
+   "updated_at": "2026-11-26T12:58:51.133+00:00",
+   "turn_count": 1,
+   "evidence": [
+    {
+     "id": "K1",
+     "kind": "kb",
+     "title": "반품 정책 › 반품 신청 기간 (정책 · 현행 (2026-03-01부터))",
+     "text": "상품을 받은 날부터 7일 이내에 반품을 신청할 수 있습니다. 받은 날은 세지 않으며, 7일 안에 신청만 하면 되고 상품이 그 안에 도착할 필요는 없습니다.",
+     "turn_seq": 1,
+     "meta": {
+      "chunk_id": "return-policy#1",
+      "doc_id": "return-policy",
+      "doc_title": "반품 정책",
+      "heading": "반품 신청 기간",
+      "doc_type": "policy",
+      "effective_from": "2026-03-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "BM-24031 반품 기간이 하루 지났는데 한 번만 봐주시면 안 될까요?",
+      "score": 0.03178,
+      "expanded_from": null,
+      "cited": true
+     }
+    },
+    {
+     "id": "K2",
+     "kind": "kb",
+     "title": "쿠폰 사용 안내 › 취소·반품 시 쿠폰 (안내 · 현행 (2026-03-01부터))",
+     "text": "주문 전체를 취소하거나 전체 반품한 경우에만, 유효기간이 남아 있는 쿠폰을 복원합니다.",
+     "turn_seq": 1,
+     "meta": {
+      "chunk_id": "coupons#3",
+      "doc_id": "coupons",
+      "doc_title": "쿠폰 사용 안내",
+      "heading": "취소·반품 시 쿠폰",
+      "doc_type": "guide",
+      "effective_from": "2026-03-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "BM-24031 반품 기간이 하루 지났는데 한 번만 봐주시면 안 될까요?",
+      "score": 0.03028,
+      "expanded_from": null
+     }
+    },
+    {
+     "id": "K3",
+     "kind": "kb",
+     "title": "결제수단 안내 › 결제 오류와 이중 결제 (안내 · 현행 (2026-03-01부터))",
+     "text": "결제가 두 번 된 것 같거나 결제는 됐는데 주문이 보이지 않는 경우에는 상담원이 결제 대행사 내역을 직접 확인해야 합니다. 채팅에서 상담원 연결을 요청해 주세요.",
+     "turn_seq": 1,
+     "meta": {
+      "chunk_id": "payment-methods#3",
+      "doc_id": "payment-methods",
+      "doc_title": "결제수단 안내",
+      "heading": "결제 오류와 이중 결제",
+      "doc_type": "guide",
+      "effective_from": "2026-03-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "BM-24031 반품 기간이 하루 지났는데 한 번만 봐주시면 안 될까요?",
+      "score": 0.03016,
+      "expanded_from": null
+     }
+    },
+    {
+     "id": "K4",
+     "kind": "kb",
+     "title": "[공지] 2025 연말 감사 행사 — 반품 기간 연장 › 적용 범위 (공지 · 적용 종료 (2026-01-15까지))",
+     "text": "행사 기간 밖에 결제한 주문에는 적용하지 않으며, 기본 반품 정책을 따릅니다. 반품 배송비와 반품할 수 없는 상품 기준은 기본 정책과 같습니다.",
+     "turn_seq": 1,
+     "meta": {
+      "chunk_id": "notice-2025-yearend-returns#2",
+      "doc_id": "notice-2025-yearend-returns",
+      "doc_title": "[공지] 2025 연말 감사 행사 — 반품 기간 연장",
+      "heading": "적용 범위",
+      "doc_type": "notice",
+      "effective_from": "2025-12-01",
+      "effective_to": "2026-01-15",
+      "in_effect": false,
+      "query": "BM-24031 반품 기간이 하루 지났는데 한 번만 봐주시면 안 될까요?",
+      "score": 0.02985,
+      "expanded_from": null
+     }
+    },
+    {
+     "id": "K5",
+     "kind": "kb",
+     "title": "자주 묻는 질문 — 배송비 › 여러 상품을 주문하면 배송비가 따로 붙나요? (자주 묻는 질문 · 현행 (2025-06-01부터))",
+     "text": "한 번에 결제한 주문은 상품이 여러 개여도 배송비를 한 번만 받습니다.",
+     "turn_seq": 1,
+     "meta": {
+      "chunk_id": "faq-shipping-fee#2",
+      "doc_id": "faq-shipping-fee",
+      "doc_title": "자주 묻는 질문 — 배송비",
+      "heading": "여러 상품을 주문하면 배송비가 따로 붙나요?",
+      "doc_type": "faq",
+      "effective_from": "2025-06-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "BM-24031 반품 기간이 하루 지났는데 한 번만 봐주시면 안 될까요?",
+      "score": 0.02941,
+      "expanded_from": null
+     }
+    },
+    {
+     "id": "K6",
+     "kind": "kb",
+     "title": "[공지] 2025 연말 감사 행사 — 반품 기간 연장 › 행사 내용 (공지 · 적용 종료 (2026-01-15까지))",
+     "text": "2025년 12월 1일부터 2026년 1월 15일 사이에 결제한 주문에 한해, 반품 신청 기간을 상품을 받은 날부터 14일로 늘립니다.",
+     "turn_seq": 1,
+     "meta": {
+      "chunk_id": "notice-2025-yearend-returns#1",
+      "doc_id": "notice-2025-yearend-returns",
+      "doc_title": "[공지] 2025 연말 감사 행사 — 반품 기간 연장",
+      "heading": "행사 내용",
+      "doc_type": "notice",
+      "effective_from": "2025-12-01",
+      "effective_to": "2026-01-15",
+      "in_effect": false,
+      "query": "BM-24031 반품 기간이 하루 지났는데 한 번만 봐주시면 안 될까요?",
+      "score": 0.02985,
+      "expanded_from": "notice-2025-yearend-returns#2"
+     }
+    },
+    {
+     "id": "T1",
+     "kind": "tool",
+     "title": "예시 주문 시스템 · get_order(order_id=BM-24031)",
+     "text": "{\"discount\": 0, \"items\": [{\"category\": \"general\", \"item_id\": \"I-1\", \"name\": \"보온 텀블러 480ml\", \"qty\": 1, \"unit_price\": 22000}], \"items_total\": 22000, \"order_id\": \"BM-24031\", \"ordered_at\": \"2026-11-09 10:00\", \"paid_total\": 30000, \"payment_method\": \"신용카드\", \"remote_area_fee\": 5000, \"shipment\": {\"carrier\": \"한빛택배\", \"delivered_at\": \"2026-11-12\", \"shipped_at\": \"2026-11-10\", \"tracking_no\": \"HB7301124031\"}, \"shipping_fee\": 3000, \"status\": \"delivered\", \"status_label\": \"배송완료\"}",
+     "turn_seq": 1,
+     "meta": {
+      "tool": "get_order",
+      "args": {
+       "order_id": "BM-24031"
+      },
+      "status": "ok"
+     }
+    }
+   ],
+   "pending": {},
+   "resolution": {
+    "status": "handed_off",
+    "customer_signal": "none",
+    "reason": "상담원에게 인계된 대화",
+    "checker": {
+     "engine": "rules"
+    },
+    "source": "rule",
+    "updated_at": "2026-11-26T12:58:51.133+00:00"
+   },
+   "feedback": null,
+   "meta": {}
+  },
+  "messages": [
+   {
+    "seq": 1,
+    "role": "customer",
+    "text": "BM-24031 반품 기간이 하루 지났는데 한 번만 봐주시면 안 될까요?",
+    "payload": {},
+    "created_at": "2026-11-26T12:58:43.989+00:00"
+   },
+   {
+    "seq": 2,
+    "role": "ai",
+    "text": "BM-24031 주문은 2026-11-12에 배송이 완료되어, 반품 신청 기간(받은 날부터 7일 이내)이 2026-11-19에 끝났습니다. 기간 예외 요청은 정책상 제가 결정할 수 없어 상담원에게 연결해 드리겠습니다.",
+    "payload": {
+     "turn_seq": 1,
+     "action": "handoff",
+     "citations": [
+      {
+       "id": "K1",
+       "kind": "kb",
+       "title": "반품 정책 › 반품 신청 기간 (정책 · 현행 (2026-03-01부터))",
+       "text": "상품을 받은 날부터 7일 이내에 반품을 신청할 수 있습니다. 받은 날은 세지 않으며, 7일 안에 신청만 하면 되고 상품이 그 안에 도착할 필요는 없습니다.",
+       "turn_seq": 1,
+       "meta": {
+        "chunk_id": "return-policy#1",
+        "doc_id": "return-policy",
+        "doc_title": "반품 정책",
+        "heading": "반품 신청 기간",
+        "doc_type": "policy",
+        "effective_from": "2026-03-01",
+        "effective_to": null,
+        "in_effect": true,
+        "query": "BM-24031 반품 기간이 하루 지났는데 한 번만 봐주시면 안 될까요?",
+        "score": 0.03178,
+        "expanded_from": null,
+        "cited": true
+       }
+      },
+      {
+       "id": "T1",
+       "kind": "tool",
+       "title": "예시 주문 시스템 · get_order(order_id=BM-24031)",
+       "text": "{\"discount\": 0, \"items\": [{\"category\": \"general\", \"item_id\": \"I-1\", \"name\": \"보온 텀블러 480ml\", \"qty\": 1, \"unit_price\": 22000}], \"items_total\": 22000, \"order_id\": \"BM-24031\", \"ordered_at\": \"2026-11-09 10:00\", \"paid_total\": 30000, \"payment_method\": \"신용카드\", \"remote_area_fee\": 5000, \"shipment\": {\"carrier\": \"한빛택배\", \"delivered_at\": \"2026-11-12\", \"shipped_at\": \"2026-11-10\", \"tracking_no\": \"HB7301124031\"}, \"shipping_fee\": 3000, \"status\": \"delivered\", \"status_label\": \"배송완료\"}",
+       "turn_seq": 1,
+       "meta": {
+        "tool": "get_order",
+        "args": {
+         "order_id": "BM-24031"
+        },
+        "status": "ok"
+       }
+      }
+     ],
+     "handoff_reason": "policy_exception",
+     "engine": "anthropic",
+     "grounding": "grounded"
+    },
+    "created_at": "2026-11-26T12:58:51.131+00:00"
+   },
+   {
+    "seq": 3,
+    "role": "system",
+    "text": "상담원에게 대화를 넘겼습니다. 대화 내용과 확인한 근거가 함께 전달되었습니다.",
+    "payload": {
+     "kind": "handoff_opened",
+     "handoff_id": "ho_7128a9ead524",
+     "reason": "policy_exception",
+     "reason_label": "정책 밖 예외·보상 요구"
+    },
+    "created_at": "2026-11-26T12:58:51.131+00:00"
+   },
+   {
+    "seq": 4,
+    "role": "system",
+    "text": "상담원 데모 상담원(스크립트) 님이 대화를 확인하고 있습니다.",
+    "payload": {
+     "kind": "handoff_assigned",
+     "handoff_id": "ho_7128a9ead524"
+    },
+    "created_at": "2026-11-26T12:58:51.132+00:00"
+   },
+   {
+    "seq": 5,
+    "role": "agent",
+    "text": "안녕하세요, 상담원입니다. 도서산간 배송으로 수령이 늦어진 점을 감안해 이번 한 번은 반품을 접수해 드리겠습니다.",
+    "payload": {
+     "agent": "데모 상담원(스크립트)",
+     "handoff_id": "ho_7128a9ead524"
+    },
+    "created_at": "2026-11-26T12:58:51.132+00:00"
+   },
+   {
+    "seq": 6,
+    "role": "system",
+    "text": "상담원이 상담을 종료했습니다. 이용해 주셔서 감사합니다.",
+    "payload": {
+     "kind": "handoff_resolved",
+     "handoff_id": "ho_7128a9ead524",
+     "return_to_ai": false
+    },
+    "created_at": "2026-11-26T12:58:51.133+00:00"
+   }
+  ],
+  "turns": [
+   {
+    "id": 10,
+    "conversation_id": "conv_da9f7a920648",
+    "turn_seq": 1,
+    "started_at": "2026-11-26T12:58:43.989+00:00",
+    "latency_ms": 7141.0,
+    "outcome": "handoff",
+    "handoff_reason": "policy_exception",
+    "handoff_source": "model",
+    "grounding_verdict": "grounded",
+    "revisions": 0,
+    "blocked_count": 0,
+    "engine": "anthropic",
+    "model": "claude-haiku-5-5",
+    "prompt_id": "agent-v4",
+    "prompt_sha": "8fbbd864a03e",
+    "llm_calls": 3,
+    "input_tokens": 3547,
+    "output_tokens": 957,
+    "cache_read_tokens": 13670,
+    "cost_usd": 0.00097,
+    "tool_calls": 1,
+    "tool_errors": 0,
+    "error": null,
+    "kb_issue": null,
+    "detail": {
+     "steps": [
+      {
+       "type": "retrieval",
+       "query": "BM-24031 반품 기간이 하루 지났는데 한 번만 봐주시면 안 될까요?",
+       "latency_ms": 0.9,
+       "hits": [
+        {
+         "evidence_id": "K1",
+         "chunk_id": "return-policy#1",
+         "title": "반품 정책 › 반품 신청 기간 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.03178
+        },
+        {
+         "evidence_id": "K2",
+         "chunk_id": "coupons#3",
+         "title": "쿠폰 사용 안내 › 취소·반품 시 쿠폰 (안내 · 현행 (2026-03-01부터))",
+         "score": 0.03028
+        },
+        {
+         "evidence_id": "K3",
+         "chunk_id": "payment-methods#3",
+         "title": "결제수단 안내 › 결제 오류와 이중 결제 (안내 · 현행 (2026-03-01부터))",
+         "score": 0.03016
+        },
+        {
+         "evidence_id": "K4",
+         "chunk_id": "notice-2025-yearend-returns#2",
+         "title": "[공지] 2025 연말 감사 행사 — 반품 기간 연장 › 적용 범위 (공지 · 적용 종료 (2026-01-15까지))",
+         "score": 0.02985
+        },
+        {
+         "evidence_id": "K5",
+         "chunk_id": "faq-shipping-fee#2",
+         "title": "자주 묻는 질문 — 배송비 › 여러 상품을 주문하면 배송비가 따로 붙나요? (자주 묻는 질문 · 현행 (2025-06-01부터))",
+         "score": 0.02941
+        }
+       ]
+      },
+      {
+       "type": "llm",
+       "purpose": "agent",
+       "engine": "anthropic",
+       "model": "claude-haiku-5-5",
+       "stop_reason": "tool_use",
+       "latency_ms": 2715.1,
+       "attempts": 1,
+       "usage": {
+        "input_tokens": 902,
+        "output_tokens": 99,
+        "cache_read_input_tokens": 5284,
+        "cache_creation_input_tokens": 0
+       },
+       "cost_usd": 0.000193,
+       "request_id": "req_011ChRaZdeHFi6xVkQEgDfUh",
+       "tool_calls": [
+        {
+         "name": "get_order",
+         "input": {
+          "order_id": "BM-24031"
+         }
+        }
+       ]
+      },
+      {
+       "type": "tool",
+       "name": "get_order",
+       "args": {
+        "order_id": "BM-24031"
+       },
+       "status": "ok",
+       "is_error": false,
+       "latency_ms": 1.5,
+       "attempts": 1,
+       "evidence_ids": [
+        "T1"
+       ]
+      },
+      {
+       "type": "llm",
+       "purpose": "agent",
+       "engine": "anthropic",
+       "model": "claude-haiku-5-5",
+       "stop_reason": "tool_use",
+       "latency_ms": 2756.7,
+       "attempts": 1,
+       "usage": {
+        "input_tokens": 1256,
+        "output_tokens": 646,
+        "cache_read_input_tokens": 5284,
+        "cache_creation_input_tokens": 0
+       },
+       "cost_usd": 0.000501,
+       "request_id": "req_011ChRaZqFHFFdN6rCPd6fV3",
+       "tool_calls": [
+        {
+         "name": "respond",
+         "input": {
+          "action": "handoff",
+          "message": "BM-24031 주문은 2026-11-12에 배송이 완료되어, 반품 신청 기간(받은 날부터 7일 이내)이 2026-11-19에 끝났습니다. 기간 예외 요청은 정책상 제가 결정할 수 없어 상담원에게 연결해 드리겠습니다.",
+          "citations": [
+           "K1",
+           "T1"
+          ],
+          "handoff_reason": "policy_exception",
+          "handoff_summary": "고객(박서연, C-1003)이 BM-24031 주문(보온 텀블러 480ml, 1개, 결제 30,000원)의 반품 기간이 하루 지났으니 한 번만 봐달라고 요청함. 확인 사실: 배송완료일 2026-11-12, 반품 신청 기간은 받은 날부터 7일 이내(받은 날 미포함)로 2026-11-19까지이며, 오늘 2026-11-20 기준 기간이 지남. 정책에 없는 기간 예외 요청이므로 상담원 판단 필요.",
+          "kb_issue": ""
+         }
+        }
+       ]
+      },
+      {
+       "type": "llm",
+       "purpose": "grounding",
+       "engine": "anthropic",
+       "model": "claude-haiku-5-5",
+       "stop_reason": "end_turn",
+       "latency_ms": 1661.7,
+       "attempts": 1,
+       "usage": {
+        "input_tokens": 1389,
+        "output_tokens": 212,
+        "cache_read_input_tokens": 3102,
+        "cache_creation_input_tokens": 0
+       },
+       "cost_usd": 0.000276,
+       "request_id": "req_011ChRaa33wV3xBE2rimHujA",
+       "tool_calls": []
+      },
+      {
+       "type": "grounding",
+       "verdict": "grounded",
+       "mode": "llm+rules",
+       "contradicted": 0,
+       "unsupported": 0,
+       "problems": [],
+       "fact_flags": [
+        {
+         "fact": "date:2026-11-19",
+         "kind": "date",
+         "surface": "2026-11-19",
+         "hard": true
+        },
+        {
+         "fact": "md:11-19",
+         "kind": "md",
+         "surface": "2026-11-19",
+         "hard": true
+        }
+       ]
+      }
+     ],
+     "blocked": [],
+     "grounding": {
+      "verdict": "grounded",
+      "mode": "llm+rules",
+      "claims": [
+       {
+        "claim": "BM-24031 주문은 2026-11-12에 배송이 완료되어",
+        "label": "supported",
+        "evidence_ids": [
+         "T1"
+        ],
+        "reason": ""
+       },
+       {
+        "claim": "반품 신청 기간(받은 날부터 7일 이내)이 2026-11-19에 끝났습니다",
+        "label": "supported",
+        "evidence_ids": [
+         "K1",
+         "T1"
+        ],
+        "reason": ""
+       },
+       {
+        "claim": "기간 예외 요청은 정책상 제가 결정할 수 없어 상담원에게 연결해 드리겠습니다",
+        "label": "not_factual",
+        "evidence_ids": [],
+        "reason": ""
+       }
+      ],
+      "contradicted": 0,
+      "unsupported": 0,
+      "fact_flags": [
+       {
+        "fact": "date:2026-11-19",
+        "kind": "date",
+        "surface": "2026-11-19",
+        "hard": true
+       },
+       {
+        "fact": "md:11-19",
+        "kind": "md",
+        "surface": "2026-11-19",
+        "hard": true
+       }
+      ],
+      "problems": [],
+      "checker": {
+       "engine": "anthropic",
+       "model": "claude-haiku-5-5",
+       "prompt": "grounding-v4",
+       "prompt_sha256": "0edca4226cf3",
+       "latency_ms": 1661.7,
+       "cost_usd": 0.000276
+      }
+     },
+     "stage_latency_ms": {
+      "retrieval": 0.9,
+      "llm_agent": 5471.8,
+      "llm_checks": 1661.7,
+      "tools": 1.5
+     },
+     "fresh_evidence_ids": [
+      "K1",
+      "K2",
+      "K3",
+      "K4",
+      "K5"
+     ],
+     "cited": [
+      "K1",
+      "T1"
+     ]
+    }
+   }
+  ],
+  "handoffs": [
+   {
+    "id": "ho_7128a9ead524",
+    "conversation_id": "conv_da9f7a920648",
+    "turn_seq": 1,
+    "reason": "policy_exception",
+    "source": "model",
+    "summary": "고객(박서연, C-1003)이 BM-24031 주문(보온 텀블러 480ml, 1개, 결제 30,000원)의 반품 기간이 하루 지났으니 한 번만 봐달라고 요청함. 확인 사실: 배송완료일 2026-11-12, 반품 신청 기간은 받은 날부터 7일 이내(받은 날 미포함)로 2026-11-19까지이며, 오늘 2026-11-20 기준 기간이 지남. 정책에 없는 기간 예외 요청이므로 상담원 판단 필요.",
+    "status": "resolved",
+    "created_at": "2026-11-26T12:58:51.131+00:00",
+    "assigned_to": "데모 상담원(스크립트)",
+    "assigned_at": "2026-11-26T12:58:51.132+00:00",
+    "resolved_at": "2026-11-26T12:58:51.133+00:00",
+    "resolution_note": "수령 지연 사유로 1회 예외 승인",
+    "snapshot": {
+     "customer_question": "BM-24031 반품 기간이 하루 지났는데 한 번만 봐주시면 안 될까요?",
+     "reason_label": "정책 밖 예외·보상 요구",
+     "evidence": [
+      {
+       "id": "K1",
+       "kind": "kb",
+       "title": "반품 정책 › 반품 신청 기간 (정책 · 현행 (2026-03-01부터))",
+       "text": "상품을 받은 날부터 7일 이내에 반품을 신청할 수 있습니다. 받은 날은 세지 않으며, 7일 안에 신청만 하면 되고 상품이 그 안에 도착할 필요는 없습니다.",
+       "turn_seq": 1,
+       "meta": {
+        "chunk_id": "return-policy#1",
+        "doc_id": "return-policy",
+        "doc_title": "반품 정책",
+        "heading": "반품 신청 기간",
+        "doc_type": "policy",
+        "effective_from": "2026-03-01",
+        "effective_to": null,
+        "in_effect": true,
+        "query": "BM-24031 반품 기간이 하루 지났는데 한 번만 봐주시면 안 될까요?",
+        "score": 0.03178,
+        "expanded_from": null,
+        "cited": true
+       }
+      },
+      {
+       "id": "K2",
+       "kind": "kb",
+       "title": "쿠폰 사용 안내 › 취소·반품 시 쿠폰 (안내 · 현행 (2026-03-01부터))",
+       "text": "주문 전체를 취소하거나 전체 반품한 경우에만, 유효기간이 남아 있는 쿠폰을 복원합니다.",
+       "turn_seq": 1,
+       "meta": {
+        "chunk_id": "coupons#3",
+        "doc_id": "coupons",
+        "doc_title": "쿠폰 사용 안내",
+        "heading": "취소·반품 시 쿠폰",
+        "doc_type": "guide",
+        "effective_from": "2026-03-01",
+        "effective_to": null,
+        "in_effect": true,
+        "query": "BM-24031 반품 기간이 하루 지났는데 한 번만 봐주시면 안 될까요?",
+        "score": 0.03028,
+        "expanded_from": null
+       }
+      },
+      {
+       "id": "K3",
+       "kind": "kb",
+       "title": "결제수단 안내 › 결제 오류와 이중 결제 (안내 · 현행 (2026-03-01부터))",
+       "text": "결제가 두 번 된 것 같거나 결제는 됐는데 주문이 보이지 않는 경우에는 상담원이 결제 대행사 내역을 직접 확인해야 합니다. 채팅에서 상담원 연결을 요청해 주세요.",
+       "turn_seq": 1,
+       "meta": {
+        "chunk_id": "payment-methods#3",
+        "doc_id": "payment-methods",
+        "doc_title": "결제수단 안내",
+        "heading": "결제 오류와 이중 결제",
+        "doc_type": "guide",
+        "effective_from": "2026-03-01",
+        "effective_to": null,
+        "in_effect": true,
+        "query": "BM-24031 반품 기간이 하루 지났는데 한 번만 봐주시면 안 될까요?",
+        "score": 0.03016,
+        "expanded_from": null
+       }
+      },
+      {
+       "id": "K4",
+       "kind": "kb",
+       "title": "[공지] 2025 연말 감사 행사 — 반품 기간 연장 › 적용 범위 (공지 · 적용 종료 (2026-01-15까지))",
+       "text": "행사 기간 밖에 결제한 주문에는 적용하지 않으며, 기본 반품 정책을 따릅니다. 반품 배송비와 반품할 수 없는 상품 기준은 기본 정책과 같습니다.",
+       "turn_seq": 1,
+       "meta": {
+        "chunk_id": "notice-2025-yearend-returns#2",
+        "doc_id": "notice-2025-yearend-returns",
+        "doc_title": "[공지] 2025 연말 감사 행사 — 반품 기간 연장",
+        "heading": "적용 범위",
+        "doc_type": "notice",
+        "effective_from": "2025-12-01",
+        "effective_to": "2026-01-15",
+        "in_effect": false,
+        "query": "BM-24031 반품 기간이 하루 지났는데 한 번만 봐주시면 안 될까요?",
+        "score": 0.02985,
+        "expanded_from": null
+       }
+      },
+      {
+       "id": "K5",
+       "kind": "kb",
+       "title": "자주 묻는 질문 — 배송비 › 여러 상품을 주문하면 배송비가 따로 붙나요? (자주 묻는 질문 · 현행 (2025-06-01부터))",
+       "text": "한 번에 결제한 주문은 상품이 여러 개여도 배송비를 한 번만 받습니다.",
+       "turn_seq": 1,
+       "meta": {
+        "chunk_id": "faq-shipping-fee#2",
+        "doc_id": "faq-shipping-fee",
+        "doc_title": "자주 묻는 질문 — 배송비",
+        "heading": "여러 상품을 주문하면 배송비가 따로 붙나요?",
+        "doc_type": "faq",
+        "effective_from": "2025-06-01",
+        "effective_to": null,
+        "in_effect": true,
+        "query": "BM-24031 반품 기간이 하루 지났는데 한 번만 봐주시면 안 될까요?",
+        "score": 0.02941,
+        "expanded_from": null
+       }
+      },
+      {
+       "id": "K6",
+       "kind": "kb",
+       "title": "[공지] 2025 연말 감사 행사 — 반품 기간 연장 › 행사 내용 (공지 · 적용 종료 (2026-01-15까지))",
+       "text": "2025년 12월 1일부터 2026년 1월 15일 사이에 결제한 주문에 한해, 반품 신청 기간을 상품을 받은 날부터 14일로 늘립니다.",
+       "turn_seq": 1,
+       "meta": {
+        "chunk_id": "notice-2025-yearend-returns#1",
+        "doc_id": "notice-2025-yearend-returns",
+        "doc_title": "[공지] 2025 연말 감사 행사 — 반품 기간 연장",
+        "heading": "행사 내용",
+        "doc_type": "notice",
+        "effective_from": "2025-12-01",
+        "effective_to": "2026-01-15",
+        "in_effect": false,
+        "query": "BM-24031 반품 기간이 하루 지났는데 한 번만 봐주시면 안 될까요?",
+        "score": 0.02985,
+        "expanded_from": "notice-2025-yearend-returns#2"
+       }
+      },
+      {
+       "id": "T1",
+       "kind": "tool",
+       "title": "예시 주문 시스템 · get_order(order_id=BM-24031)",
+       "text": "{\"discount\": 0, \"items\": [{\"category\": \"general\", \"item_id\": \"I-1\", \"name\": \"보온 텀블러 480ml\", \"qty\": 1, \"unit_price\": 22000}], \"items_total\": 22000, \"order_id\": \"BM-24031\", \"ordered_at\": \"2026-11-09 10:00\", \"paid_total\": 30000, \"payment_method\": \"신용카드\", \"remote_area_fee\": 5000, \"shipment\": {\"carrier\": \"한빛택배\", \"delivered_at\": \"2026-11-12\", \"shipped_at\": \"2026-11-10\", \"tracking_no\": \"HB7301124031\"}, \"shipping_fee\": 3000, \"status\": \"delivered\", \"status_label\": \"배송완료\"}",
+       "turn_seq": 1,
+       "meta": {
+        "tool": "get_order",
+        "args": {
+         "order_id": "BM-24031"
+        },
+        "status": "ok"
+       }
+      }
+     ],
+     "cited": [
+      "K1",
+      "T1"
+     ],
+     "tool_calls": [
+      {
+       "name": "get_order",
+       "args": {
+        "order_id": "BM-24031"
+       },
+       "status": "ok",
+       "latency_ms": 1.5,
+       "attempts": 1
+      }
+     ],
+     "blocked_drafts": [],
+     "grounding_problems": [],
+     "message_seq_at_handoff": 2
+    }
+   }
+  ]
+ }
+}

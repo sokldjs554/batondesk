@@ -36,7 +36,7 @@ def create_app(settings: Settings | None = None, *, llm: LLMClient | None = None
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         service = SupportService(settings, llm=llm, db=db)
         recordings = settings.data_dir / "recordings"
-        loaded = service.load_recordings(recordings) if recordings.exists() else 0
+        loaded = service.load_recordings(recordings) if settings.load_recordings and recordings.exists() else 0
         app.state.service = service
         app.mount("/example-commerce", service.commerce_app)
         if settings.web_dir.exists():

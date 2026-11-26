@@ -1,0 +1,401 @@
+{
+ "title": "문서끼리 내용이 다를 때 — 현행 정책 기준으로 답변",
+ "provenance": {
+  "kind": "실제 모델 호출 기록",
+  "recorded_at": "2026-11-26T12:58:28+00:00",
+  "agent_model": "claude-haiku-5-5",
+  "judge_model": "claude-haiku-5-5",
+  "agent_prompt": "agent-v4",
+  "agent_prompt_sha256": "8fbbd864a03e",
+  "git_sha": "f22724ea69dc4d9cae4e432db478472b67053ed8",
+  "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45824425001",
+  "example_clock": "2026-11-20T10:00:00+09:00",
+  "order_system_fault": "none",
+  "customer_messages": "스크립트에 정해 둔 글",
+  "agent_messages": "없음"
+ },
+ "export": {
+  "conversation": {
+   "id": "conv_bbd586f74b31",
+   "customer_id": "C-1001",
+   "customer_name": "김하늘",
+   "channel": "web",
+   "sandbox_id": "record-04-document-conflict",
+   "status": "open",
+   "source": "live",
+   "created_at": "2026-11-26T12:58:19.878+00:00",
+   "updated_at": "2026-11-26T12:58:28.393+00:00",
+   "turn_count": 1,
+   "evidence": [
+    {
+     "id": "K1",
+     "kind": "kb",
+     "title": "자주 묻는 질문 — 배송비 › 무료배송 기준이 어떻게 되나요? (자주 묻는 질문 · 현행 (2025-06-01부터))",
+     "text": "30,000원 이상 구매하시면 무료로 배송해 드립니다. 30,000원 미만 주문은 배송비 3,000원이 붙습니다.",
+     "turn_seq": 1,
+     "meta": {
+      "chunk_id": "faq-shipping-fee#1",
+      "doc_id": "faq-shipping-fee",
+      "doc_title": "자주 묻는 질문 — 배송비",
+      "heading": "무료배송 기준이 어떻게 되나요?",
+      "doc_type": "faq",
+      "effective_from": "2025-06-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "35,000원짜리 하나 주문하려는데 무료배송 맞죠? FAQ에는 3만 원 이상이면 무료라고 돼 있던데요.",
+      "score": 0.03252,
+      "expanded_from": null
+     }
+    },
+    {
+     "id": "K2",
+     "kind": "kb",
+     "title": "배송 정책 › 배송비와 무료배송 기준 (정책 · 현행 (2026-03-01부터))",
+     "text": "기본 배송비는 주문 1건당 3,000원입니다. 한 주문의 상품 결제금액 합계가 50,000원 이상이면 배송비가 무료입니다. 쿠폰·적립금으로 할인받은 금액은 합계에서 빼고 계산합니다.",
+     "turn_seq": 1,
+     "meta": {
+      "chunk_id": "shipping-policy#2",
+      "doc_id": "shipping-policy",
+      "doc_title": "배송 정책",
+      "heading": "배송비와 무료배송 기준",
+      "doc_type": "policy",
+      "effective_from": "2026-03-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "35,000원짜리 하나 주문하려는데 무료배송 맞죠? FAQ에는 3만 원 이상이면 무료라고 돼 있던데요.",
+      "score": 0.03252,
+      "expanded_from": null,
+      "cited": true
+     }
+    },
+    {
+     "id": "K3",
+     "kind": "kb",
+     "title": "주문 취소 › 부분 취소 (정책 · 현행 (2026-03-01부터))",
+     "text": "한 주문에서 일부 상품만 취소할 수 있습니다. 남은 상품의 결제금액 합계가 무료배송 기준에 못 미치게 되면 환불 금액에서 배송비 3,000원을 뺍니다.",
+     "turn_seq": 1,
+     "meta": {
+      "chunk_id": "order-cancel#3",
+      "doc_id": "order-cancel",
+      "doc_title": "주문 취소",
+      "heading": "부분 취소",
+      "doc_type": "policy",
+      "effective_from": "2026-03-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "35,000원짜리 하나 주문하려는데 무료배송 맞죠? FAQ에는 3만 원 이상이면 무료라고 돼 있던데요.",
+      "score": 0.03175,
+      "expanded_from": null
+     }
+    },
+    {
+     "id": "K4",
+     "kind": "kb",
+     "title": "제주·도서산간 배송 › 추가 배송비 (정책 · 현행 (2026-03-01부터))",
+     "text": "제주 지역은 3,000원, 그 밖의 도서산간 지역은 5,000원의 추가 배송비가 붙습니다. 무료배송 조건을 채운 주문에도 추가 배송비는 따로 부과합니다.",
+     "turn_seq": 1,
+     "meta": {
+      "chunk_id": "shipping-remote#1",
+      "doc_id": "shipping-remote",
+      "doc_title": "제주·도서산간 배송",
+      "heading": "추가 배송비",
+      "doc_type": "policy",
+      "effective_from": "2026-03-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "35,000원짜리 하나 주문하려는데 무료배송 맞죠? FAQ에는 3만 원 이상이면 무료라고 돼 있던데요.",
+      "score": 0.03125,
+      "expanded_from": null
+     }
+    },
+    {
+     "id": "K5",
+     "kind": "kb",
+     "title": "반품 정책 › 단순변심 반품 배송비 (정책 · 현행 (2026-03-01부터))",
+     "text": "단순변심으로 반품하면 반품 배송비는 고객이 부담합니다. 처음에 배송비를 낸 주문은 3,000원(편도), 무료배송으로 받은 주문은 6,000원(왕복)이며 환불 금액에서 뺍니다. 처음에 낸 배송비는 돌려드리지 않습니다.",
+     "turn_seq": 1,
+     "meta": {
+      "chunk_id": "return-policy#2",
+      "doc_id": "return-policy",
+      "doc_title": "반품 정책",
+      "heading": "단순변심 반품 배송비",
+      "doc_type": "policy",
+      "effective_from": "2026-03-01",
+      "effective_to": null,
+      "in_effect": true,
+      "query": "35,000원짜리 하나 주문하려는데 무료배송 맞죠? FAQ에는 3만 원 이상이면 무료라고 돼 있던데요.",
+      "score": 0.03054,
+      "expanded_from": null
+     }
+    }
+   ],
+   "pending": {},
+   "resolution": {
+    "status": "unresolved",
+    "customer_signal": "none",
+    "reason": "AI가 무료배송 기준(5만 원 이상)과 배송비 3,000원을 정확히 안내해 문의에 답했으나, 고객이 FAQ의 3만 원 기준을 근거로 물었고 대화가 고객 반응 없이 끝났습니다. 고객이 FAQ와의 차이를 인지하고 만족했는지 확인되지 않아 보수적으로 unresolved로 판정합니다.",
+    "checker": {
+     "engine": "anthropic",
+     "model": "claude-haiku-5-5",
+     "prompt": "resolution-v1",
+     "prompt_sha256": "0a4797d8768a",
+     "latency_ms": 1340.5,
+     "cost_usd": 0.000126
+    },
+    "source": "judge",
+    "updated_at": "2026-11-26T12:58:28.393+00:00"
+   },
+   "feedback": null,
+   "meta": {}
+  },
+  "messages": [
+   {
+    "seq": 1,
+    "role": "customer",
+    "text": "35,000원짜리 하나 주문하려는데 무료배송 맞죠? FAQ에는 3만 원 이상이면 무료라고 돼 있던데요.",
+    "payload": {},
+    "created_at": "2026-11-26T12:58:19.878+00:00"
+   },
+   {
+    "seq": 2,
+    "role": "ai",
+    "text": "안내 드린 것처럼 35,000원 주문은 무료배송 대상이 아닙니다. 현재 무료배송 기준은 한 주문의 상품 결제금액 합계가 50,000원 이상이며, 기본 배송비는 주문 1건당 3,000원입니다. 따라서 35,000원 상품 1개만 주문하시면 배송비 3,000원이 붙습니다. 쿠폰이나 적립금으로 할인받은 금액은 합계에서 빼고 계산합니다.",
+    "payload": {
+     "turn_seq": 1,
+     "action": "answer",
+     "citations": [
+      {
+       "id": "K2",
+       "kind": "kb",
+       "title": "배송 정책 › 배송비와 무료배송 기준 (정책 · 현행 (2026-03-01부터))",
+       "text": "기본 배송비는 주문 1건당 3,000원입니다. 한 주문의 상품 결제금액 합계가 50,000원 이상이면 배송비가 무료입니다. 쿠폰·적립금으로 할인받은 금액은 합계에서 빼고 계산합니다.",
+       "turn_seq": 1,
+       "meta": {
+        "chunk_id": "shipping-policy#2",
+        "doc_id": "shipping-policy",
+        "doc_title": "배송 정책",
+        "heading": "배송비와 무료배송 기준",
+        "doc_type": "policy",
+        "effective_from": "2026-03-01",
+        "effective_to": null,
+        "in_effect": true,
+        "query": "35,000원짜리 하나 주문하려는데 무료배송 맞죠? FAQ에는 3만 원 이상이면 무료라고 돼 있던데요.",
+        "score": 0.03252,
+        "expanded_from": null,
+        "cited": true
+       }
+      }
+     ],
+     "handoff_reason": null,
+     "engine": "anthropic",
+     "grounding": "grounded"
+    },
+    "created_at": "2026-11-26T12:58:25.649+00:00"
+   }
+  ],
+  "turns": [
+   {
+    "id": 7,
+    "conversation_id": "conv_bbd586f74b31",
+    "turn_seq": 1,
+    "started_at": "2026-11-26T12:58:19.879+00:00",
+    "latency_ms": 5770.0,
+    "outcome": "answered",
+    "handoff_reason": null,
+    "handoff_source": null,
+    "grounding_verdict": "grounded",
+    "revisions": 0,
+    "blocked_count": 0,
+    "engine": "anthropic",
+    "model": "claude-haiku-5-5",
+    "prompt_id": "agent-v4",
+    "prompt_sha": "8fbbd864a03e",
+    "llm_calls": 2,
+    "input_tokens": 2034,
+    "output_tokens": 1210,
+    "cache_read_tokens": 8386,
+    "cost_usd": 0.000893,
+    "tool_calls": 0,
+    "tool_errors": 0,
+    "error": null,
+    "kb_issue": "자주 묻는 질문(K1)은 무료배송 기준을 30,000원 이상으로 안내하지만, 배송 정책(K2, 2026-03-01부터 현행)은 50,000원 이상으로 정하고 있어 서로 다릅니다. 정책 문서를 따라 50,000원 기준으로 답변했습니다. FAQ 문서를 정책에 맞게 수정해 주세요.",
+    "detail": {
+     "steps": [
+      {
+       "type": "retrieval",
+       "query": "35,000원짜리 하나 주문하려는데 무료배송 맞죠? FAQ에는 3만 원 이상이면 무료라고 돼 있던데요.",
+       "latency_ms": 1.2,
+       "hits": [
+        {
+         "evidence_id": "K1",
+         "chunk_id": "faq-shipping-fee#1",
+         "title": "자주 묻는 질문 — 배송비 › 무료배송 기준이 어떻게 되나요? (자주 묻는 질문 · 현행 (2025-06-01부터))",
+         "score": 0.03252
+        },
+        {
+         "evidence_id": "K2",
+         "chunk_id": "shipping-policy#2",
+         "title": "배송 정책 › 배송비와 무료배송 기준 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.03252
+        },
+        {
+         "evidence_id": "K3",
+         "chunk_id": "order-cancel#3",
+         "title": "주문 취소 › 부분 취소 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.03175
+        },
+        {
+         "evidence_id": "K4",
+         "chunk_id": "shipping-remote#1",
+         "title": "제주·도서산간 배송 › 추가 배송비 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.03125
+        },
+        {
+         "evidence_id": "K5",
+         "chunk_id": "return-policy#2",
+         "title": "반품 정책 › 단순변심 반품 배송비 (정책 · 현행 (2026-03-01부터))",
+         "score": 0.03054
+        }
+       ]
+      },
+      {
+       "type": "llm",
+       "purpose": "agent",
+       "engine": "anthropic",
+       "model": "claude-haiku-5-5",
+       "stop_reason": "tool_use",
+       "latency_ms": 4197.5,
+       "attempts": 1,
+       "usage": {
+        "input_tokens": 998,
+        "output_tokens": 890,
+        "cache_read_input_tokens": 5284,
+        "cache_creation_input_tokens": 0
+       },
+       "cost_usd": 0.000598,
+       "request_id": "req_011ChRaXrZMwvEZ8ugLxrLpH",
+       "tool_calls": [
+        {
+         "name": "respond",
+         "input": {
+          "action": "answer",
+          "message": "안내 드린 것처럼 35,000원 주문은 무료배송 대상이 아닙니다. 현재 무료배송 기준은 한 주문의 상품 결제금액 합계가 50,000원 이상이며, 기본 배송비는 주문 1건당 3,000원입니다. 따라서 35,000원 상품 1개만 주문하시면 배송비 3,000원이 붙습니다. 쿠폰이나 적립금으로 할인받은 금액은 합계에서 빼고 계산합니다.",
+          "citations": [
+           "K2"
+          ],
+          "handoff_reason": "none",
+          "handoff_summary": "",
+          "kb_issue": "자주 묻는 질문(K1)은 무료배송 기준을 30,000원 이상으로 안내하지만, 배송 정책(K2, 2026-03-01부터 현행)은 50,000원 이상으로 정하고 있어 서로 다릅니다. 정책 문서를 따라 50,000원 기준으로 답변했습니다. FAQ 문서를 정책에 맞게 수정해 주세요."
+         }
+        }
+       ]
+      },
+      {
+       "type": "llm",
+       "purpose": "grounding",
+       "engine": "anthropic",
+       "model": "claude-haiku-5-5",
+       "stop_reason": "end_turn",
+       "latency_ms": 1567.6,
+       "attempts": 1,
+       "usage": {
+        "input_tokens": 1036,
+        "output_tokens": 320,
+        "cache_read_input_tokens": 3102,
+        "cache_creation_input_tokens": 0
+       },
+       "cost_usd": 0.000295,
+       "request_id": "req_011ChRaYAWN1q8wTjDvvKMSv",
+       "tool_calls": []
+      },
+      {
+       "type": "grounding",
+       "verdict": "grounded",
+       "mode": "llm+rules",
+       "contradicted": 0,
+       "unsupported": 0,
+       "problems": [],
+       "fact_flags": []
+      }
+     ],
+     "blocked": [],
+     "grounding": {
+      "verdict": "grounded",
+      "mode": "llm+rules",
+      "claims": [
+       {
+        "claim": "35,000원 주문은 무료배송 대상이 아닙니다",
+        "label": "supported",
+        "evidence_ids": [
+         "K2"
+        ],
+        "reason": ""
+       },
+       {
+        "claim": "현재 무료배송 기준은 한 주문의 상품 결제금액 합계가 50,000원 이상입니다",
+        "label": "supported",
+        "evidence_ids": [
+         "K2"
+        ],
+        "reason": ""
+       },
+       {
+        "claim": "기본 배송비는 주문 1건당 3,000원입니다",
+        "label": "supported",
+        "evidence_ids": [
+         "K2"
+        ],
+        "reason": ""
+       },
+       {
+        "claim": "35,000원 상품 1개만 주문하시면 배송비 3,000원이 붙습니다",
+        "label": "supported",
+        "evidence_ids": [
+         "K2"
+        ],
+        "reason": ""
+       },
+       {
+        "claim": "쿠폰이나 적립금으로 할인받은 금액은 합계에서 빼고 계산합니다",
+        "label": "supported",
+        "evidence_ids": [
+         "K2"
+        ],
+        "reason": ""
+       }
+      ],
+      "contradicted": 0,
+      "unsupported": 0,
+      "fact_flags": [],
+      "problems": [],
+      "checker": {
+       "engine": "anthropic",
+       "model": "claude-haiku-5-5",
+       "prompt": "grounding-v4",
+       "prompt_sha256": "0edca4226cf3",
+       "latency_ms": 1567.6,
+       "cost_usd": 0.000295
+      }
+     },
+     "stage_latency_ms": {
+      "retrieval": 1.2,
+      "llm_agent": 4197.5,
+      "llm_checks": 1567.6,
+      "tools": 0.0
+     },
+     "fresh_evidence_ids": [
+      "K1",
+      "K2",
+      "K3",
+      "K4",
+      "K5"
+     ],
+     "cited": [
+      "K2"
+     ]
+    }
+   }
+  ],
+  "handoffs": []
+ }
+}

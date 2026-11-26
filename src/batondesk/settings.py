@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     prompts_dir: Path = REPO_ROOT / "prompts"
     web_dir: Path = REPO_ROOT / "web"
     db_path: Path = REPO_ROOT / "var" / "batondesk.sqlite3"
+    # data/recordings 의 저장된 상담 기록(실제 모델로 만든 데모 대화)을 시작할 때 싣는다. 빈 화면 점검용으로 끌 수 있다.
+    load_recordings: bool = True
 
     # LLM
     # auto: ANTHROPIC_API_KEY 가 있으면 live, 없으면 off(대화 API가 503을 돌려주고 화면은 저장 기록만 보여 준다).

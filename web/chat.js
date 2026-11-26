@@ -354,7 +354,8 @@ function updateChrome() {
   if (conv) {
     const provenance = (conv.meta && conv.meta.provenance) || {};
     sub.append(sourceBadge(conv.source));
-    if (conv.source === "recorded" && provenance.model) sub.append(el("span", { class: "pill", text: provenance.model }));
+    const recordedModel = provenance.agent_model || provenance.model;
+    if (conv.source === "recorded" && recordedModel) sub.append(el("span", { class: "pill", text: recordedModel }));
     const status = { open: ["AI 응대 중", "pill-ok"], handed_off: ["상담원 응대 중", "pill-bad"], closed: ["종료", "pill-ink"] }[conv.status];
     if (status) sub.append(el("span", { class: `pill ${status[1]}`, text: status[0] }));
   } else {
@@ -371,10 +372,16 @@ function updateChrome() {
     const provenance = (conv && conv.meta && conv.meta.provenance) || {};
     const parts = [];
     if (conv && conv.source === "recorded") {
-      parts.push("저장된 상담 기록입니다(읽기 전용).");
-      if (provenance.model) parts.push(`모델 ${provenance.model}`);
-      if (provenance.recorded_at) parts.push(`기록 ${provenance.recorded_at}`);
-      if (provenance.commit) parts.push(`커밋 ${String(provenance.commit).slice(0, 7)}`);
+      // 이 기록이 어디서 나왔는지: 실제 모델 호출인지, 어떤 모델·프롬프트·커밋인지, 고객·상담원 메시지를 누가 썼는지.
+      const model = provenance.agent_model || provenance.model;
+      const commit = provenance.git_sha || provenance.commit;
+      parts.push(`저장된 상담 기록(읽기 전용)${provenance.kind ? " — " + provenance.kind : ""}`);
+      if (model) parts.push(`모델 ${model}`);
+      if (provenance.agent_prompt) parts.push(`프롬프트 ${provenance.agent_prompt}`);
+      if (provenance.recorded_at) parts.push(`기록 ${String(provenance.recorded_at).slice(0, 10)}`);
+      if (commit) parts.push(`커밋 ${String(commit).slice(0, 7)}`);
+      if (provenance.customer_messages) parts.push(`고객 메시지: ${provenance.customer_messages}`);
+      if (provenance.agent_messages && provenance.agent_messages !== "없음") parts.push(`상담원 메시지: ${provenance.agent_messages}`);
     } else {
       parts.push("운영 화면에서 연 대화입니다(읽기 전용).");
     }
