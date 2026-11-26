@@ -216,6 +216,17 @@ def cmd_compare(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_regrade(args: argparse.Namespace) -> int:
+    for run in args.runs:
+        manifest = json.loads((Path(run) / "manifest.json").read_text(encoding="utf-8"))
+        result = report.regrade(Path(run), load_agent_cases(DATA, manifest["split"]))
+        was, now = result["as_graded"], result["regraded"]
+        print(f"{result['run']}: 당시 채점 {was['mean']:.1%} → 지금 기준 {now['mean']:.1%} [{now['lo']:.1%}, {now['hi']:.1%}]")
+        for row in result["changed"]:
+            print(f"    {row['case_id']} {row['rep']}회차: {'통과' if row['was'] else '실패'} → {'통과' if row['now'] else '실패'}")
+    return 0
+
+
 def cmd_gate(args: argparse.Namespace) -> int:
     problems = report.check_agent_gate(Path(args.run), json.loads(Path(args.gate).read_text(encoding="utf-8")))
     for problem in problems:
@@ -311,6 +322,9 @@ def main() -> int:
     base.add_argument("--max-pass", type=float, default=0.35)
     base.set_defaults(func=cmd_baselines)
 
+    regrade = sub.add_parser("regrade", help="저장된 에이전트 실행의 글자 비교 채점을 지금 기준으로 다시 계산")
+    regrade.add_argument("runs", nargs="+")
+    regrade.set_defaults(func=cmd_regrade)
     compare = sub.add_parser("compare", help="두 실행을 같은 문항끼리 비교")
     compare.add_argument("a")
     compare.add_argument("b")

@@ -140,3 +140,24 @@ def grade_case(case: AgentCase, run: dict[str, Any]) -> dict[str, Any]:
         "actual_handoff": handed_off,
         "end_state_diff": diff,
     }
+
+
+def regrade_text_checks(case: AgentCase, row: dict[str, Any]) -> dict[str, Any]:
+    """저장된 실행 한 건의 글자 비교 채점(사실·모른다고 말하기)만 지금의 기준으로 다시 한다.
+
+    채점 기준(문항의 기대 표현, ABSTAIN_MARKERS)을 고친 뒤, 고치기 전에 돌린 실행을 같은 기준으로 읽기 위한 것이다.
+    주문 상태·도구·주입 여부는 저장된 값을 그대로 쓴다(다시 계산할 원자료가 결과 파일에 없다).
+    """
+    ai_messages = [m["text"] for m in row["transcript"] if m["role"] == "ai"]
+    all_text = normalize("\n".join(ai_messages))
+    last_text = normalize(ai_messages[-1]) if ai_messages else ""
+    grades = dict(row["grades"])
+    expect = case.expect
+    if expect.must_include or expect.must_not_include:
+        missing = [g for g in expect.must_include if not any(_includes(all_text, alt) for alt in g)]
+        present = [p for p in expect.must_not_include if _includes(all_text, p)]
+        grades["facts_ok"] = not missing and not present
+    else:
+        grades["facts_ok"] = None
+    grades["abstain_ok"] = (row["final_action"] == "handoff" or any(m in last_text for m in ABSTAIN_MARKERS)) if expect.abstain else None
+    return {**row, "grades": grades, "passed": all(grades.get(k) is not False for k in PASS_KEYS)}

@@ -7,8 +7,8 @@ from pathlib import Path
 from typing import Any
 
 from batondesk.evals.data import AgentCase
-from batondesk.evals.graders import grade_case
-from batondesk.evals.stats import paired_diff
+from batondesk.evals.graders import grade_case, regrade_text_checks
+from batondesk.evals.stats import cluster_ci, paired_diff
 
 CATEGORY_LABEL = {
     "kb_answerable": "문서에 답이 있는 문의",
@@ -156,6 +156,20 @@ def _by_case(rows: list[dict[str, Any]], key: str | None = None) -> dict[str, li
         if value is not None:
             out.setdefault(row["case_id"], []).append(float(value))
     return out
+
+
+def regrade(run_dir: Path, cases: list[AgentCase]) -> dict[str, Any]:
+    """저장된 실행을 지금의 글자 비교 기준으로 다시 채점한 통과율. 원래 채점과 달라진 실행을 함께 돌려준다."""
+    _, summary, rows = _load_run(run_dir)
+    by_id = {c.id: c for c in cases}
+    scored = [r for r in rows if not r.get("skipped")]
+    again = [regrade_text_checks(by_id[r["case_id"]], r) for r in scored]
+    changed = [
+        {"case_id": new["case_id"], "rep": new["rep"], "was": old["passed"], "now": new["passed"]}
+        for old, new in zip(scored, again, strict=True)
+        if old["passed"] != new["passed"]
+    ]
+    return {"run": run_dir.name, "as_graded": summary["pass"], "regraded": cluster_ci(_by_case(again)), "changed": changed}
 
 
 def compare(a_dir: Path, b_dir: Path) -> dict[str, Any]:

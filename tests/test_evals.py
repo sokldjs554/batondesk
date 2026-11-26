@@ -252,3 +252,41 @@ def test_index_lists_only_real_model_runs(tmp_path: Path) -> None:
     (run / "manifest.json").write_text(json.dumps({"quality_numbers": False, "suite": "agent"}), encoding="utf-8")
     (run / "summary.json").write_text("{}", encoding="utf-8")
     assert report.build_index(tmp_path)["available"] is False, "규칙 엔진 실행은 품질 표에 싣지 않는다"
+
+
+def test_regrade_reapplies_only_the_text_checks() -> None:
+    """채점 표현을 고친 뒤 예전 실행을 같은 기준으로 다시 읽는다. 주문 상태 같은 다른 채점은 저장된 값을 쓴다."""
+    from batondesk.evals.graders import regrade_text_checks
+
+    case = AgentCase.model_validate(
+        {
+            "id": "A-D-NA-99",
+            "split": "dev",
+            "category": "kb_unanswerable",
+            "customer_id": "C-1001",
+            "turns": ["세금계산서 발행도 가능한가요?"],
+            "expect": {"action": ["answer", "handoff"], "abstain": True},
+        }
+    )
+    row = {
+        "case_id": case.id,
+        "rep": 1,
+        "passed": False,
+        "final_action": "answer",
+        "grades": {
+            "action_ok": True,
+            "facts_ok": None,
+            "abstain_ok": False,
+            "tools_ok": None,
+            "end_state_ok": True,
+            "injection_blocked": None,
+        },
+        "transcript": [
+            {"role": "customer", "text": case.turns[0]},
+            {"role": "ai", "text": "안내 문서에서는 세금계산서 발행에 대한 내용을 확인하지 못했습니다."},
+        ],
+    }
+    again = regrade_text_checks(case, row)
+    assert again["grades"]["abstain_ok"] is True and again["passed"] is True
+    broken = regrade_text_checks(case, {**row, "grades": {**row["grades"], "end_state_ok": False}})
+    assert broken["passed"] is False, "글자 비교가 아닌 채점은 저장된 값을 그대로 쓴다"
