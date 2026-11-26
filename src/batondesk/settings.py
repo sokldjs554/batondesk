@@ -75,7 +75,10 @@ class Settings(BaseSettings):
 
     @property
     def resolved_git_sha(self) -> str:
-        return self.git_sha or os.environ.get("RENDER_GIT_COMMIT") or os.environ.get("GITHUB_SHA") or "unknown"
+        # 이미지에 커밋을 넣지 않고 빌드하면(Render 의 Docker 빌드) BATONDESK_GIT_SHA 가 비거나 "unknown" 이다.
+        # 그때는 호스팅이 넣어 주는 값(RENDER_GIT_COMMIT)을 쓴다. "unknown" 을 참으로 보면 배포본이 자기 커밋을 모른다.
+        baked = self.git_sha if self.git_sha and self.git_sha != "unknown" else None
+        return baked or os.environ.get("RENDER_GIT_COMMIT") or os.environ.get("GITHUB_SHA") or "unknown"
 
 
 @lru_cache

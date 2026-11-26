@@ -17,7 +17,8 @@ COPY web ./web
 COPY eval_results ./eval_results
 
 # 설치된 패키지가 아니라 /app 의 자료를 읽게 한다.
-ARG GIT_SHA=unknown
+# CI 는 --build-arg GIT_SHA 로 커밋을 넣는다. Render 는 넣지 않으므로 비워 두고, 실행할 때 RENDER_GIT_COMMIT 을 읽는다.
+ARG GIT_SHA=""
 ENV BATONDESK_GIT_SHA=${GIT_SHA} \
     BATONDESK_KB_DIR=/app/kb \
     BATONDESK_PROMPTS_DIR=/app/prompts \

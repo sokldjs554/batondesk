@@ -310,3 +310,12 @@ def test_committed_recordings_load_and_carry_their_provenance(tmp_path: Path, ll
         assert all(t["engine"] == "anthropic" for t in view["turns"]), "기록 안의 턴은 모두 실제 모델 호출이다"
         refused = client.post(f"/v1/conversations/{listed[0]['id']}/messages", json={"text": "더 물어볼게요"})
         assert refused.status_code in (403, 409) and "저장된 상담 기록" in refused.text
+
+
+def test_release_commit_falls_back_to_the_hosting_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    """이미지에 커밋이 안 들어간 배포(Render)에서도 배포본이 자기 커밋을 말할 수 있어야 한다. 배포 검사가 이 값을 본다."""
+    monkeypatch.setenv("RENDER_GIT_COMMIT", "a" * 40)
+    monkeypatch.delenv("GITHUB_SHA", raising=False)
+    for baked in (None, "", "unknown"):
+        assert Settings(git_sha=baked, _env_file=None).resolved_git_sha == "a" * 40  # type: ignore[call-arg]
+    assert Settings(git_sha="b" * 40, _env_file=None).resolved_git_sha == "b" * 40  # type: ignore[call-arg]
