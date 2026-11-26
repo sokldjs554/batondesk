@@ -316,6 +316,7 @@ def build_agent_graph(llm: LLMClient, executor: ToolExecutor, checker: Grounding
             turn.pool.all(),
             conversation_for_check(turn.history, turn.customer_text),
             use_llm=True if draft.action == "answer" else "auto",
+            today=turn.now,
         )
         steps.extend(check_steps)
         steps.append(

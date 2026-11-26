@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any
 
 from fastapi import APIRouter, Depends, Request
@@ -9,6 +10,7 @@ from fastapi import APIRouter, Depends, Request
 from batondesk.agent.evidence import Evidence
 from batondesk.api.deps import client_key, get_service, guard_llm
 from batondesk.api.schemas import GroundingCheckRequest, KnowledgeSearch, ResolutionCheckRequest
+from batondesk.clock import KST
 from batondesk.service import ServiceError, SupportService
 
 router = APIRouter(prefix="/v1", tags=["지식 검색·판정"])
@@ -86,7 +88,8 @@ async def check_grounding(body: GroundingCheckRequest, request: Request, service
         guard_llm(service, client_key(request))
     evidence = [Evidence(id=e.id, kind=e.kind, title=e.title, text=e.text, turn_seq=0) for e in body.evidence]
     conversation = [m.model_dump() for m in body.conversation]
-    result, _ = await service.grounding_checker().check(body.answer, evidence, conversation, use_llm=body.use_llm)
+    today = datetime.combine(body.today, datetime.min.time(), tzinfo=KST) if body.today else None
+    result, _ = await service.grounding_checker().check(body.answer, evidence, conversation, use_llm=body.use_llm, today=today)
     return result.model_dump()
 
 

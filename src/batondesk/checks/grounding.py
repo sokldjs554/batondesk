@@ -14,6 +14,7 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field, ValidationError
@@ -71,8 +72,23 @@ class GroundingResult(BaseModel):
         return self.verdict == "grounded"
 
 
-def _render_input(answer: str, evidence: list[Evidence], conversation: list[dict[str, str]], flags: list[FactFlag]) -> str:
-    parts = ["<근거>"]
+WEEKDAYS = "월화수목금토일"
+
+
+def _today_text(today: datetime | None) -> str:
+    """판정기가 날짜 계산("기한까지 4일 남았습니다")을 확인하려면 오늘이 며칠인지 알아야 한다."""
+    if today is None:
+        return ""
+    return f"{today.strftime('%Y-%m-%d')} ({WEEKDAYS[today.weekday()]}) {today.month}월 {today.day}일"
+
+
+def _render_input(
+    answer: str, evidence: list[Evidence], conversation: list[dict[str, str]], flags: list[FactFlag], today: datetime | None
+) -> str:
+    parts = []
+    if today is not None:
+        parts.append(f"<오늘>{_today_text(today)}</오늘>")
+    parts.append("<근거>")
     parts.extend(e.for_model() for e in evidence)
     if not evidence:
         parts.append("(근거 없음)")
@@ -107,6 +123,7 @@ class GroundingChecker:
         conversation: list[dict[str, str]] | None = None,
         *,
         use_llm: bool | Literal["auto"] = True,
+        today: datetime | None = None,
     ) -> tuple[GroundingResult, list[dict[str, Any]]]:
         """(판정, 실행 기록 단계들)을 돌려준다.
 
@@ -118,7 +135,7 @@ class GroundingChecker:
         flags = check_facts(
             answer,
             [(f"{e.title}\n{e.text}", e.kind == "tool") for e in evidence],
-            extra_context=customer_said,
+            extra_context=f"{customer_said}\n{_today_text(today)}",
         )
         flag_dicts = [f.as_dict() for f in flags]
         hard = [f for f in flags if f.hard]
@@ -131,7 +148,7 @@ class GroundingChecker:
                 purpose="grounding",
                 model=self.model,
                 system=self.prompt.system,
-                messages=[{"role": "user", "content": _render_input(answer, evidence, conversation, flags)}],
+                messages=[{"role": "user", "content": _render_input(answer, evidence, conversation, flags, today)}],
                 output_schema=GROUNDING_SCHEMA,
                 max_tokens=self.max_tokens,
                 effort=self.effort,

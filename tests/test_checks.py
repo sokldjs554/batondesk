@@ -138,3 +138,16 @@ async def test_resolution_uses_the_model_and_survives_its_failure(prompts: Promp
     assert unknown.status == "unknown" and not unknown.counted and steps[-1]["type"] == "check_error"
     none, _ = await ResolutionChecker(None, prompts.get("resolution"), "m").check(messages)
     assert none.status == "unknown"
+
+
+async def test_today_is_given_to_the_judge_and_to_the_rules(prompts: PromptRegistry) -> None:
+    from datetime import datetime
+
+    from batondesk.clock import KST
+
+    today = datetime(2026, 11, 20, 10, 0, tzinfo=KST)
+    llm = QueueLLM([fake_final({"claims": []})])
+    await _checker(llm, prompts).check("오늘 기준으로 4일 남았습니다.", [ORDER], today=today)
+    assert "<오늘>2026-11-20 (금) 11월 20일</오늘>" in llm.requests[0].messages[0]["content"]
+    flags = check_facts("오늘 11월 20일 기준으로 안내드립니다.", [], extra_context="2026-11-20 (금) 11월 20일")
+    assert flags == []

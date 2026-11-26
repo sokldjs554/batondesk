@@ -17,7 +17,7 @@ from batondesk.agent.evidence import Evidence
 from batondesk.checks.facts import check_facts
 from batondesk.checks.grounding import GroundingChecker
 from batondesk.checks.resolution import RESOLVED, ResolutionChecker
-from batondesk.evals.data import read_jsonl, suite_path
+from batondesk.evals.data import EVAL_NOW, read_jsonl, suite_path
 from batondesk.evals.graders import normalize
 from batondesk.evals.stats import cluster_ci, group
 from batondesk.kb.retriever import KnowledgeBase, SearchMode
@@ -146,7 +146,7 @@ async def eval_grounding(
         flags = check_facts(
             item["answer"],
             [(f"{e.title}\n{e.text}", e.kind == "tool") for e in evidence],
-            extra_context="\n".join(m["text"] for m in item["conversation"] if m["role"] == "고객"),
+            extra_context="\n".join(m["text"] for m in item["conversation"] if m["role"] == "고객") + "\n2026-11-20 11월 20일",
         )
         row: dict[str, Any] = {
             "id": item["id"],
@@ -159,7 +159,7 @@ async def eval_grounding(
         }
         if use_llm:
             async with semaphore:
-                result, steps = await checker.check(item["answer"], evidence, item["conversation"], use_llm=True)
+                result, steps = await checker.check(item["answer"], evidence, item["conversation"], use_llm=True, today=EVAL_NOW)
             all_steps.extend(steps)
             if result.mode != "llm+rules":
                 errors.append(
