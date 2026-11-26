@@ -9,7 +9,7 @@
 | 1 | 고객이 질문한다 | 웹 채팅·임베드 위젯·API·웹훅으로 메시지가 들어온다 | `api/routers/conversations.py`, `api/routers/ops.py`(웹훅) |
 | 2 | 맥락 확인과 지식 검색 | 이전 대화와 앞서 확보한 근거를 모으고, 메시지로 지식 문서를 미리 검색한다. 후속 질문이면 앞 메시지를 붙인 질의도 함께 검색한다 | `agent/graph.py` `prepare`, `kb/retriever.py` |
 | 3 | 도구 호출 | 모델이 허용된 도구(주문 조회·배송 조회·취소/반품 확인·추가 검색)를 부른다. 실행기는 허용 목록·고객 범위·확인 코드를 검사한다 | `agent/graph.py` `model`·`tools`, `tools/executor.py` |
-| 4 | 근거 있는 답변과 출처 | 모델이 정해진 형식(JSON)으로 답과 인용한 근거 ID를 낸다. 근거 검사를 통과하면 고객에게 나간다 | `agent/protocol.py`, `checks/grounding.py`, `agent/graph.py` `verify` |
+| 4 | 근거 있는 답변과 출처 | 모델이 `respond` 도구로 답과 인용한 근거 ID를 제출한다. 근거 검사를 통과하면 고객에게 나간다 | `agent/protocol.py`, `checks/grounding.py`, `agent/graph.py` `verify` |
 | 5 | 보류와 인계 | 근거와 어긋나면 내보내지 않고 다시 쓰게 한다. 또 어긋나거나, 모델이 인계를 고르거나, 처리 중 오류가 나면 인계 티켓을 만든다 | `agent/graph.py` `revise`·`fallback`, `service.py` `_open_handoff` |
 | 6 | 상담원 확인 | 상담원 화면에서 인계 요약, 대화, 근거, 도구 결과, 보내지 않은 AI 초안을 보고 답한다 | `api/routers/handoffs.py`, `web/desk.html` |
 | 7 | 운영 확인 | 해결률·인계율·근거 보류·지연 시간·모델 호출·도구 실패를 본다 | `obs/metrics.py`, `api/routers/ops.py`, `web/ops.html` |
@@ -22,9 +22,10 @@
 graph TD
   start([시작]) --> prepare
   prepare[prepare<br/>대화 맥락 + 지식 미리 검색] --> model
-  model[model<br/>Claude 호출: 도구 + 출력 스키마] -. 도구 호출 .-> tools
+  model[model<br/>Claude 호출: 조회 도구 + 응답 제출 도구] -. 도구 호출 .-> tools
   tools[tools<br/>허용 목록·고객 범위·확인 코드 검사 후 실행] --> model
-  model -. 최종 출력 .-> verify
+  model -. respond 도구로 제출 .-> verify
+  model -. 글만 쓰고 끝냄 .-> nudge[nudge<br/>응답 제출 도구로 다시 내라고 요청] --> model
   model -. 오류·거절·잘림 .-> fallback
   model -. 도구 반복 한도 .-> limit --> fallback
   verify[verify<br/>근거 검사: 규칙 + LLM 주장 판정] -. 통과 .-> done([끝])
@@ -34,7 +35,7 @@ graph TD
   fallback[fallback<br/>모델 없이 만드는 안전한 인계] --> done
 ```
 
-고객에게 나가는 글은 `verify` 를 지나거나 `fallback` 이 만든 정해진 문구뿐이다.
+고객에게 나가는 글은 `verify` 를 지난 `respond` 제출이거나 `fallback` 이 만든 정해진 문구뿐이다. 도구 없이 쓴 글은 나가지 않는다.
 
 ## 구성 요소
 
@@ -74,7 +75,7 @@ FastAPI 앱 (src/batondesk/api)
 | 도구 정의(허용 목록) | `src/batondesk/tools/specs.py` |
 | 도구 실행기(고객 범위, 확인 코드) | `src/batondesk/tools/executor.py` |
 | 주문 시스템 클라이언트(제한 시간, 재시도) | `src/batondesk/tools/client.py` |
-| Claude 호출(캐시, 구조화 출력, 재시도) | `src/batondesk/llm/anthropic_llm.py` |
+| Claude 호출(캐시, strict 도구, 구조화 출력, 재시도) | `src/batondesk/llm/anthropic_llm.py` |
 | 근거 일치 판정 | `src/batondesk/checks/grounding.py`, `checks/facts.py` |
 | 해결 여부 판정 | `src/batondesk/checks/resolution.py` |
 | 지식 검색 | `src/batondesk/kb/retriever.py`, `bm25.py`, `charngram.py`, `tokenizer.py` |

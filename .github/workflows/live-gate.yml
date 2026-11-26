@@ -1,0 +1,54 @@
+# 배포본에 대한 판정. `ci` 는 코드에 대한 판정이고, 이 워크플로는 공개 주소가 이 커밋을 실제로 서빙하는지 본다.
+#
+# 저장소 변수 PUBLIC_DEMO_URL (Settings → Secrets and variables → Actions → Variables) 에 공개 주소를 넣어야 돈다.
+# 없으면 건너뛰고 그 사실을 Summary 에 적는다 — 배포하지 않은 것을 통과로 보이게 하지 않기 위해서다.
+name: live-gate
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      with_model:
+        description: "실제 모델로 문의 한 건을 보내 본다(서버의 호출 한도에서 차감)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: live-gate
+  cancel-in-progress: true # 연달아 push 하면 마지막 커밋만 기다린다
+
+jobs:
+  public-demo:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PUBLIC_DEMO_URL: ${{ vars.PUBLIC_DEMO_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: 공개 주소 확인
+        id: url
+        run: |
+          if [ -z "$PUBLIC_DEMO_URL" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "### 건너뜀: 공개 데모 주소(PUBLIC_DEMO_URL)가 설정되지 않았습니다 — 배포 전" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: 이 커밋이 배포될 때까지 기다린 뒤 검사
+        if: steps.url.outputs.configured == 'true'
+        run: |
+          python3 scripts/live_check.py "$PUBLIC_DEMO_URL" --sha "$GITHUB_SHA" --out live-check.json \
+            ${{ inputs.with_model && '--with-model' || '' }} | tee live-check.log
+          {
+            echo "### 공개 데모 검사: $PUBLIC_DEMO_URL @ ${GITHUB_SHA:0:8}"
+            echo '```'
+            grep -E "^(PASS|FAIL)" live-check.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.url.outputs.configured == 'true'
+        with:
+          name: live-check
+          path: live-check.json
+          if-no-files-found: ignore

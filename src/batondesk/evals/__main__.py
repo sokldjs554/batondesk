@@ -225,6 +225,33 @@ def cmd_gate(args: argparse.Namespace) -> int:
     return 1 if problems else 0
 
 
+def cmd_failures(args: argparse.Namespace) -> int:
+    """실패한 실행을 사람이 읽기 좋게 펼친다. 프롬프트를 고치기 전에 원인을 분류하려고 쓴다."""
+    rows = read_jsonl(Path(args.run) / "results.jsonl")
+    shown = 0
+    for row in rows:
+        if row["passed"] is not False or (args.case and row["case_id"] not in args.case):
+            continue
+        if not args.all_reps and row["rep"] != min(r["rep"] for r in rows if r["case_id"] == row["case_id"] and r["passed"] is False):
+            continue
+        shown += 1
+        fails = sum(1 for r in rows if r["case_id"] == row["case_id"] and r["passed"] is False)
+        total = sum(1 for r in rows if r["case_id"] == row["case_id"])
+        print(
+            f"\n=== {row['case_id']} [{row['category']}] 반복 {row['rep']} · 실패 {fails}/{total} · 행동 {row['final_action']} · 인계 사유 {row['handoff_reason']}"
+        )
+        print("  실패 이유: " + " / ".join(row["fail_reasons"]))
+        print("  도구: " + (", ".join(f"{t['name']}({t['status']})" for t in row["tools"]) or "없음"))
+        for message in row["transcript"]:
+            if message["role"] in ("customer", "ai", "agent"):
+                print(f"  [{message['role']}] {message['text'][: args.width]}")
+    errors = read_jsonl(Path(args.run) / "errors.jsonl") if (Path(args.run) / "errors.jsonl").exists() else []
+    print(f"\n실패 문항 {shown}건 표시 · 인프라 오류 {len(errors)}건")
+    for error in errors:
+        print(f"  오류: {error}")
+    return 0
+
+
 def cmd_freeze(_: argparse.Namespace) -> int:
     print(json.dumps(freeze(DATA), ensure_ascii=False, indent=2))
     return 0
@@ -294,6 +321,13 @@ def main() -> int:
     gate.add_argument("run")
     gate.add_argument("--gate", required=True)
     gate.set_defaults(func=cmd_gate)
+
+    failures = sub.add_parser("failures", help="실패한 실행의 대화를 펼쳐 보기")
+    failures.add_argument("run")
+    failures.add_argument("--case", action="append", default=[])
+    failures.add_argument("--all-reps", action="store_true")
+    failures.add_argument("--width", type=int, default=400)
+    failures.set_defaults(func=cmd_failures)
 
     sub.add_parser("freeze", help="평가용 자료의 해시를 기록").set_defaults(func=cmd_freeze)
     sub.add_parser("check-frozen", help="평가용 자료가 바뀌지 않았는지 확인").set_defaults(func=cmd_check_frozen)

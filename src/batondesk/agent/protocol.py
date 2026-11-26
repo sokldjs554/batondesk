@@ -1,7 +1,11 @@
 """에이전트가 내놓는 최종 출력의 형식과, 모델에 보내는 메시지 조립.
 
-출력은 structured outputs 로 고정한다. 고객에게 보이는 글(message)과 시스템이 읽는 판단
-(action, 인계 사유, 인용한 근거)을 분리해 두어야 인계·근거 검사·집계를 코드로 처리할 수 있다.
+최종 출력은 `respond` 도구 호출로 받는다(strict 스키마). 고객에게 보이는 글(message)과 시스템이 읽는
+판단(action, 인계 사유, 인용한 근거)을 분리해 두어야 인계·근거 검사·집계를 코드로 처리할 수 있다.
+
+처음에는 structured outputs(JSON 출력 형식)로 받았다. 실제 API로 돌려 보니 JSON 출력 형식과 도구를
+함께 준 요청에서 모델이 필요한 도구 호출을 건너뛰고 빈 답을 내는 경우가 있었다(공급자 문서에도 적힌
+동작). 그래서 "답도 도구로 제출"하게 바꿨다 — 모델은 처음부터 끝까지 도구 호출 방식으로만 움직인다.
 """
 
 from __future__ import annotations
@@ -72,6 +76,23 @@ AGENT_OUTPUT_SCHEMA: dict[str, Any] = {
     "required": ["action", "message", "citations", "handoff_reason", "handoff_summary", "kb_issue"],
     "additionalProperties": False,
 }
+
+
+RESPOND_TOOL = "respond"
+RESPOND_TOOL_DESCRIPTION = (
+    "이번 턴의 최종 응답을 제출한다. 고객에게 보낼 글은 반드시 이 도구로만 내보낸다. "
+    "필요한 근거(지식 문서, 주문 조회 결과)를 모두 확보한 뒤 마지막에 한 번 부른다. "
+    "다른 도구와 같은 응답에서 함께 부르지 않는다."
+)
+
+
+def respond_tool_definition(description: str | None = None) -> dict[str, Any]:
+    return {
+        "name": RESPOND_TOOL,
+        "description": description or RESPOND_TOOL_DESCRIPTION,
+        "strict": True,
+        "input_schema": AGENT_OUTPUT_SCHEMA,
+    }
 
 
 class AgentOutput(BaseModel):

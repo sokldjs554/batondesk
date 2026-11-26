@@ -1,6 +1,7 @@
 """에이전트 한 턴의 흐름 (LangGraph 상태 그래프).
 
     prepare ─▶ model ─┬─▶ tools ─▶ model …        (도구 호출이 있으면 반복)
+                      ├─▶ nudge ─▶ model           (응답 제출 도구 없이 끝내면 다시 요청)
                       ├─▶ verify ─┬─▶ END          (근거와 맞음)
                       │           ├─▶ revise ─▶ model   (어긋남: 한 번 다시 쓰게 함)
                       │           └─▶ fallback ─▶ END   (다시 써도 어긋남: 상담원에게)
@@ -16,7 +17,6 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import re
 import time
 from collections.abc import Awaitable, Callable
@@ -29,11 +29,12 @@ from pydantic import ValidationError
 
 from batondesk.agent.evidence import Evidence, EvidencePool
 from batondesk.agent.protocol import (
-    AGENT_OUTPUT_SCHEMA,
     MODEL_HANDOFF_REASONS,
+    RESPOND_TOOL,
     AgentOutput,
     context_block,
     customer_block,
+    respond_tool_definition,
 )
 from batondesk.checks.grounding import GroundingChecker, GroundingResult
 from batondesk.llm.base import LLMClient, LLMError, LLMRequest, LLMResponse
@@ -46,6 +47,7 @@ ProgressFn = Callable[[dict[str, Any]], Awaitable[None]]
 _FOLLOWUP_HINT = re.compile(r"^(그럼|그러면|그건|그거|그게|이건|이거|거기|아까|그리고|근데|그런데|혹시 그|그 ?경우)")
 MAX_CARRIED_KB = 6
 MAX_CARRIED_TOOL = 6
+MAX_NUDGES = 2
 
 FALLBACK_MESSAGES = {
     "ungrounded_answer": "죄송합니다. 정확한 안내를 위해 확인이 더 필요한 내용이라 상담원에게 연결해 드리겠습니다. 지금까지의 대화 내용은 함께 전달합니다.",
@@ -114,6 +116,9 @@ class AgentState(TypedDict, total=False):
     draft: AgentOutput | None
     grounding: GroundingResult | None
     revisions: int
+    nudges: int
+    respond_call_id: str | None
+    route: str
     blocked: list[dict[str, Any]]
     final: AgentOutput | None
     handoff_source: str | None
@@ -157,7 +162,8 @@ def conversation_for_check(history: list[HistoryItem], customer_text: str) -> li
 
 
 def build_agent_graph(llm: LLMClient, executor: ToolExecutor, checker: GroundingChecker, config: TurnConfig) -> Any:
-    tools = tool_definitions(config.prompt.tool_descriptions)
+    descriptions = config.prompt.tool_descriptions
+    tools = [*tool_definitions(descriptions), respond_tool_definition(descriptions.get(RESPOND_TOOL))]
 
     async def prepare(state: AgentState) -> dict[str, Any]:
         turn = state["turn"]
@@ -219,6 +225,7 @@ def build_agent_graph(llm: LLMClient, executor: ToolExecutor, checker: Grounding
             "steps": [step],
             "rounds": 0,
             "revisions": 0,
+            "nudges": 0,
             "blocked": [],
             "fresh_ids": [e.id for e in fresh],
             "injected": False,
@@ -232,7 +239,6 @@ def build_agent_graph(llm: LLMClient, executor: ToolExecutor, checker: Grounding
             system=config.prompt.system,
             messages=state["messages"],
             tools=tools,
-            output_schema=AGENT_OUTPUT_SCHEMA,
             max_tokens=config.max_tokens,
             effort=config.effort,
         )
@@ -241,32 +247,60 @@ def build_agent_graph(llm: LLMClient, executor: ToolExecutor, checker: Grounding
             response = await llm.complete(request)
         except LLMError as exc:
             steps.append({"type": "llm_error", "purpose": "agent", "kind": exc.kind, "attempts": exc.attempts, "error": str(exc)[:300]})
-            return {"steps": steps, "response": None, "error": f"llm_{exc.kind}", "fail_reason": "agent_error"}
+            return {"steps": steps, "response": None, "error": f"llm_{exc.kind}", "fail_reason": "agent_error", "route": "fallback"}
         steps.append(response.trace("agent"))
-        update: dict[str, Any] = {"steps": steps, "response": response, "engine": response.engine}
-        if response.stop_reason == "tool_use" and response.tool_calls:
-            return update
+        update: dict[str, Any] = {"steps": steps, "response": response, "engine": response.engine, "respond_call_id": None}
         if response.stop_reason == "refusal":
-            return {**update, "error": f"refusal:{response.refusal_category}", "fail_reason": "agent_error"}
+            return {**update, "error": f"refusal:{response.refusal_category}", "fail_reason": "agent_error", "route": "fallback"}
         if response.stop_reason == "max_tokens":
-            return {**update, "error": "truncated", "fail_reason": "agent_error"}
+            return {**update, "error": "truncated", "fail_reason": "agent_error", "route": "fallback"}
+
+        respond_calls = [c for c in response.tool_calls if c.name == RESPOND_TOOL]
+        other_calls = [c for c in response.tool_calls if c.name != RESPOND_TOOL]
+        if not response.tool_calls:
+            # 응답 제출 도구 없이 글만 쓰고 끝냈다. 그 글은 검사를 거치지 않았으므로 고객에게 내보내지 않는다.
+            if state["nudges"] >= MAX_NUDGES:
+                return {**update, "error": "no_final_response", "fail_reason": "agent_error", "route": "fallback"}
+            return {**update, "route": "nudge"}
+        if other_calls or len(respond_calls) > 1:
+            # 조회 도구와 응답 제출을 한 번에 불렀다면 조회만 실행하고, 결과를 본 뒤 다시 제출하게 한다.
+            return {**update, "route": "tools" if state["rounds"] < config.max_tool_rounds else "limit"}
+
+        call = respond_calls[0]
         try:
-            draft = AgentOutput.model_validate(json.loads(response.text))
+            draft = AgentOutput.model_validate(call.input)
+            if not draft.message.strip():
+                raise ValueError("message 가 비어 있습니다")
         except (ValueError, ValidationError) as exc:
-            return {**update, "error": f"bad_output:{type(exc).__name__}", "fail_reason": "agent_error"}
+            steps.append({"type": "respond_rejected", "error": f"{type(exc).__name__}: {str(exc)[:200]}"})
+            if state["rounds"] >= config.max_tool_rounds:
+                return {**update, "steps": steps, "error": "bad_output", "fail_reason": "agent_error", "route": "fallback"}
+            return {**update, "steps": steps, "route": "tools"}
         if draft.action != "handoff":
             draft.handoff_reason, draft.handoff_summary = "none", ""
         elif draft.handoff_reason not in MODEL_HANDOFF_REASONS or draft.handoff_reason == "none":
             draft.handoff_reason = "needs_human_review"
-        return {**update, "draft": draft}
+        return {**update, "draft": draft, "respond_call_id": call.id, "route": "verify"}
 
     def after_model(state: AgentState) -> str:
-        if state.get("fail_reason"):
-            return "fallback"
-        response = state.get("response")
-        if response is not None and response.stop_reason == "tool_use" and response.tool_calls:
-            return "tools" if state["rounds"] < config.max_tool_rounds else "limit"
-        return "verify"
+        return state["route"]
+
+    async def nudge(state: AgentState) -> dict[str, Any]:
+        response = state["response"]
+        assert response is not None
+        messages = list(state["messages"])
+        messages.append({"role": "assistant", "content": response.raw_content})
+        messages.append(
+            {
+                "role": "user",
+                "content": (
+                    "<시스템_안내>\n방금 쓴 글은 고객에게 전달되지 않았습니다. 고객에게 보낼 응답은 respond 도구로 제출해야 합니다. "
+                    "확인이 더 필요하면 먼저 필요한 도구를 부르고, 준비가 되면 respond 를 부르세요.\n</시스템_안내>"
+                ),
+            }
+        )
+        steps = [*state["steps"], {"type": "nudge", "reason": "응답 제출 도구 없이 턴을 끝냄"}]
+        return {"messages": messages, "steps": steps, "nudges": state["nudges"] + 1}
 
     async def limit(state: AgentState) -> dict[str, Any]:
         return {"error": "tool_round_limit", "fail_reason": "agent_error"}
@@ -275,21 +309,29 @@ def build_agent_graph(llm: LLMClient, executor: ToolExecutor, checker: Grounding
         response = state["response"]
         assert response is not None
         ctx = state["ctx"]
-        results = await asyncio.gather(*(executor.run(c.name, c.input, ctx) for c in response.tool_calls))
+        action_calls = [c for c in response.tool_calls if c.name != RESPOND_TOOL]
+        results = await asyncio.gather(*(executor.run(c.name, c.input, ctx) for c in action_calls))
+        by_id = {call.id: result for call, result in zip(action_calls, results, strict=True)}
         steps = list(state["steps"])
         steps.extend(r.trace() for r in results)
+        rejected = next((s["error"] for s in reversed(steps) if s["type"] == "respond_rejected"), None) if not action_calls else None
+        # 한 번의 응답에 든 도구 호출의 결과는 한 user 메시지에 모두 담는다.
+        content: list[dict[str, Any]] = []
+        for call in response.tool_calls:
+            if call.id in by_id:
+                result = by_id[call.id]
+                content.append({"type": "tool_result", "tool_use_id": call.id, "content": result.content, "is_error": result.is_error})
+            elif rejected:
+                message = (
+                    f"응답이 형식에 맞지 않아 제출되지 않았습니다({rejected}). 고객에게 보낼 message 를 채워 respond 를 다시 부르세요."
+                )
+                content.append({"type": "tool_result", "tool_use_id": call.id, "content": message, "is_error": True})
+            else:
+                message = "아직 제출되지 않았습니다. 함께 부른 도구의 결과를 확인한 뒤 respond 를 한 번만 다시 부르세요."
+                content.append({"type": "tool_result", "tool_use_id": call.id, "content": message, "is_error": True})
         messages = list(state["messages"])
         messages.append({"role": "assistant", "content": response.raw_content})
-        # 한 번의 응답에 든 도구 호출의 결과는 한 user 메시지에 모두 담는다.
-        messages.append(
-            {
-                "role": "user",
-                "content": [
-                    {"type": "tool_result", "tool_use_id": call.id, "content": result.content, "is_error": result.is_error}
-                    for call, result in zip(response.tool_calls, results, strict=True)
-                ],
-            }
-        )
+        messages.append({"role": "user", "content": content})
         return {"steps": steps, "messages": messages, "rounds": state["rounds"] + 1}
 
     async def verify(state: AgentState) -> dict[str, Any]:
@@ -344,19 +386,27 @@ def build_agent_graph(llm: LLMClient, executor: ToolExecutor, checker: Grounding
     async def revise(state: AgentState) -> dict[str, Any]:
         response = state["response"]
         result = state["grounding"]
-        assert response is not None and result is not None
+        call_id = state.get("respond_call_id")
+        assert response is not None and result is not None and call_id is not None
         feedback = "\n".join(f"- {p}" for p in result.problems) or "- 근거로 확인되지 않는 내용이 있습니다."
         messages = list(state["messages"])
         messages.append({"role": "assistant", "content": response.raw_content})
         messages.append(
             {
                 "role": "user",
-                "content": (
-                    "<검증_결과>\n방금 작성한 답변은 근거 검사를 통과하지 못해 고객에게 보내지 않았습니다.\n"
-                    f"{feedback}\n"
-                    "근거에 있는 내용만으로 다시 작성하세요. 필요한 근거가 없으면 도구로 확인하고, "
-                    "그래도 답할 수 없으면 handoff 하세요.\n</검증_결과>"
-                ),
+                "content": [
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": call_id,
+                        "is_error": True,
+                        "content": (
+                            "제출한 응답은 근거 검사를 통과하지 못해 고객에게 보내지 않았습니다.\n"
+                            f"{feedback}\n"
+                            "근거에 있는 내용만으로 다시 작성해 respond 로 제출하세요. 필요한 근거가 없으면 도구로 확인하고, "
+                            "그래도 답할 수 없으면 action 을 handoff 로 하세요."
+                        ),
+                    }
+                ],
             }
         )
         steps = [*state["steps"], {"type": "revise", "problems": result.problems}]
@@ -398,6 +448,7 @@ def build_agent_graph(llm: LLMClient, executor: ToolExecutor, checker: Grounding
     builder.add_node("prepare", prepare)
     builder.add_node("model", model)
     builder.add_node("tools", run_tools)
+    builder.add_node("nudge", nudge)
     builder.add_node("limit", limit)
     builder.add_node("verify", verify)
     builder.add_node("revise", revise)
@@ -405,7 +456,10 @@ def build_agent_graph(llm: LLMClient, executor: ToolExecutor, checker: Grounding
     builder.add_node("fallback", fallback)
     builder.add_edge(START, "prepare")
     builder.add_edge("prepare", "model")
-    builder.add_conditional_edges("model", after_model, {"tools": "tools", "limit": "limit", "verify": "verify", "fallback": "fallback"})
+    builder.add_conditional_edges(
+        "model", after_model, {"tools": "tools", "nudge": "nudge", "limit": "limit", "verify": "verify", "fallback": "fallback"}
+    )
+    builder.add_edge("nudge", "model")
     builder.add_edge("tools", "model")
     builder.add_edge("limit", "fallback")
     builder.add_conditional_edges("verify", after_verify, {"done": END, "revise": "revise", "give_up": "give_up"})
@@ -420,6 +474,7 @@ PROGRESS_LABEL = {
     "tools": "주문 시스템을 확인했습니다",
     "verify": "답변을 근거와 대조했습니다",
     "revise": "근거와 맞지 않아 다시 작성합니다",
+    "nudge": "응답을 다시 정리합니다",
     "fallback": "상담원 연결을 준비합니다",
 }
 
@@ -435,8 +490,8 @@ async def run_turn(graph: Any, turn: TurnInput, on_progress: ProgressFn | None =
                 continue
             if node == "model":
                 response = state.get("response")
-                if response is not None and response.tool_calls:
-                    names = ", ".join(c.name for c in response.tool_calls)
+                names = ", ".join(c.name for c in response.tool_calls if c.name != RESPOND_TOOL) if response is not None else ""
+                if names:
                     await on_progress({"stage": "tool_call", "label": f"확인 중: {names}"})
             elif node in PROGRESS_LABEL:
                 await on_progress({"stage": node, "label": PROGRESS_LABEL[node]})

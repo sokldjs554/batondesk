@@ -2,8 +2,8 @@
 
 평가 수십 건을 보낸 뒤에야 요청 형식이 틀렸다는 걸 알게 되는 일을 막는다. 세 가지를 본다:
 1. 판정용 호출: structured outputs 만 쓰는 요청이 스키마대로 돌아오는가.
-2. 에이전트용 호출: 실제 도구 정의 + 출력 스키마를 함께 보낸 요청에서 도구 호출이 나오는가.
-3. 도구 결과를 돌려준 뒤 최종 JSON이 스키마대로 나오는가.
+2. 에이전트용 호출: 실제 도구 정의를 보낸 요청에서 주문 조회 도구 호출이 나오는가.
+3. 도구 결과를 돌려준 뒤 respond 도구로 최종 응답이 스키마대로 제출되는가.
 
     ANTHROPIC_API_KEY=... python scripts/llm_smoke.py
 """
@@ -14,7 +14,7 @@ import asyncio
 import json
 import sys
 
-from batondesk.agent.protocol import AGENT_OUTPUT_SCHEMA, AgentOutput, customer_block
+from batondesk.agent.protocol import RESPOND_TOOL, AgentOutput, customer_block, respond_tool_definition
 from batondesk.checks.resolution import RESOLUTION_SCHEMA
 from batondesk.llm.anthropic_llm import AnthropicLLM
 from batondesk.llm.base import LLMError, LLMRequest, LLMResponse
@@ -57,7 +57,7 @@ async def main() -> int:
         print("   ", json.loads(judge.text))
 
         agent_prompt = prompts.get("agent", settings.agent_prompt)
-        tools = tool_definitions(agent_prompt.tool_descriptions)
+        tools = [*tool_definitions(agent_prompt.tool_descriptions), respond_tool_definition()]
         messages: list[dict] = [
             {
                 "role": "user",
@@ -74,13 +74,14 @@ async def main() -> int:
         def request() -> LLMRequest:
             return LLMRequest(
                 purpose="agent", model=settings.agent_model, system=agent_prompt.system, messages=messages, tools=tools,
-                output_schema=AGENT_OUTPUT_SCHEMA, max_tokens=settings.agent_max_tokens, effort=settings.agent_effort,
+                max_tokens=settings.agent_max_tokens, effort=settings.agent_effort,
             )  # fmt: skip
 
         first = await llm.complete(request())
         show("에이전트 호출 1", first)
-        if first.stop_reason != "tool_use" or not first.tool_calls:
-            print("   도구 호출이 나오지 않았습니다:", first.text[:300])
+        lookups = [c for c in first.tool_calls if c.name != RESPOND_TOOL]
+        if first.stop_reason != "tool_use" or not lookups:
+            print("   주문 조회 도구를 부르지 않았습니다:", first.text[:200], [(c.name, c.input) for c in first.tool_calls])
             return 1
         print("    도구 호출:", [(c.name, c.input) for c in first.tool_calls])
         messages.append({"role": "assistant", "content": first.raw_content})
@@ -96,14 +97,21 @@ async def main() -> int:
                             ensure_ascii=False,
                         ),
                     }
-                    for call in first.tool_calls
+                    for call in lookups
                 ],
             }
         )
         second = await llm.complete(request())
         show("에이전트 호출 2", second)
-        output = AgentOutput.model_validate(json.loads(second.text))
+        final = next((c for c in second.tool_calls if c.name == RESPOND_TOOL), None)
+        if final is None:
+            print("   respond 도구로 응답을 제출하지 않았습니다:", second.text[:200], [(c.name, c.input) for c in second.tool_calls])
+            return 1
+        output = AgentOutput.model_validate(final.input)
         print("   ", output.model_dump())
+        if not output.message.strip():
+            print("   message 가 비어 있습니다")
+            return 1
         if second.usage.cache_read_input_tokens == 0:
             print("    참고: 두 번째 호출에서 캐시 읽기가 0입니다(시스템 프롬프트가 캐시 최소 길이보다 짧을 수 있음).")
     except LLMError as exc:

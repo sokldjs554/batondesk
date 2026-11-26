@@ -50,6 +50,11 @@ def fake_final(payload: dict[str, Any], **kwargs: Any) -> LLMResponse:
     return fake_response(text=json.dumps(payload, ensure_ascii=False), **kwargs)
 
 
+def fake_respond(payload: dict[str, Any], **kwargs: Any) -> LLMResponse:
+    """에이전트의 최종 응답: respond 도구 호출."""
+    return fake_response(tool_calls=[("respond", payload)], **kwargs)
+
+
 def agent_payload(
     message: str,
     *,
@@ -133,7 +138,7 @@ class RuleLLM:
         match = _CUSTOMER_RE.search(joined)
         customer = match.group(1) if match else joined
         if "상담원" in customer or "사람" in customer:
-            return fake_final(
+            return fake_respond(
                 agent_payload(
                     "상담원에게 연결해 드리겠습니다. 지금까지의 대화 내용을 함께 전달합니다.",
                     action="handoff",
@@ -154,8 +159,8 @@ class RuleLLM:
             body = passage.group(3).strip()
             sentences = re.split(r"(?<=[.다요])\s+", body)
             answer = " ".join(sentences[:2]).strip()
-            return fake_final(agent_payload(answer, citations=[passage.group(1)]), model=self.engine, engine=self.engine)
-        return fake_final(
+            return fake_respond(agent_payload(answer, citations=[passage.group(1)]), model=self.engine, engine=self.engine)
+        return fake_respond(
             agent_payload(
                 "죄송합니다. 이 문의는 제가 가진 안내 문서에서 답을 찾지 못했습니다. 상담원에게 연결해 드리겠습니다.",
                 action="handoff",
@@ -174,7 +179,7 @@ class RuleLLM:
             except ValueError:
                 parsed.append(({}, True))
         if any(is_error for _, is_error in parsed):
-            return fake_final(
+            return fake_respond(
                 agent_payload(
                     "죄송합니다. 지금 주문 시스템에서 정보를 불러오지 못했습니다. 상담원에게 연결해 드리겠습니다.",
                     action="handoff",
@@ -189,15 +194,15 @@ class RuleLLM:
         result = data.get("result", {})
         if result.get("found") is False:
             message = "이 계정에서 해당 주문을 찾지 못했습니다. 주문번호를 다시 확인해 주시겠어요?"
-            return fake_final(agent_payload(message, action="ask", citations=[evidence_id]), model=self.engine, engine=self.engine)
+            return fake_respond(agent_payload(message, action="ask", citations=[evidence_id]), model=self.engine, engine=self.engine)
         if "orders" in result:
             listing = ", ".join(f"{o['order_id']}({o['status_label']})" for o in result["orders"][:5])
             message = f"최근 주문은 다음과 같습니다: {listing}. 어느 주문에 대해 도와드릴까요?"
-            return fake_final(agent_payload(message, action="ask", citations=[evidence_id]), model=self.engine, engine=self.engine)
+            return fake_respond(agent_payload(message, action="ask", citations=[evidence_id]), model=self.engine, engine=self.engine)
         if "events" in result:
             last = result["events"][-1] if result["events"] else None
             where = f"{last['location']}에서 {last['status']} 상태입니다" if last else "아직 출고 전입니다"
             message = f"주문 {result.get('order_id')}은(는) 현재 {result.get('status_label')}이며, {where}."
         else:
             message = f"주문 {result.get('order_id')}은(는) 현재 {result.get('status_label')} 상태입니다."
-        return fake_final(agent_payload(message, citations=[evidence_id]), model=self.engine, engine=self.engine)
+        return fake_respond(agent_payload(message, citations=[evidence_id]), model=self.engine, engine=self.engine)

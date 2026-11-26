@@ -13,7 +13,7 @@ API 키가 GitHub Actions 시크릿에만 있는데, 작업 당시 저장소로�
 
 | 항목 | 상태 |
 |---|---|
-| 백엔드, 에이전트 그래프, 판정 API, 예시 주문 시스템 | 구현. 테스트 142건 통과(모델 대역 사용) |
+| 백엔드, 에이전트 그래프, 판정 API, 예시 주문 시스템 | 구현. 테스트 144건 통과(모델 대역 사용) |
 | 화면(고객·상담원·운영·위젯) | 구현. 브라우저 점검 118항목 통과(PC 1440×900, 모바일 390×844, 규칙 엔진) |
 | 검색 품질 | **측정됨**: 평가용 40문항에서 5위 내 적중 77.5% |
 | 평가 자료(284문항)와 실행기 | 준비됨. 평가용 동결 |
@@ -80,7 +80,7 @@ ANTHROPIC_API_KEY=… batondesk serve             # 실제 모델
 <http://localhost:8000> → 고객 화면(`/chat`) → 상담원 화면(`/desk`) → 운영 화면(`/ops`). API 문서는 `/docs`.
 
 ```bash
-pytest                                             # 테스트 142건
+pytest                                             # 테스트 144건
 tests/e2e/run.sh                                   # 브라우저 화면 점검
 python -m batondesk.evals retrieval --split test   # 검색 평가
 docker build -t batondesk . && docker run -p 8000:8000 batondesk

@@ -9,7 +9,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from batondesk.api.app import create_app
-from batondesk.llm.scripted import QueueLLM, agent_payload, fake_final, fake_response
+from batondesk.llm.scripted import QueueLLM, agent_payload, fake_final, fake_respond, fake_response
 from batondesk.service import SupportService
 from batondesk.settings import Settings
 
@@ -32,7 +32,7 @@ def _say(client: TestClient, cid: str, text: str) -> dict:
 def test_answer_with_sources_and_trace(client: TestClient, llm: QueueLLM) -> None:
     cid = _start(client)
     llm.push(
-        fake_final(agent_payload("처음에 배송비를 냈다면 3,000원입니다.", citations=["K1"])), fake_final(SUPPORTED), fake_final(RESOLVED)
+        fake_respond(agent_payload("처음에 배송비를 냈다면 3,000원입니다.", citations=["K1"])), fake_final(SUPPORTED), fake_final(RESOLVED)
     )
     result = _say(client, cid, "반품 배송비 얼마예요?")
     message = result["message"]
@@ -63,7 +63,7 @@ def test_handoff_lifecycle(client: TestClient, llm: QueueLLM) -> None:
     cid = _start(client)
     llm.push(
         fake_response(tool_calls=[("get_order", {"order_id": "BM-24031"})]),
-        fake_final(
+        fake_respond(
             agent_payload(
                 "반품 기간이 지나 제가 처리해 드릴 수 없는 건이라 상담원에게 연결해 드리겠습니다.",
                 action="handoff", handoff_reason="policy_exception",
@@ -110,7 +110,7 @@ def test_agent_can_return_the_conversation_to_ai(client: TestClient, llm: QueueL
     handoff = client.post(f"/v1/conversations/{cid}/handoff").json()["handoff"]
     assert handoff["reason"] == "customer_request" and handoff["source"] == "customer"
     client.post(f"/v1/handoffs/{handoff['id']}/resolve", json={"note": "", "return_to_ai": True})
-    llm.push(fake_final(agent_payload("7일 이내에 신청하실 수 있습니다.", citations=["K1"])), fake_final(SUPPORTED))
+    llm.push(fake_respond(agent_payload("7일 이내에 신청하실 수 있습니다.", citations=["K1"])), fake_final(SUPPORTED))
     result = _say(client, cid, "반품 언제까지 돼요?")
     assert result["standby"] is False and result["conversation"]["status"] == "open"
     history = llm.requests[0].messages
@@ -120,7 +120,7 @@ def test_agent_can_return_the_conversation_to_ai(client: TestClient, llm: QueueL
 
 def test_feedback_overrides_the_judge(client: TestClient, llm: QueueLLM) -> None:
     cid = _start(client)
-    llm.push(fake_final(agent_payload("7일 이내에 신청하실 수 있습니다.", citations=["K1"])), fake_final(SUPPORTED), fake_final(RESOLVED))
+    llm.push(fake_respond(agent_payload("7일 이내에 신청하실 수 있습니다.", citations=["K1"])), fake_final(SUPPORTED), fake_final(RESOLVED))
     _say(client, cid, "반품 언제까지 돼요?")
     no = client.post(f"/v1/conversations/{cid}/feedback", json={"resolved": False}).json()
     assert no["resolution"]["status"] == "unresolved" and no["resolution"]["source"] == "customer_feedback"
@@ -130,12 +130,12 @@ def test_feedback_overrides_the_judge(client: TestClient, llm: QueueLLM) -> None
 
 def test_metrics_follow_the_definitions(client: TestClient, llm: QueueLLM) -> None:
     a, b, c = _start(client), _start(client, "C-1002"), _start(client, "C-1003")
-    llm.push(fake_final(agent_payload("7일 이내입니다.", citations=["K1"])), fake_final(SUPPORTED), fake_final(RESOLVED))
+    llm.push(fake_respond(agent_payload("7일 이내입니다.", citations=["K1"])), fake_final(SUPPORTED), fake_final(RESOLVED))
     _say(client, a, "반품 언제까지 돼요?")
     llm.push(
-        fake_final(agent_payload("반품은 14일 이내입니다.", citations=["K1"])),
+        fake_respond(agent_payload("반품은 14일 이내입니다.", citations=["K1"])),
         fake_final({"claims": [{"claim": "14일", "label": "contradicted", "evidence_ids": ["K1"], "reason": "7일"}]}),
-        fake_final(agent_payload("7일 이내입니다.", citations=["K1"])), fake_final(SUPPORTED),
+        fake_respond(agent_payload("7일 이내입니다.", citations=["K1"])), fake_final(SUPPORTED),
         fake_final({"status": "unresolved", "customer_signal": "negative", "reason": "불만"}),
     )  # fmt: skip
     _say(client, b, "반품 언제까지 돼요? 지난번엔 14일이라던데")
@@ -160,7 +160,7 @@ def test_kb_issue_and_tool_failure_are_surfaced_to_ops(client: TestClient, llm: 
     client.put("/v1/demo/fault", json={"mode": "error"})
     llm.push(
         fake_response(tool_calls=[("get_order", {"order_id": "BM-24011"})]),
-        fake_final(
+        fake_respond(
             agent_payload(
                 "주문 확인이 어려워 상담원에게 연결합니다.",
                 action="handoff",
@@ -184,7 +184,7 @@ def test_stream_endpoint_reports_progress_then_result(client: TestClient, llm: Q
     cid = _start(client)
     llm.push(
         fake_response(tool_calls=[("track_shipment", {"order_id": "BM-24012"})]),
-        fake_final(agent_payload("BM-24012 주문은 서울 송파 터미널에 있습니다.", citations=["T1"])), fake_final(SUPPORTED), fake_final(RESOLVED),
+        fake_respond(agent_payload("BM-24012 주문은 서울 송파 터미널에 있습니다.", citations=["T1"])), fake_final(SUPPORTED), fake_final(RESOLVED),
     )  # fmt: skip
     with client.stream("POST", f"/v1/conversations/{cid}/messages/stream", json={"text": "BM-24012 어디예요"}) as stream:
         raw = "".join(stream.iter_text())
@@ -238,12 +238,12 @@ def test_knowledge_and_ops_endpoints(client: TestClient) -> None:
 
 
 def test_webhook_channel_keeps_one_conversation_per_user(client: TestClient, llm: QueueLLM) -> None:
-    llm.push(fake_final(agent_payload("7일 이내입니다.", citations=["K1"])), fake_final(SUPPORTED), fake_final(RESOLVED))
+    llm.push(fake_respond(agent_payload("7일 이내입니다.", citations=["K1"])), fake_final(SUPPORTED), fake_final(RESOLVED))
     first = client.post(
         "/v1/channels/webhook", json={"channel": "kakao", "external_user_key": "u-1", "customer_id": "C-1001", "text": "반품 기한?"}
     ).json()
     assert first["reply"] == "7일 이내입니다." and first["sources"][0]["id"] == "K1" and first["handoff"] is False
-    llm.push(fake_final(agent_payload("주문번호를 알려 주세요.", action="ask")), fake_final(RESOLVED))
+    llm.push(fake_respond(agent_payload("주문번호를 알려 주세요.", action="ask")), fake_final(RESOLVED))
     second = client.post(
         "/v1/channels/webhook", json={"channel": "kakao", "external_user_key": "u-1", "customer_id": "C-1001", "text": "그럼 접수해 주세요"}
     ).json()
@@ -262,7 +262,7 @@ def test_server_without_a_model_refuses_new_conversations(tmp_path: Path, monkey
 
 async def test_recordings_are_read_only_and_reported_separately(service: SupportService, llm: QueueLLM) -> None:
     conv = service.create_conversation("C-1001")
-    llm.push(fake_final(agent_payload("7일 이내입니다.", citations=["K1"])), fake_final(SUPPORTED), fake_final(RESOLVED))
+    llm.push(fake_respond(agent_payload("7일 이내입니다.", citations=["K1"])), fake_final(SUPPORTED), fake_final(RESOLVED))
     await service.handle_customer_message(conv["id"], "반품 기한?")
     export = json.loads(json.dumps(service.export_conversation(conv["id"]), default=str))
     rid = service.import_recording(export, recording_id="demo-01", title="반품 기한 문의", provenance={"model": "m", "run": "r"})
@@ -282,7 +282,7 @@ async def test_recordings_are_read_only_and_reported_separately(service: Support
 async def test_turn_cap(service: SupportService, llm: QueueLLM) -> None:
     service.settings.max_customer_turns = 1
     conv = service.create_conversation("C-1001")
-    llm.push(fake_final(agent_payload("주문번호를 알려 주세요.", action="ask")), fake_final(RESOLVED))
+    llm.push(fake_respond(agent_payload("주문번호를 알려 주세요.", action="ask")), fake_final(RESOLVED))
     await service.handle_customer_message(conv["id"], "취소요")
     with pytest.raises(Exception, match="대화가 길어졌습니다"):
         await service.handle_customer_message(conv["id"], "BM-24022")

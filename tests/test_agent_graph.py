@@ -11,7 +11,7 @@ from batondesk.agent.graph import HistoryItem, TurnConfig, TurnInput, build_agen
 from batondesk.checks.grounding import GroundingChecker
 from batondesk.commerce.store import CommerceStore
 from batondesk.llm.base import LLMError, LLMRequest, LLMResponse
-from batondesk.llm.scripted import QueueLLM, agent_payload, fake_final, fake_response
+from batondesk.llm.scripted import QueueLLM, agent_payload, fake_final, fake_respond, fake_response
 from batondesk.prompts.registry import PromptRegistry
 from batondesk.tools.executor import ToolExecutor
 
@@ -44,7 +44,9 @@ def run(executor: ToolExecutor, prompts: PromptRegistry, llm: QueueLLM):  # type
 
 
 async def test_answer_from_preretrieved_knowledge(run, llm: QueueLLM) -> None:  # type: ignore[no-untyped-def]
-    llm.push(fake_final(agent_payload("단순변심 반품비는 처음에 배송비를 냈다면 3,000원입니다.", citations=["K1"])), fake_final(SUPPORTED))
+    llm.push(
+        fake_respond(agent_payload("단순변심 반품비는 처음에 배송비를 냈다면 3,000원입니다.", citations=["K1"])), fake_final(SUPPORTED)
+    )
     result = await run("반품 배송비 얼마예요?")
     assert result.outcome == "answered" and result.output.citations == ["K1"]
     assert result.grounding is not None and result.grounding.grounded
@@ -53,13 +55,14 @@ async def test_answer_from_preretrieved_knowledge(run, llm: QueueLLM) -> None:  
     user_blocks = agent_request.messages[-1]["content"]
     assert "<고객_메시지>" in user_blocks[0]["text"] and "[K1]" in user_blocks[1]["text"]
     assert "오늘: 2026-11-20 (금)" in user_blocks[1]["text"]
-    assert agent_request.output_schema is not None and len(agent_request.tools) == 7
+    assert agent_request.output_schema is None, "JSON 출력 형식은 쓰지 않는다. 답도 도구(respond)로 제출한다"
+    assert len(agent_request.tools) == 8 and agent_request.tools[-1]["name"] == "respond" and agent_request.tools[-1]["strict"] is True
 
 
 async def test_tool_loop_then_answer(run, llm: QueueLLM) -> None:  # type: ignore[no-untyped-def]
     llm.push(
         fake_response(tool_calls=[("get_order", {"order_id": "BM-24011"}), ("track_shipment", {"order_id": "BM-24011"})]),
-        fake_final(agent_payload("BM-24011 주문은 2026-11-17에 배송 완료되었습니다.", citations=["T1", "T2"])),
+        fake_respond(agent_payload("BM-24011 주문은 2026-11-17에 배송 완료되었습니다.", citations=["T1", "T2"])),
         fake_final(SUPPORTED),
     )
     result = await run("BM-24011 어디쯤이에요?")
@@ -75,22 +78,23 @@ async def test_tool_loop_then_answer(run, llm: QueueLLM) -> None:  # type: ignor
 
 async def test_ungrounded_draft_is_held_and_rewritten(run, llm: QueueLLM) -> None:  # type: ignore[no-untyped-def]
     llm.push(
-        fake_final(agent_payload("반품은 14일 이내에 가능합니다.", citations=["K1"])),
+        fake_respond(agent_payload("반품은 14일 이내에 가능합니다.", citations=["K1"])),
         fake_final(CONTRADICTED),
-        fake_final(agent_payload("반품은 받은 날부터 7일 이내에 신청하실 수 있습니다.", citations=["K1"])),
+        fake_respond(agent_payload("반품은 받은 날부터 7일 이내에 신청하실 수 있습니다.", citations=["K1"])),
         fake_final(SUPPORTED),
     )
     result = await run("반품 언제까지 돼요?")
     assert result.outcome == "answered" and "7일" in result.output.message
     assert result.revisions == 1 and len(result.blocked) == 1 and "14일" in result.blocked[0]["message"]
-    feedback = llm.requests[2].messages[-1]["content"]
-    assert "<검증_결과>" in feedback and "근거는 7일" in feedback
+    feedback = llm.requests[2].messages[-1]["content"][0]
+    assert feedback["type"] == "tool_result" and feedback["is_error"] is True and feedback["tool_use_id"] == "toolu_fake_1"
+    assert "근거 검사를 통과하지 못해" in feedback["content"] and "근거는 7일" in feedback["content"]
 
 
 async def test_still_ungrounded_after_rewrite_goes_to_a_human(run, llm: QueueLLM) -> None:  # type: ignore[no-untyped-def]
     llm.push(
-        fake_final(agent_payload("반품은 14일 이내에 가능합니다.", citations=["K1"])), fake_final(CONTRADICTED),
-        fake_final(agent_payload("반품은 14일 이내입니다.", citations=["K1"])), fake_final(CONTRADICTED),
+        fake_respond(agent_payload("반품은 14일 이내에 가능합니다.", citations=["K1"])), fake_final(CONTRADICTED),
+        fake_respond(agent_payload("반품은 14일 이내입니다.", citations=["K1"])), fake_final(CONTRADICTED),
     )  # fmt: skip
     result = await run("반품 언제까지 돼요?")
     assert result.outcome == "handoff" and result.handoff_source == "system"
@@ -100,19 +104,19 @@ async def test_still_ungrounded_after_rewrite_goes_to_a_human(run, llm: QueueLLM
 
 
 async def test_flag_mode_delivers_but_marks(run, llm: QueueLLM) -> None:  # type: ignore[no-untyped-def]
-    llm.push(fake_final(agent_payload("반품은 14일 이내에 가능합니다.", citations=["K1"])), fake_final(CONTRADICTED))
+    llm.push(fake_respond(agent_payload("반품은 14일 이내에 가능합니다.", citations=["K1"])), fake_final(CONTRADICTED))
     result = await run("반품 언제까지 돼요?", grounding_mode="flag")
     assert result.outcome == "answered" and result.grounding is not None and not result.grounding.grounded
 
 
 async def test_off_mode_skips_the_check(run, llm: QueueLLM) -> None:  # type: ignore[no-untyped-def]
-    llm.push(fake_final(agent_payload("반품은 14일 이내에 가능합니다.", citations=["K1"])))
+    llm.push(fake_respond(agent_payload("반품은 14일 이내에 가능합니다.", citations=["K1"])))
     result = await run("반품 언제까지 돼요?", grounding_mode="off")
     assert result.outcome == "answered" and result.grounding is None and len(llm.requests) == 1
 
 
 async def test_unknown_citations_are_removed(run, llm: QueueLLM) -> None:  # type: ignore[no-untyped-def]
-    llm.push(fake_final(agent_payload("7일 이내에 신청하실 수 있습니다.", citations=["K1", "K99", "T7"])), fake_final(SUPPORTED))
+    llm.push(fake_respond(agent_payload("7일 이내에 신청하실 수 있습니다.", citations=["K1", "K99", "T7"])), fake_final(SUPPORTED))
     result = await run("반품 언제까지 돼요?")
     assert result.output.citations == ["K1"]
     assert {"type": "citation_fix", "removed": ["K99", "T7"]} in result.steps
@@ -120,7 +124,7 @@ async def test_unknown_citations_are_removed(run, llm: QueueLLM) -> None:  # typ
 
 async def test_model_handoff_keeps_reason_and_summary(run, llm: QueueLLM) -> None:  # type: ignore[no-untyped-def]
     llm.push(
-        fake_final(
+        fake_respond(
             agent_payload(
                 "보상 금액은 상담원이 확인해 드려야 합니다. 상담원에게 연결해 드리겠습니다.",
                 action="handoff", handoff_reason="policy_exception", handoff_summary="고객이 지연 보상 금액 조정을 요구함.",
@@ -134,7 +138,7 @@ async def test_model_handoff_keeps_reason_and_summary(run, llm: QueueLLM) -> Non
 
 
 async def test_non_handoff_output_cannot_carry_a_handoff_reason(run, llm: QueueLLM) -> None:  # type: ignore[no-untyped-def]
-    llm.push(fake_final(agent_payload("주문번호를 알려 주시겠어요?", action="ask", handoff_reason="tool_failure", handoff_summary="x")))
+    llm.push(fake_respond(agent_payload("주문번호를 알려 주시겠어요?", action="ask", handoff_reason="tool_failure", handoff_summary="x")))
     result = await run("주문 취소하고 싶어요")
     assert result.outcome == "asked" and result.output.handoff_reason == "none" and result.output.handoff_summary == ""
 
@@ -143,9 +147,7 @@ async def test_non_handoff_output_cannot_carry_a_handoff_reason(run, llm: QueueL
     ("response", "error"),
     [
         (fake_response(text="", stop_reason="refusal"), "refusal:None"),
-        (fake_response(text='{"action": "answer", "mess', stop_reason="max_tokens"), "truncated"),
-        (fake_response(text="죄송합니다, JSON이 아닙니다."), "bad_output:JSONDecodeError"),
-        (fake_final({"action": "dance", "message": "x"}), "bad_output:ValidationError"),
+        (fake_response(text="받은 날부터 7일 이", stop_reason="max_tokens"), "truncated"),
     ],
 )
 async def test_unusable_model_output_becomes_a_safe_handoff(run, llm: QueueLLM, response: LLMResponse, error: str) -> None:  # type: ignore[no-untyped-def]
@@ -153,6 +155,58 @@ async def test_unusable_model_output_becomes_a_safe_handoff(run, llm: QueueLLM, 
     result = await run("반품 언제까지 돼요?")
     assert result.outcome == "handoff" and result.handoff_source == "system"
     assert result.output.handoff_reason == "agent_error" and result.error == error
+
+
+async def test_text_without_the_respond_tool_is_not_delivered(run, llm: QueueLLM) -> None:  # type: ignore[no-untyped-def]
+    """응답 제출 도구 없이 쓴 글은 근거 검사를 거치지 않았으므로 고객에게 나가지 않는다. 다시 요청한다."""
+    llm.push(
+        fake_response(text="반품은 14일 이내에 가능합니다."),
+        fake_respond(agent_payload("받은 날부터 7일 이내에 신청하실 수 있습니다.", citations=["K1"])),
+        fake_final(SUPPORTED),
+    )
+    result = await run("반품 언제까지 돼요?")
+    assert result.outcome == "answered" and "7일" in result.output.message and "14일" not in result.output.message
+    assert [s["type"] for s in result.steps].count("nudge") == 1
+    assert "respond 도구로 제출" in llm.requests[1].messages[-1]["content"]
+
+
+async def test_repeated_text_only_turns_end_in_a_safe_handoff(run, llm: QueueLLM) -> None:  # type: ignore[no-untyped-def]
+    for _ in range(3):
+        llm.push(fake_response(text="안내드리겠습니다."))
+    result = await run("반품 언제까지 돼요?")
+    assert result.output.handoff_reason == "agent_error" and result.error == "no_final_response"
+    assert "안내드리겠습니다" not in result.output.message
+
+
+async def test_respond_called_together_with_a_lookup_is_deferred(run, llm: QueueLLM) -> None:  # type: ignore[no-untyped-def]
+    """조회 결과를 보기도 전에 낸 응답은 받지 않는다. 조회만 실행하고 다시 제출하게 한다."""
+    llm.push(
+        fake_response(tool_calls=[("get_order", {"order_id": "BM-24011"}), ("respond", agent_payload("배송중입니다."))]),
+        fake_respond(agent_payload("BM-24011 주문은 배송완료 상태입니다.", citations=["T1"])),
+        fake_final(SUPPORTED),
+    )
+    result = await run("BM-24011 상태 알려주세요")
+    assert result.output.message == "BM-24011 주문은 배송완료 상태입니다."
+    results = llm.requests[1].messages[-1]["content"]
+    assert [(r["tool_use_id"], r["is_error"]) for r in results] == [("toolu_fake_1", False), ("toolu_fake_2", True)]
+    assert "결과를 확인한 뒤" in results[1]["content"]
+
+
+async def test_empty_or_malformed_response_is_rejected_and_retried(run, llm: QueueLLM) -> None:  # type: ignore[no-untyped-def]
+    """실제 API에서 본 실패: 도구를 부르지 않고 빈 message 로 응답을 낸다."""
+    llm.push(
+        fake_respond(agent_payload("")),
+        fake_respond(agent_payload("받은 날부터 7일 이내에 신청하실 수 있습니다.", citations=["K1"])),
+        fake_final(SUPPORTED),
+    )
+    result = await run("반품 언제까지 돼요?")
+    assert result.outcome == "answered" and result.error is None
+    rejected = llm.requests[1].messages[-1]["content"][0]
+    assert rejected["is_error"] is True and "message 를 채워" in rejected["content"]
+
+    llm.push(fake_respond({"action": "dance", "message": "x"}), fake_respond({"action": "dance", "message": "x"}))
+    broken = await run("반품 언제까지 돼요?", max_tool_rounds=1)
+    assert broken.output.handoff_reason == "agent_error" and broken.error == "bad_output"
 
 
 async def test_model_api_failure_becomes_a_safe_handoff(run, llm: QueueLLM) -> None:  # type: ignore[no-untyped-def]
@@ -177,7 +231,7 @@ async def test_tool_failure_reaches_the_model_as_an_error_result(run, llm: Queue
     commerce_store.sandbox("test").fault = "error"
     llm.push(
         fake_response(tool_calls=[("get_order", {"order_id": "BM-24011"})]),
-        fake_final(
+        fake_respond(
             agent_payload(
                 "주문 시스템 확인이 어려워 상담원에게 연결해 드리겠습니다.",
                 action="handoff",
@@ -196,11 +250,11 @@ async def test_history_and_carried_evidence_reach_the_next_turn(run, llm: QueueL
     pool = EvidencePool()
     llm.push(
         fake_response(tool_calls=[("get_order", {"order_id": "BM-24011"})]),
-        fake_final(agent_payload("BM-24011 주문은 배송완료 상태입니다.", citations=["T1", "K1"])),
+        fake_respond(agent_payload("BM-24011 주문은 배송완료 상태입니다.", citations=["T1", "K1"])),
         fake_final(SUPPORTED),
     )
     first = await run("BM-24011 상태 알려주세요", pool=pool)
-    llm.push(fake_final(agent_payload("받은 날부터 7일 이내에 신청하실 수 있습니다.", citations=["K1"])), fake_final(SUPPORTED))
+    llm.push(fake_respond(agent_payload("받은 날부터 7일 이내에 신청하실 수 있습니다.", citations=["K1"])), fake_final(SUPPORTED))
     history = [HistoryItem("customer", "BM-24011 상태 알려주세요"), HistoryItem("ai", first.output.message)]
     await run("그럼 반품은요?", history=history, pool=pool)
     request = llm.requests[-2]
@@ -212,9 +266,9 @@ async def test_history_and_carried_evidence_reach_the_next_turn(run, llm: QueueL
 async def test_injected_draft_must_pass_the_same_check(run, llm: QueueLLM) -> None:  # type: ignore[no-untyped-def]
     """평가용 주입: 모델의 멀쩡한 초안을 틀린 글로 바꿔도 근거 검사가 막아야 한다."""
     llm.push(
-        fake_final(agent_payload("받은 날부터 7일 이내에 신청하실 수 있습니다.", citations=["K1"])),
+        fake_respond(agent_payload("받은 날부터 7일 이내에 신청하실 수 있습니다.", citations=["K1"])),
         fake_final(CONTRADICTED),
-        fake_final(agent_payload("받은 날부터 7일 이내에 신청하실 수 있습니다.", citations=["K1"])),
+        fake_respond(agent_payload("받은 날부터 7일 이내에 신청하실 수 있습니다.", citations=["K1"])),
         fake_final(SUPPORTED),
     )
     result = await run("반품 언제까지 돼요?", inject_draft="반품은 받은 날부터 14일 이내에 신청하실 수 있습니다.")
@@ -233,7 +287,7 @@ def test_followup_adds_a_second_query_with_the_previous_message() -> None:
 
 async def test_topic_switch_still_retrieves_for_the_new_question(run, llm: QueueLLM) -> None:  # type: ignore[no-untyped-def]
     """짧은 새 질문에 앞 메시지를 붙이기만 하면 앞 화제의 문서가 검색을 차지한다."""
-    llm.push(fake_final(agent_payload("제주는 3,000원이 추가됩니다.", citations=["K1"])), fake_final(SUPPORTED))
+    llm.push(fake_respond(agent_payload("제주는 3,000원이 추가됩니다.", citations=["K1"])), fake_final(SUPPORTED))
     history = [HistoryItem("customer", "단순변심 반품 배송비는 누가 내나요?"), HistoryItem("ai", "고객님이 부담하십니다.")]
     result = await run("제주 추가 배송비는요?", history=history)
     hits = result.steps[0]["hits"]
