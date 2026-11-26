@@ -1,0 +1,130 @@
+{
+  "base": "https://batondesk.onrender.com",
+  "release": {
+    "name": "batondesk",
+    "version": "0.1.0",
+    "git_sha": "3891c8cb1186e2b9d812f829b19dc431ef6bbad5",
+    "uptime_s": 27,
+    "engine": {
+      "engine": "off",
+      "label": "모델 호출 꺼짐 — 저장된 상담 기록만 볼 수 있습니다",
+      "agent_model": null,
+      "judge_model": null,
+      "budget": {
+        "daily_usd_cap": 1.5,
+        "spent_usd_today": 0.0,
+        "llm_calls_today": 0,
+        "exhausted": false
+      }
+    },
+    "prompts": {
+      "agent": {
+        "id": "agent-v4",
+        "sha256": "8fbbd864a03e"
+      },
+      "grounding": {
+        "id": "grounding-v4",
+        "sha256": "0edca4226cf3"
+      },
+      "resolution": {
+        "id": "resolution-v1",
+        "sha256": "0a4797d8768a"
+      }
+    },
+    "knowledge_base": {
+      "documents": 23,
+      "chunks": 72
+    },
+    "grounding_mode": "block",
+    "data_notice": "주문·고객·정책은 가상의 예시 쇼핑몰 '바통마켓'의 예시 데이터입니다."
+  },
+  "checks": [
+    {
+      "name": "배포된 커밋",
+      "ok": true,
+      "detail": "3891c8cb1186e2b9d812f829b19dc431ef6bbad5"
+    },
+    {
+      "name": "엔진 표시",
+      "ok": true,
+      "detail": "모델 호출 꺼짐 — 저장된 상담 기록만 볼 수 있습니다"
+    },
+    {
+      "name": "지식 문서",
+      "ok": true,
+      "detail": {
+        "documents": 23,
+        "chunks": 72
+      }
+    },
+    {
+      "name": "프롬프트 버전",
+      "ok": true,
+      "detail": {
+        "id": "agent-v4",
+        "sha256": "8fbbd864a03e"
+      }
+    },
+    {
+      "name": "화면 /",
+      "ok": true,
+      "detail": 200
+    },
+    {
+      "name": "화면 /chat",
+      "ok": true,
+      "detail": 200
+    },
+    {
+      "name": "화면 /desk",
+      "ok": true,
+      "detail": 200
+    },
+    {
+      "name": "화면 /ops",
+      "ok": true,
+      "detail": 200
+    },
+    {
+      "name": "화면 /embed-demo",
+      "ok": true,
+      "detail": 200
+    },
+    {
+      "name": "화면 /docs",
+      "ok": true,
+      "detail": 200
+    },
+    {
+      "name": "화면 /example-commerce/docs",
+      "ok": true,
+      "detail": 200
+    },
+    {
+      "name": "화면 /static/widget.js",
+      "ok": true,
+      "detail": 200
+    },
+    {
+      "name": "지식 검색",
+      "ok": true,
+      "detail": "return-policy#2"
+    },
+    {
+      "name": "예시 고객·주문",
+      "ok": true,
+      "detail": 200
+    },
+    {
+      "name": "저장된 상담 기록 목록",
+      "ok": true,
+      "detail": "8건"
+    },
+    {
+      "name": "실제 모델 응답",
+      "ok": false,
+      "detail": "서버에 모델 키가 없어 모델 호출이 꺼져 있습니다"
+    }
+  ],
+  "passed": false
+}
