@@ -15,7 +15,7 @@
 | LangChain의 모델 래퍼·프롬프트 템플릿·체인 | 검토만 | 모델 호출은 Anthropic SDK를 직접 쓴다. 아래 D1 참고 |
 | FastAPI | 사용 | 서비스 API와 예시 주문 시스템 API(별도 ASGI 앱) |
 | Django | 검토만 | 관리자 화면·ORM·인증이 한 번에 필요한 서비스라면 유리하다. 이 프로젝트는 비동기 모델 호출과 SSE가 중심이고 모델이 6개 테이블뿐이라 FastAPI가 가볍다. Django로 작성한 코드는 없다 |
-| Render (컨테이너 호스팅) | 설정만 작성 | `Dockerfile` + `render.yaml`. CI 가 이미지를 빌드해 띄워 본다. **배포는 아직 이뤄지지 않았다**(README의 "현재 상태") |
+| Render (컨테이너 호스팅) | 사용 | `Dockerfile` + `render.yaml`. <https://batondesk.onrender.com> 에 배포되어 있고 push 마다 다시 배포된다. `live-gate` 가 배포된 커밋과 화면을 검사한다 |
 | GitHub Actions (CI/CD) | 사용 | 단위 테스트·화면 점검·이미지 빌드(`ci.yml`), 프롬프트·에이전트가 바뀌면 실제 모델 평가와 회귀 게이트(`eval-live.yml`). 실행 기록이 저장소의 Actions 탭과 `eval_results/runs/` 에 있다 |
 | AWS Lambda | 검토만 | 형태소 분석기 로딩(약 1초, 330MB)이 콜드 스타트마다 걸리고, SSE 진행 표시는 응답 스트리밍 설정이 따로 필요하다. 상태(SQLite)를 둘 곳도 없다 |
 | Vercel | 검토만 | 파이썬 함수의 실행 시간·번들 크기 제한 안에 형태소 분석 모델(105MB)을 넣기 어렵다 |

@@ -26,8 +26,8 @@
 | 내부 데이터셋과 도구를 활용해 AI Agent의 정확도를 테스트하고 검증 | ✅ | 평가 자료 307문항(개발용·평가용 분리, 평가용 동결), 채점기, 반복 실행기, 문항 단위 신뢰구간, 같은 문항끼리의 비교, 재채점 | `data/evals/`, `src/batondesk/evals/`, `eval_results/runs/`(실행 25건). 실패를 읽어 채점 규칙 오류를 찾고 수정 전후를 모두 남긴 기록: `docs/evaluation.md` 6.3. **문항과 정답은 AI가 썼고 사람 검수는 없다** |
 | RAG, 지식 기반 및 맞춤형 툴체인을 지원하는 백엔드 API를 통합 | ✅ | 지식 문서 23건과 검색 API, 도구 7개와 예시 주문 시스템 API, 도구 실행기의 안전장치 | `src/batondesk/kb/`, `tools/`, `commerce/`, `tests/test_kb.py`·`test_tools.py`·`test_commerce.py`. 검색: 평가용 5위 내 77.5%. 실제 모델 실행에서 불러야 할 도구를 부른 비율 98.6~100%. **평가용 실패의 가장 큰 원인이 검색이었다**(6.4) |
 | 다양한 사용 사례에 맞는 프롬프트를 제작, 테스트 및 세부 조정 | ✅ | 에이전트 프롬프트 v1~v4, 근거 판정 v1~v4, 해결 판정 v1. 버전마다 무엇을 왜 바꿨는지와 결과를 파일의 `changes` 에 기록 | `prompts/`. 같은 문항으로 버전을 비교했고, **평가용에서 v4 는 v1 보다 통과율이 높지 않았다**(+0.5%p [−3.6, +5.2]). 지연 p95 는 15.0초 → 10.0초. `docs/evaluation.md` 6.1~6.2 |
-| 프롬프트 버전 및 에이전트 배포를 위한 CI/CD 파이프라인을 설정 | ✅ CI·평가 게이트 / 🟡 배포 | 프롬프트 파일 버전 + 해시 잠금, 프롬프트·에이전트 변경 시 실제 모델 평가와 회귀 게이트, 이미지 빌드와 기동 확인 | `src/batondesk/prompts/registry.py`, `prompts/LOCK.json`, `.github/workflows/ci.yml`·`eval-live.yml`, `eval_results/gate.json`. Actions 실행 기록 있음(6.7절 표). `Dockerfile`·`render.yaml`·`live-gate.yml` 은 준비만 — **공개 배포는 하지 않았다** |
-| 웹, 채팅 및 API 중심 환경에 에이전트를 임베드 | ✅ | 웹 채팅 화면, 한 줄 스크립트로 넣는 위젯, REST·SSE API, 외부 채팅 채널용 웹훅 | `web/chat.html`, `web/widget.js`, `/embed-demo`, `docs/api.md`, 화면 점검 148항목(`tests/e2e/`). 특정 메신저 플랫폼 연동은 안 함 |
+| 프롬프트 버전 및 에이전트 배포를 위한 CI/CD 파이프라인을 설정 | ✅ | 프롬프트 파일 버전 + 해시 잠금, 프롬프트·에이전트 변경 시 실제 모델 평가와 회귀 게이트, 이미지 빌드와 기동 확인, push 마다 재배포와 배포본 검사 | `src/batondesk/prompts/registry.py`, `prompts/LOCK.json`, `.github/workflows/ci.yml`·`eval-live.yml`·`live-gate.yml`, `eval_results/gate.json`, `render.yaml`. 공개 주소 <https://batondesk.onrender.com> 에서 최신 커밋이 서빙되는 것을 `live-gate` 가 확인(`live-checks` 브랜치에 기록과 캡처). **배포본에는 모델 키가 없어 실시간 문의는 꺼져 있다** |
+| 웹, 채팅 및 API 중심 환경에 에이전트를 임베드 | ✅ | 웹 채팅 화면, 한 줄 스크립트로 넣는 위젯, REST·SSE API, 외부 채팅 채널용 웹훅 | `web/chat.html`, `web/widget.js`, `/embed-demo`, `docs/api.md`, 화면 점검 154항목(`tests/e2e/`). 특정 메신저 플랫폼 연동은 안 함 |
 | 실시간 성능 지표를 모니터링하고 로그, 대시보드 등의 관측 기능을 구현 | ✅ | 구조화 로그(한 줄 JSON), 이벤트 저장, 운영 화면(해결률·인계율·근거 보류·단계별 지연·모델 호출·도구 실패·검토 대기·프롬프트 버전별 평가 결과) | `src/batondesk/obs/`, `web/ops.html`, `GET /v1/metrics/summary`, `GET /v1/events`. 실제 모델로 만든 기록 8건의 지표가 화면에 집계된다. **실제 트래픽은 없다** |
 | 시니어 엔지니어, 제품 관리자 및 UX 디자이너와 긴밀히 협력 | ❌ | 혼자(와 AI 에이전트로) 만든 프로젝트다. 협업 경험을 보여 주지 않는다 | — |
 
@@ -35,7 +35,7 @@
 
 | 공고 문장 | 상태 | 이 저장소에서 | 주의 |
 |---|---|---|---|
-| Python: 깔끔하고 유지 관리가 용이한 Python 코드 작성 경험 | ✅ (코드의 상태) | 파이썬 약 7,200줄(평가 코드 1,800줄 포함)과 테스트 1,800줄. `mypy --strict` 통과, `ruff` 통과, 모듈별 책임 분리, 테스트 148건 | 코드는 AI 에이전트가 썼다. **지원자의 작성 경험을 증명하지 않는다.** 읽고 설명할 수 있어야 한다 |
+| Python: 깔끔하고 유지 관리가 용이한 Python 코드 작성 경험 | ✅ (코드의 상태) | 파이썬 약 7,200줄(평가 코드 1,800줄 포함)과 테스트 1,800줄. `mypy --strict` 통과, `ruff` 통과, 모듈별 책임 분리, 테스트 149건 | 코드는 AI 에이전트가 썼다. **지원자의 작성 경험을 증명하지 않는다.** 읽고 설명할 수 있어야 한다 |
 | Backend: Django, FastAPI, Express 등 서버 측 프레임워크를 사용한 백엔드 개발 실무 경험 | ✅ (FastAPI 코드) | FastAPI 엔드포인트 37개, SSE, 하위 앱 마운트, 의존성 주입, 오류 형식 통일, OpenAPI 문서 | "실무 경험"은 아니다. 개인 프로젝트다 |
 | 협업: 뛰어난 의사소통 능력, 문서화 기술, 애자일한 팀에서의 협업 경험 | 문서화만 | 설계 결정, API 설명, 테스트 방법, 평가 방법과 결과, 한계, 변경 기록 | 팀 협업 경험은 없다 |
 
@@ -44,7 +44,7 @@
 | 공고 문장 | 상태 | 내용 |
 |---|---|---|
 | 프롬프트 엔지니어링 프레임워크(예: LangChain) 사용 경험 | ✅ LangGraph 사용 / 🔎 LangChain 모델 래퍼 | LangGraph로 에이전트 그래프를 구성했다(노드, 조건 분기, 스트리밍). LangChain의 모델 래퍼·프롬프트 템플릿은 쓰지 않았다 — 이유는 `docs/design-decisions.md` D1 |
-| 클라우드 플랫폼(AWS Lambda, Vercel, GCP Cloud Functions)에 대한 이해도 | 🔎 | 세 플랫폼을 이 서비스에 대어 보고 맞지 않는 이유를 정리했다(형태소 분석기의 메모리·콜드 스타트, SSE, 상태 저장). 실제로 올린 곳은 없다. Render 배포 설정만 작성했다 |
+| 클라우드 플랫폼(AWS Lambda, Vercel, GCP Cloud Functions)에 대한 이해도 | 🔎 | 세 플랫폼을 이 서비스에 대어 보고 맞지 않는 이유를 정리했다(형태소 분석기의 메모리·콜드 스타트, SSE, 상태 저장). 실제로 올린 곳은 없다. 실제로 올린 곳은 Render(컨테이너 호스팅) 한 곳이다 |
 | AI 제품 관련 UX 디자인 또는 제품 관리 경험 | 일부 | 제품 조사를 바탕으로 출처 표시·고객에게 보내지 않은 초안 표시·인계 요약·데이터 구분 표시·검토 대기열을 설계했다(`docs/research.md` 6절). 사용자 테스트는 하지 않았다 |
 | Django 또는 유사한 Python 웹 프레임워크 사용 경험 | ✅ FastAPI / 🔎 Django | FastAPI를 썼다. Django는 검토만 했다 |
 
@@ -59,4 +59,4 @@
 | 툴체인(Tool Calling) | 사용 (조회·확인·실행 도구 7개와 응답 제출 도구, strict 스키마). 실제 모델로 실행함 |
 | LangChain | LangGraph 사용 |
 | AWS Lambda / Vercel / GCP Cloud Functions | 검토만 |
-| CI/CD | GitHub Actions: 테스트·화면 점검·이미지 빌드, 프롬프트 변경 시 실제 모델 평가와 게이트. 공개 배포는 안 함 |
+| CI/CD | GitHub Actions: 테스트·화면 점검·이미지 빌드, 프롬프트 변경 시 실제 모델 평가와 게이트, push 마다 Render 재배포와 배포본 검사 |
