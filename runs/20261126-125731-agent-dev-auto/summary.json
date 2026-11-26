@@ -1,0 +1,236 @@
+{
+  "cases": 40,
+  "reps": 2,
+  "rows_scored": 80,
+  "rows_skipped": 0,
+  "rows_errored": 0,
+  "pass": {
+    "mean": 0.9625,
+    "lo": 0.9,
+    "hi": 1.0,
+    "cases": 40,
+    "rows": 80
+  },
+  "by_category": {
+    "followup_context": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 4,
+      "rows": 8
+    },
+    "handoff_required": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 5,
+      "rows": 10
+    },
+    "kb_answerable": {
+      "mean": 0.9,
+      "lo": 0.7,
+      "hi": 1.0,
+      "cases": 5,
+      "rows": 10
+    },
+    "kb_conflict": {
+      "mean": 0.75,
+      "lo": 0.25,
+      "hi": 1.0,
+      "cases": 4,
+      "rows": 8
+    },
+    "kb_unanswerable": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 4,
+      "rows": 8
+    },
+    "order_invalid": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 4,
+      "rows": 8
+    },
+    "order_task": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 6,
+      "rows": 12
+    },
+    "tool_failure": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 4,
+      "rows": 8
+    },
+    "ungrounded_injection": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 4,
+      "rows": 8
+    }
+  },
+  "grades": {
+    "action_ok": {
+      "mean": 0.975,
+      "lo": 0.9375,
+      "hi": 1.0,
+      "cases": 40,
+      "rows": 80
+    },
+    "facts_ok": {
+      "mean": 0.9655,
+      "lo": 0.8966,
+      "hi": 1.0,
+      "cases": 29,
+      "rows": 58
+    },
+    "abstain_ok": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 4,
+      "rows": 8
+    },
+    "tools_ok": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 17,
+      "rows": 34
+    },
+    "end_state_ok": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 40,
+      "rows": 80
+    },
+    "injection_blocked": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 4,
+      "rows": 8
+    },
+    "handoff_reason_ok": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 8,
+      "rows": 16
+    },
+    "citation_ok": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 14,
+      "rows": 26
+    },
+    "retrieval_first_hit": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 16,
+      "rows": 32
+    },
+    "retrieval_any_hit": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 16,
+      "rows": 32
+    },
+    "kb_issue_flagged": {
+      "mean": 0.75,
+      "lo": 0.5,
+      "hi": 1.0,
+      "cases": 2,
+      "rows": 4
+    },
+    "grounded_online": {
+      "mean": 0.9875,
+      "lo": 0.9625,
+      "hi": 1.0,
+      "cases": 40,
+      "rows": 80
+    }
+  },
+  "handoff": {
+    "tp": 16,
+    "fp": 1,
+    "fn": 0,
+    "tn": 47,
+    "precision": 0.9412,
+    "recall": 1.0,
+    "over_handoff_rate": 0.0208,
+    "by_reason": {
+      "needs_human_review": 6,
+      "ungrounded_answer": 1,
+      "customer_request": 2,
+      "policy_exception": 2,
+      "safety_or_legal": 2,
+      "tool_failure": 4
+    },
+    "by_source": {
+      "model": 16,
+      "system": 1
+    }
+  },
+  "flaky_cases": [
+    "A-D-KB-05"
+  ],
+  "always_failing_cases": [
+    "A-D-CF-04"
+  ],
+  "model_outcome_errors": {
+    "ungrounded_after_revision": 1
+  },
+  "infra_errors": {},
+  "retried_rows": 0,
+  "turns": {
+    "count": 94,
+    "latency_ms": {
+      "p50": 4680.9,
+      "p95": 9723.3,
+      "max": 15576.0
+    },
+    "stage_latency_ms_p50": {
+      "llm_agent": 3328.9,
+      "llm_checks": 1549.9,
+      "retrieval": 0.8,
+      "tools": 0.0
+    },
+    "llm_calls_per_turn": 2.6,
+    "tool_calls_per_turn": 0.82,
+    "turns_with_blocked_draft": 12,
+    "models_served": {
+      "claude-haiku-5-5": 94
+    }
+  },
+  "usage": {
+    "agent": {
+      "calls": 161,
+      "input_tokens": 191836,
+      "output_tokens": 58232,
+      "cache_read_tokens": 850724,
+      "cost_usd": 0.0568
+    },
+    "checks": {
+      "calls": 83,
+      "input_tokens": 105273,
+      "output_tokens": 24798,
+      "cache_read_tokens": 245058,
+      "cost_usd": 0.02693
+    },
+    "total_cost_usd": 0.08373
+  },
+  "wall_clock_s": 125.6,
+  "engine": "live"
+}
