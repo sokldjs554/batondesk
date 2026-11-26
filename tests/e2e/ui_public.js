@@ -49,6 +49,12 @@ fs.mkdirSync(OUT, { recursive: true });
     check(L("첫 화면: 문제 설명과 사용 순서가 첫 화면 안에 있음"), await page.evaluate(() => document.querySelector(".hero h1").getBoundingClientRect().top < window.innerHeight && document.querySelectorAll(".try-steps li").length === 3));
     check(L("첫 화면: 엔진 배지가 서버 상태와 같음"), engine === "live" ? badge.includes("실제 모델 호출") : badge.includes("모델 호출 꺼짐"), badge);
     check(L("첫 화면: 예시 데이터 고지"), (await page.textContent("body")).includes("예시 데이터"));
+    if (engine === "off" && recorded.length) {
+      await page.waitForFunction(() => document.querySelector("#cta-primary").textContent.includes("상담 기록"));
+      check(L("첫 화면: 모델이 꺼져 있으면 첫 버튼이 저장된 기록으로 안내"), (await page.getAttribute("#cta-primary", "href")) === "/chat?pane=recordings", await page.textContent("#cta-primary"));
+    } else {
+      check(L("첫 화면: 첫 버튼이 고객 화면으로 안내"), (await page.getAttribute("#cta-primary", "href")) === "/chat", await page.textContent("#cta-primary"));
+    }
     check(L("첫 화면: 바닥글의 커밋이 배포본과 같음"), (await page.textContent("#footer-sha")).trim() === String(release.git_sha).slice(0, 7), await page.textContent("#footer-sha"));
     await noHScroll("첫 화면");
     await shot("01-landing-fold", false);

@@ -136,6 +136,8 @@ async function init() {
   const saved = state.customerId ? sessionStorage.getItem(`bd.conv.${state.customerId}`) : null;
   if (saved && (await restore(saved))) return;
   fresh();
+  // 모델 호출이 꺼진 서버에서 할 수 있는 일은 저장된 기록을 보는 것뿐이라 그 구역을 먼저 연다(?pane=recordings 로도 열 수 있다).
+  if (params.get("pane") === "recordings" || state.engine === "off") showPane("recordings");
 }
 
 function showPane(name) {

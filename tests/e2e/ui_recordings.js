@@ -34,6 +34,17 @@ const SCALE = Number(process.env.SCALE || 1);
       check(L(`${label}: 가로 스크롤 없음`), sw[0] <= sw[1] + 1, `${sw[0]} > ${sw[1]}`);
     };
 
+    // 0. 첫 화면: 모델이 꺼진 서버에서는 "문의해 보기"가 아니라 저장된 기록으로 안내한다
+    await page.goto(`${BASE}/`);
+    await page.waitForFunction(() => document.querySelector("#cta-primary").textContent.includes("상담 기록"));
+    const cta = page.locator("#cta-primary");
+    check(L("첫 화면: 첫 버튼이 저장된 기록으로 안내"), (await cta.textContent()).includes(`${listed.length}건`) && (await cta.getAttribute("href")) === "/chat?pane=recordings");
+    check(L("첫 화면: 사용 순서가 꺼진 상태에 맞게 바뀜"), (await page.textContent("#try-steps")).includes("새 문의는 받지 않습니다") && (await page.locator("#try-steps li").count()) === 3);
+    await page.screenshot({ path: path.join(OUT, `${name}-39-rec-landing.png`), fullPage: false });
+    await cta.click();
+    await page.waitForSelector("#rec-list li a");
+    check(L("첫 버튼을 누르면 저장된 기록 구역이 열려 있음"), await page.locator("#pane-recordings").isVisible());
+
     // 1. 기록 목록
     await page.goto(`${BASE}/chat`);
     await page.waitForSelector("#greeting");

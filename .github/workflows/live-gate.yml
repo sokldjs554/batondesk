@@ -1,8 +1,7 @@
 # 배포본에 대한 판정. `ci` 는 코드에 대한 판정이고, 이 워크플로는 공개 주소가 이 커밋을 실제로 서빙하는지 본다.
 #
-# 공개 주소는 저장소 변수 PUBLIC_DEMO_URL (Settings → Secrets and variables → Actions → Variables) 에서 읽는다.
-# 수동 실행할 때는 url 입력으로 줄 수도 있다. 둘 다 없으면 건너뛰고 그 사실을 Summary 에 적는다 —
-# 배포하지 않은 것을 통과로 보이게 하지 않기 위해서다.
+# 공개 주소는 https://batondesk.onrender.com 이다(2026-11-26 저장소 주인이 Render 에 배포).
+# 저장소 변수 PUBLIC_DEMO_URL 이나 수동 실행의 url 입력으로 바꿀 수 있다.
 #
 # 하는 일
 #   1. 주소가 응답하는지 본다(잠든 무료 인스턴스가 깨는 시간을 기다린다).
@@ -31,12 +30,17 @@ concurrency:
 permissions:
   contents: write # live-checks 브랜치에 결과를 남긴다
 
+defaults:
+  run:
+    shell: bash # pipefail 을 켠다. 없으면 `검사 | tee 로그` 에서 검사가 실패해도 단계가 통과로 끝난다.
+
 jobs:
   public-demo:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
-      PUBLIC_DEMO_URL: ${{ inputs.url || vars.PUBLIC_DEMO_URL }}
+      # 수동 입력 > 저장소 변수 > 배포된 기본 주소
+      PUBLIC_DEMO_URL: ${{ inputs.url || vars.PUBLIC_DEMO_URL || 'https://batondesk.onrender.com' }}
       WITH_MODEL: ${{ inputs.with_model && '1' || '0' }}
     steps:
       - uses: actions/checkout@v4
