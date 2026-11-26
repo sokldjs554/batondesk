@@ -84,9 +84,7 @@ class QueueLLM:
         if not self.queue:
             raise AssertionError(f"QueueLLM: 준비된 응답이 없습니다 (purpose={request.purpose})")
         item = self.queue.pop(0)
-        response = item(request) if callable(item) else item
-        response.model = request.model
-        return response
+        return item(request) if callable(item) else item
 
 
 _ORDER_RE = re.compile(r"BM-\d{5}", re.I)
@@ -108,7 +106,7 @@ class RuleLLM:
 
     async def complete(self, request: LLMRequest) -> LLMResponse:
         if request.purpose == "grounding":
-            return fake_final({"claims": []}, model=request.model, engine=self.engine)
+            return fake_final({"claims": []}, model=self.engine, engine=self.engine)
         if request.purpose == "resolution":
             return self._resolution(request)
         return self._agent(request)
@@ -124,7 +122,7 @@ class RuleLLM:
         else:
             status, signal = "resolved_assumed", "none"
         payload = {"status": status, "customer_signal": signal, "reason": "규칙 엔진의 키워드 판정(LLM 아님)"}
-        return fake_final(payload, model=request.model, engine=self.engine)
+        return fake_final(payload, model=self.engine, engine=self.engine)
 
     def _agent(self, request: LLMRequest) -> LLMResponse:
         blocks = _last_user_blocks(request.messages)
@@ -142,21 +140,21 @@ class RuleLLM:
                     handoff_reason="customer_request",
                     handoff_summary=f"고객이 상담원 연결을 요청했습니다. 마지막 메시지: {customer[:120]}",
                 ),
-                model=request.model,
+                model=self.engine,
                 engine=self.engine,
             )
         order = _ORDER_RE.search(customer)
         if order:
             name = "track_shipment" if re.search(r"배송|어디|언제 ?와|도착", customer) else "get_order"
-            return fake_response(tool_calls=[(name, {"order_id": order.group(0).upper()})], model=request.model, engine=self.engine)
+            return fake_response(tool_calls=[(name, {"order_id": order.group(0).upper()})], model=self.engine, engine=self.engine)
         if re.search(r"주문|배송 ?조회|내 ?택배", customer) and not _PASSAGE_RE.search(joined):
-            return fake_response(tool_calls=[("list_my_orders", {})], model=request.model, engine=self.engine)
+            return fake_response(tool_calls=[("list_my_orders", {})], model=self.engine, engine=self.engine)
         passage = _PASSAGE_RE.search(joined)
         if passage:
             body = passage.group(3).strip()
             sentences = re.split(r"(?<=[.다요])\s+", body)
             answer = " ".join(sentences[:2]).strip()
-            return fake_final(agent_payload(answer, citations=[passage.group(1)]), model=request.model, engine=self.engine)
+            return fake_final(agent_payload(answer, citations=[passage.group(1)]), model=self.engine, engine=self.engine)
         return fake_final(
             agent_payload(
                 "죄송합니다. 이 문의는 제가 가진 안내 문서에서 답을 찾지 못했습니다. 상담원에게 연결해 드리겠습니다.",
@@ -164,7 +162,7 @@ class RuleLLM:
                 handoff_reason="no_knowledge",
                 handoff_summary=f"지식 문서에서 답을 찾지 못한 문의: {customer[:120]}",
             ),
-            model=request.model,
+            model=self.engine,
             engine=self.engine,
         )
 
@@ -183,7 +181,7 @@ class RuleLLM:
                     handoff_reason="tool_failure",
                     handoff_summary="주문 시스템 조회가 재시도 후에도 실패했습니다.",
                 ),
-                model=request.model,
+                model=self.engine,
                 engine=self.engine,
             )
         data, _ = parsed[0]
@@ -191,15 +189,15 @@ class RuleLLM:
         result = data.get("result", {})
         if result.get("found") is False:
             message = "이 계정에서 해당 주문을 찾지 못했습니다. 주문번호를 다시 확인해 주시겠어요?"
-            return fake_final(agent_payload(message, action="ask", citations=[evidence_id]), model=request.model, engine=self.engine)
+            return fake_final(agent_payload(message, action="ask", citations=[evidence_id]), model=self.engine, engine=self.engine)
         if "orders" in result:
             listing = ", ".join(f"{o['order_id']}({o['status_label']})" for o in result["orders"][:5])
             message = f"최근 주문은 다음과 같습니다: {listing}. 어느 주문에 대해 도와드릴까요?"
-            return fake_final(agent_payload(message, action="ask", citations=[evidence_id]), model=request.model, engine=self.engine)
+            return fake_final(agent_payload(message, action="ask", citations=[evidence_id]), model=self.engine, engine=self.engine)
         if "events" in result:
             last = result["events"][-1] if result["events"] else None
             where = f"{last['location']}에서 {last['status']} 상태입니다" if last else "아직 출고 전입니다"
             message = f"주문 {result.get('order_id')}은(는) 현재 {result.get('status_label')}이며, {where}."
         else:
             message = f"주문 {result.get('order_id')}은(는) 현재 {result.get('status_label')} 상태입니다."
-        return fake_final(agent_payload(message, citations=[evidence_id]), model=request.model, engine=self.engine)
+        return fake_final(agent_payload(message, citations=[evidence_id]), model=self.engine, engine=self.engine)

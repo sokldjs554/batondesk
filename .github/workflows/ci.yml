@@ -1,5 +1,6 @@
 # 코드에 대한 판정. 모델을 부르지 않으므로 키 없이, 모든 push·PR에서 돈다.
 #   checks : 린트 → 타입 → 테스트 → 프롬프트 잠금 → 평가 자료 검증·동결 → 무행동 기준선 → 검색 품질 게이트
+#   ui     : 브라우저로 PC·모바일 화면 흐름 점검(대화·출처·인계·오류 상태)
 #   image  : 배포에 쓰는 이미지를 빌드해 띄우고 상태·배포 정보·화면이 응답하는지 확인
 # 실제 모델로 답변 품질을 재는 평가는 eval-live.yml 에 따로 있다(비용이 들고 비결정적이라 분리).
 name: ci
@@ -46,6 +47,33 @@ jobs:
         run: |
           python -m batondesk.evals retrieval --split dev --gate eval_results/gate.json
           python -m batondesk.evals retrieval --split test --gate eval_results/gate.json
+
+  ui:
+    # 실제 브라우저로 PC·모바일 화면의 주요 흐름을 눌러 본다(규칙 엔진 서버, 모델 호출 없음).
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e .
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: 브라우저 준비
+        run: |
+          npm install --no-save playwright@1
+          npx playwright install --with-deps chromium
+      - name: 화면 흐름 점검 (1440×900, 390×844)
+        run: tests/e2e/run.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ui-screenshots
+          path: var/ui-shots/
+          retention-days: 30
 
   image:
     runs-on: ubuntu-24.04

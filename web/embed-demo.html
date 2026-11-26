@@ -1,1 +1,74 @@
-<!doctype html><title>BatonDesk</title>
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>임베드 예시: 바통마켓 주문 상세 — BatonDesk</title>
+    <link rel="stylesheet" href="/static/app.css" />
+  </head>
+  <body>
+    <header class="store-top">
+      <div class="store-logo">바통<span>마켓</span></div>
+      <a class="btn btn-s btn-quiet" href="/">BatonDesk 소개로 돌아가기</a>
+    </header>
+
+    <main class="store-page">
+      <div>
+        <span class="eyebrow">임베드 예시</span>
+        <h1 style="font-size: clamp(26px, 3.4vw, 38px); margin-top: 4px">쇼핑몰 화면에 상담 에이전트를 넣은 모습</h1>
+        <p class="muted" style="margin-top: 8px; max-width: 44em">
+          아래는 가상의 쇼핑몰 '바통마켓'의 주문 상세 화면입니다. 스크립트 한 줄로 오른쪽 아래에 상담 버튼이 붙고, 이 화면의 고객(김하늘)으로 바로 문의할 수 있습니다.
+        </p>
+      </div>
+
+      <section class="card order-card" aria-label="주문 상세(예시)">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px">
+          <h2 style="font-size: 22px">주문 상세 <span class="mono" id="order-id">BM-24011</span></h2>
+          <span class="badge badge-example plain">예시 주문 — 실제 주문이 아닙니다</span>
+        </div>
+        <div style="display: flex; gap: 16px; align-items: center">
+          <div class="thumb" aria-hidden="true">가</div>
+          <div>
+            <b id="order-item">무선 가습기 500ml</b>
+            <div class="muted small" id="order-meta">김하늘 님 · 주문 정보를 불러오는 중…</div>
+          </div>
+        </div>
+        <div>
+          <div class="order-line"><span>주문 상태</span><b id="order-status">—</b></div>
+          <div class="order-line"><span>주문 일시</span><span class="num" id="order-date">—</span></div>
+          <div class="order-line"><span>결제 금액</span><b class="num" id="order-paid">—</b></div>
+        </div>
+        <p class="small muted">반품하면 얼마를 돌려받는지, 언제까지 신청해야 하는지 오른쪽 아래 ‘상담하기’에서 물어보세요. 예: “BM-24011 단순변심으로 반품하면 얼마 돌려받아요?”</p>
+      </section>
+
+      <section class="panel box">
+        <h3>이 화면에 넣은 코드</h3>
+        <pre class="code" id="snippet">&lt;script src="/static/widget.js" data-customer="C-1001"&gt;&lt;/script&gt;</pre>
+        <p class="small muted" style="margin-top: 10px">
+          <span class="mono">data-customer</span> 에는 쇼핑몰이 로그인으로 확인한 고객 ID를 넣습니다(여기서는 예시 고객). 채팅은 iframe 안에서 돌아 쇼핑몰 화면의 스타일과 섞이지 않습니다. 화면 없이
+          연결하려면 <a href="/docs">대화 API</a>나 <span class="mono">POST /v1/channels/webhook</span> 을 씁니다.
+        </p>
+      </section>
+    </main>
+
+    <script type="module">
+      import { $, api, mountChrome, won } from "/static/common.js";
+      await mountChrome("", { nav: false });
+      try {
+        const { customers } = await api("/v1/demo/customers");
+        const customer = customers.find((c) => c.customer_id === "C-1001");
+        const order = customer && customer.orders.find((o) => o.order_id === "BM-24011");
+        if (order) {
+          $("#order-item").textContent = order.items;
+          $("#order-meta").textContent = `${customer.name} 님 · ${customer.region}`;
+          $("#order-status").textContent = order.status_label;
+          $("#order-date").textContent = order.ordered_at;
+          $("#order-paid").textContent = won(order.paid_total);
+        }
+      } catch {
+        $("#order-meta").textContent = "주문 정보를 불러오지 못했습니다.";
+      }
+    </script>
+    <script src="/static/widget.js" data-customer="C-1001"></script>
+  </body>
+</html>

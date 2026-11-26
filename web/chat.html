@@ -1,1 +1,85 @@
-<!doctype html><title>BatonDesk</title>
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>고객 화면 — BatonDesk</title>
+    <link rel="stylesheet" href="/static/app.css" />
+  </head>
+  <body>
+    <main class="page">
+      <div class="chat-layout">
+        <section class="card chat-card" aria-label="고객 상담 채팅">
+          <header class="chat-head">
+            <div>
+              <h1>바통마켓 고객센터</h1>
+              <div class="sub" id="chat-sub"></div>
+            </div>
+            <div class="acts">
+              <button class="btn btn-s btn-coral" type="button" id="btn-handoff">상담원 연결</button>
+              <button class="btn btn-s" type="button" id="btn-new">새 대화</button>
+            </div>
+          </header>
+          <div class="chat-log" id="chat-log" aria-live="polite"></div>
+          <div class="chat-status hidden" id="chat-status" role="status"><span class="dots"><i></i><i></i><i></i></span><span id="chat-status-text"></span></div>
+          <div class="chat-banner hidden" id="chat-banner"></div>
+          <form class="composer" id="composer" autocomplete="off">
+            <textarea id="input" rows="1" placeholder="문의 내용을 입력하세요" aria-label="문의 내용"></textarea>
+            <button class="btn btn-primary" type="submit" id="btn-send">보내기</button>
+          </form>
+          <div class="composer-meta"><span id="composer-msg"></span><span class="num" id="composer-count">0 / 600</span></div>
+        </section>
+
+        <aside class="demo-col" id="demo-col" aria-label="데모 도구">
+          <div class="tabs demo-tabs" id="demo-tabs" role="tablist" aria-label="데모 도구 구역">
+            <button class="tab on" type="button" role="tab" data-pane="tools" aria-selected="true">문의 예시·도구</button>
+            <button class="tab" type="button" role="tab" data-pane="trace" aria-selected="false">응답 과정<span class="cnt hidden" id="trace-dot">새 기록</span></button>
+            <button class="tab" type="button" role="tab" data-pane="recordings" aria-selected="false">저장된 기록<span class="cnt hidden" id="rec-count"></span></button>
+          </div>
+          <div class="last-turn hidden" id="last-turn"></div>
+
+          <div class="demo-pane" id="pane-tools">
+            <section class="panel demo-box">
+              <h2>예시 고객과 주문</h2>
+              <p class="hint">고객을 바꾸면 새 대화가 시작됩니다. 주문을 누르면 주문번호가 입력창에 들어갑니다.</p>
+              <div class="cust-row" id="cust-row"></div>
+              <ul class="order-list" id="order-list"></ul>
+            </section>
+
+            <section class="panel demo-box">
+              <h2>예시 주문 시스템 장애 재현</h2>
+              <p class="hint">주문 조회 API를 일부러 늦추거나 실패시켜, 에이전트가 추측하지 않고 멈추는지 봅니다. 이 서버의 모든 방문자에게 함께 적용됩니다.</p>
+              <div class="seg" id="fault-seg" role="group" aria-label="장애 모드"></div>
+              <div class="msg-actions">
+                <span class="small muted" id="fault-note"></span>
+                <button class="btn btn-s btn-quiet" type="button" id="btn-reset">예시 주문 데이터 초기화</button>
+              </div>
+            </section>
+
+            <section class="panel demo-box">
+              <h2>이런 문의를 해 보세요</h2>
+              <p class="hint">누르면 입력창에 들어갑니다. 고객 이름이 붙은 예시는 그 고객으로 바꿔 새 대화를 시작합니다.</p>
+              <div class="scn-wrap" id="scenarios"></div>
+            </section>
+          </div>
+
+          <div class="demo-pane hidden" id="pane-trace">
+            <section class="panel demo-box">
+              <h2>이번 응답이 만들어진 과정</h2>
+              <div id="trace"><div class="empty">문의를 보내면 검색한 문서, 모델·도구 호출, 근거 검사 결과가 여기에 표시됩니다.</div></div>
+            </section>
+          </div>
+
+          <div class="demo-pane hidden" id="pane-recordings">
+            <section class="panel demo-box">
+              <h2>저장된 상담 기록</h2>
+              <p class="hint">실제 모델로 실행해 저장해 둔 대화입니다. 읽기만 할 수 있습니다.</p>
+              <ul class="rec-list" id="rec-list"></ul>
+            </section>
+          </div>
+        </aside>
+      </div>
+    </main>
+    <script type="module" src="/static/chat.js"></script>
+  </body>
+</html>
