@@ -7,9 +7,9 @@
 | # | 단계 | 무슨 일이 일어나는가 | 코드 |
 |---|---|---|---|
 | 1 | 고객이 질문한다 | 웹 채팅·임베드 위젯·API·웹훅으로 메시지가 들어온다 | `api/routers/conversations.py`, `api/routers/ops.py`(웹훅) |
-| 2 | 맥락 확인과 지식 검색 | 이전 대화와 앞서 확보한 근거를 모으고, 메시지로 지식 문서를 미리 검색한다. 후속 질문이면 앞 메시지를 붙인 질의도 함께 검색한다 | `agent/graph.py` `prepare`, `kb/retriever.py` |
-| 3 | 도구 호출 | 모델이 허용된 도구(주문 조회·배송 조회·취소/반품 확인·추가 검색)를 부른다. 실행기는 허용 목록·고객 범위·확인 코드를 검사한다 | `agent/graph.py` `model`·`tools`, `tools/executor.py` |
-| 4 | 근거 있는 답변과 출처 | 모델이 `respond` 도구로 답과 인용한 근거 ID를 제출한다. 근거 검사를 통과하면 고객에게 나간다 | `agent/protocol.py`, `checks/grounding.py`, `agent/graph.py` `verify` |
+| 2 | 맥락 확인과 지식 검색 | 이전 대화와 앞서 확보한 근거를 모으고, 메시지로 지식 문서를 미리 검색한다. 후속 질문이면 앞 메시지를 붙인 질의도 함께 검색한다. 공지의 한 절이 검색되면 같은 공지의 나머지 절도 근거로 준다 | `agent/graph.py` `prepare`, `kb/retriever.py` |
+| 3 | 도구 호출 | 모델이 허용된 도구(주문 조회·배송 조회·취소/반품 확인·추가 검색)를 부른다. 실행기는 허용 목록·고객 범위·확인 코드를 검사한다. 성공한 결과뿐 아니라 실패한 호출(형식 오류, 시스템 오류)도 근거 묶음에 남는다 | `agent/graph.py` `model`·`tools`, `tools/executor.py` |
+| 4 | 근거 있는 답변과 출처 | 모델이 `respond` 도구로 답과 인용한 근거 ID를 제출한다. 근거 검사는 근거 묶음, 대화, 상담 정보(지금 시각·고객 이름)를 보고 주장 단위로 판정한다. 통과하면 고객에게 나간다 | `agent/protocol.py`, `checks/grounding.py`, `agent/graph.py` `verify` |
 | 5 | 보류와 인계 | 근거와 어긋나면 내보내지 않고 다시 쓰게 한다. 또 어긋나거나, 모델이 인계를 고르거나, 처리 중 오류가 나면 인계 티켓을 만든다 | `agent/graph.py` `revise`·`fallback`, `service.py` `_open_handoff` |
 | 6 | 상담원 확인 | 상담원 화면에서 인계 요약, 대화, 근거, 도구 결과, 보내지 않은 AI 초안을 보고 답한다 | `api/routers/handoffs.py`, `web/desk.html` |
 | 7 | 운영 확인 | 해결률·인계율·근거 보류·지연 시간·모델 호출·도구 실패를 본다 | `obs/metrics.py`, `api/routers/ops.py`, `web/ops.html` |
@@ -84,7 +84,9 @@ FastAPI 앱 (src/batondesk/api)
 | 운영 지표 | `src/batondesk/obs/metrics.py` |
 | 프롬프트 버전 저장소 | `src/batondesk/prompts/registry.py`, `prompts/` |
 | 평가 실행기·채점·통계 | `src/batondesk/evals/` |
-| CI·실제 모델 평가 | `.github/workflows/ci.yml`, `eval-live.yml` |
+| CI·실제 모델 평가·회귀 게이트 | `.github/workflows/ci.yml`, `eval-live.yml`, `eval_results/gate.json` |
+| 평가 실행 원자료 | `eval_results/runs/<실행 id>/` (실행 조건, 요약, 문항별 채점과 대화) |
+| 실제 모델로 만든 상담 기록 | `data/recordings/*.json`, 만드는 스크립트 `scripts/record_demo.py` |
 
 ## 데이터 구분
 

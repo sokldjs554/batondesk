@@ -100,4 +100,15 @@ jobs:
             curl -fsS -o /dev/null -w "%{http_code} $page\n" "localhost:8000$page"
           done
           curl -fsS -X POST localhost:8000/v1/kb/search -H 'content-type: application/json' -d '{"query":"반품 배송비"}' | head -c 300
+          # 키 없이 뜬 공개 데모가 보여 줄 것: 실제 모델로 만든 저장 기록과 평가 결과 표
+          curl -fsS "localhost:8000/v1/conversations?source=recorded&limit=50" > recorded.json
+          curl -fsS localhost:8000/v1/evals > evals.json
+          python3 - <<'PY'
+          import json
+          recorded = json.load(open("recorded.json"))["conversations"]
+          assert len(recorded) >= 8, f"저장된 상담 기록이 이미지에 실리지 않았다: {len(recorded)}건"
+          evals = json.load(open("evals.json"))
+          assert evals["available"] and len(evals["sections"]) == 3, "평가 결과 색인이 이미지에 없다"
+          print(f"저장된 기록 {len(recorded)}건, 평가 표 {len(evals['sections'])}개")
+          PY
           docker logs app | tail -5
