@@ -288,3 +288,25 @@ async def test_turn_cap(service: SupportService, llm: QueueLLM) -> None:
     await service.handle_customer_message(conv["id"], "취소요")
     with pytest.raises(Exception, match="대화가 길어졌습니다"):
         await service.handle_customer_message(conv["id"], "BM-24022")
+
+
+def test_committed_recordings_load_and_carry_their_provenance(tmp_path: Path, llm: QueueLLM) -> None:
+    """저장소에 실린 데모 기록은 서버가 뜰 때 실리고, 어떤 모델·프롬프트·커밋에서 나왔는지와 함께 읽기 전용으로 보인다."""
+    recordings = sorted((Path(__file__).resolve().parents[1] / "data" / "recordings").glob("*.json"))
+    if not recordings:
+        pytest.skip("저장된 기록이 아직 없는 저장소")
+    settings = Settings(db_path=tmp_path / "rec.sqlite3", llm_mode="off", _env_file=None)  # type: ignore[call-arg]
+    with TestClient(create_app(settings, llm=llm)) as client:
+        listed = client.get("/v1/conversations", params={"source": "recorded", "limit": 50}).json()["conversations"]
+        assert len(listed) == len(recordings)
+        view = client.get(f"/v1/conversations/{listed[0]['id']}", params={"trace": "true"}).json()
+        provenance = view["meta"]["provenance"]
+        assert view["source"] == "recorded" and provenance["kind"] == "실제 모델 호출 기록"
+        assert (
+            provenance["agent_model"].startswith("claude-")
+            and provenance["agent_prompt"].startswith("agent-v")
+            and len(provenance["git_sha"]) == 40
+        )
+        assert all(t["engine"] == "anthropic" for t in view["turns"]), "기록 안의 턴은 모두 실제 모델 호출이다"
+        refused = client.post(f"/v1/conversations/{listed[0]['id']}/messages", json={"text": "더 물어볼게요"})
+        assert refused.status_code in (403, 409) and "저장된 상담 기록" in refused.text

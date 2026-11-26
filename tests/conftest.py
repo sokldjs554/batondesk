@@ -63,7 +63,8 @@ def executor(kb: KnowledgeBase, commerce: CommerceClient) -> ToolExecutor:
 
 @pytest.fixture
 def settings(tmp_path: Path) -> Settings:
-    return Settings(db_path=tmp_path / "test.sqlite3", llm_mode="scripted", tool_timeout_s=0.4, _env_file=None)  # type: ignore[call-arg]
+    # 저장된 데모 기록(data/recordings)은 싣지 않는다. 테스트가 세는 대화 수가 기록 파일 수에 따라 달라지면 안 된다.
+    return Settings(db_path=tmp_path / "test.sqlite3", llm_mode="scripted", tool_timeout_s=0.4, load_recordings=False, _env_file=None)  # type: ignore[call-arg]
 
 
 @pytest.fixture
