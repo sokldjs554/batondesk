@@ -1,7 +1,14 @@
 # 배포본에 대한 판정. `ci` 는 코드에 대한 판정이고, 이 워크플로는 공개 주소가 이 커밋을 실제로 서빙하는지 본다.
 #
-# 저장소 변수 PUBLIC_DEMO_URL (Settings → Secrets and variables → Actions → Variables) 에 공개 주소를 넣어야 돈다.
-# 없으면 건너뛰고 그 사실을 Summary 에 적는다 — 배포하지 않은 것을 통과로 보이게 하지 않기 위해서다.
+# 공개 주소는 저장소 변수 PUBLIC_DEMO_URL (Settings → Secrets and variables → Actions → Variables) 에서 읽는다.
+# 수동 실행할 때는 url 입력으로 줄 수도 있다. 둘 다 없으면 건너뛰고 그 사실을 Summary 에 적는다 —
+# 배포하지 않은 것을 통과로 보이게 하지 않기 위해서다.
+#
+# 하는 일
+#   1. 주소가 응답하는지 본다(잠든 무료 인스턴스가 깨는 시간을 기다린다).
+#   2. GET /v1/release 의 커밋이 이 커밋과 같아질 때까지 기다린 뒤 API 를 검사한다(scripts/live_check.py).
+#   3. 실제 브라우저로 PC·모바일 화면을 열어 본다(tests/e2e/ui_public.js).
+#   4. 결과(JSON)와 화면 캡처를 아티팩트와 `live-checks` 브랜치에 남긴다.
 name: live-gate
 
 on:
@@ -9,8 +16,11 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
+      url:
+        description: "공개 주소 (비우면 저장소 변수 PUBLIC_DEMO_URL)"
+        default: ""
       with_model:
-        description: "실제 모델로 문의 한 건을 보내 본다(서버의 호출 한도에서 차감)"
+        description: "실제 모델로 문의를 보내 본다(서버의 호출 한도에서 차감)"
         type: boolean
         default: false
 
@@ -18,12 +28,16 @@ concurrency:
   group: live-gate
   cancel-in-progress: true # 연달아 push 하면 마지막 커밋만 기다린다
 
+permissions:
+  contents: write # live-checks 브랜치에 결과를 남긴다
+
 jobs:
   public-demo:
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 45
     env:
-      PUBLIC_DEMO_URL: ${{ vars.PUBLIC_DEMO_URL }}
+      PUBLIC_DEMO_URL: ${{ inputs.url || vars.PUBLIC_DEMO_URL }}
+      WITH_MODEL: ${{ inputs.with_model && '1' || '0' }}
     steps:
       - uses: actions/checkout@v4
       - name: 공개 주소 확인
@@ -32,23 +46,81 @@ jobs:
           if [ -z "$PUBLIC_DEMO_URL" ]; then
             echo "configured=false" >> "$GITHUB_OUTPUT"
             echo "### 건너뜀: 공개 데모 주소(PUBLIC_DEMO_URL)가 설정되지 않았습니다 — 배포 전" >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "configured=true" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
-      - name: 이 커밋이 배포될 때까지 기다린 뒤 검사
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+          base="${PUBLIC_DEMO_URL%/}"
+          # 잠든 인스턴스는 첫 요청에 1분쯤 걸린다. 그래도 답이 없으면 주소가 틀린 것이다.
+          for attempt in 1 2 3 4 5 6; do
+            code=$(curl -sS -m 90 -o healthz.txt -w "%{http_code}" "$base/healthz" || true)
+            echo "시도 $attempt: $base/healthz → $code"
+            [ "$code" = "200" ] && break
+            sleep 20
+          done
+          if [ "$code" != "200" ]; then
+            echo "### 실패: $base 가 응답하지 않습니다 (마지막 응답 $code). 주소를 확인해 주세요." >> "$GITHUB_STEP_SUMMARY"
+            head -c 300 healthz.txt || true
+            exit 1
+          fi
+      - name: 이 커밋이 배포될 때까지 기다린 뒤 API 검사
         if: steps.url.outputs.configured == 'true'
         run: |
-          python3 scripts/live_check.py "$PUBLIC_DEMO_URL" --sha "$GITHUB_SHA" --out live-check.json \
-            ${{ inputs.with_model && '--with-model' || '' }} | tee live-check.log
+          mkdir -p var/public-shots
+          flag=""; [ "$WITH_MODEL" = "1" ] && flag="--with-model"
+          python3 scripts/live_check.py "$PUBLIC_DEMO_URL" --sha "$GITHUB_SHA" --out var/public-shots/live-check.json $flag | tee live-check.log
           {
-            echo "### 공개 데모 검사: $PUBLIC_DEMO_URL @ ${GITHUB_SHA:0:8}"
+            echo "### 공개 데모 API 검사: $PUBLIC_DEMO_URL @ ${GITHUB_SHA:0:8}"
             echo '```'
-            grep -E "^(PASS|FAIL)" live-check.log
+            grep -E "^(PASS|FAIL)" live-check.log | cut -c1-300
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/setup-node@v4
+        if: steps.url.outputs.configured == 'true'
+        with:
+          node-version: "22"
+      - name: 브라우저 준비
+        if: steps.url.outputs.configured == 'true'
+        run: |
+          npm install --no-save playwright@1
+          npx playwright install --with-deps chromium
+      - name: 공개 데모 화면 점검 (1440×900, 390×844)
+        if: steps.url.outputs.configured == 'true'
+        run: |
+          BASE="$PUBLIC_DEMO_URL" SHOTS_DIR=var/public-shots SCALE=2 node tests/e2e/ui_public.js | tee ui-public.log
+          {
+            echo "### 공개 데모 화면 점검"
+            echo '```'
+            grep -E "^(PASS|FAIL|배포본)" ui-public.log | cut -c1-300
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         if: always() && steps.url.outputs.configured == 'true'
         with:
           name: live-check
-          path: live-check.json
+          path: var/public-shots/
           if-no-files-found: ignore
+          retention-days: 90
+      - name: live-checks 브랜치에 결과 남기기
+        if: always() && steps.url.outputs.configured == 'true'
+        run: |
+          [ -d var/public-shots ] && [ -n "$(ls -A var/public-shots)" ] || { echo "남길 결과 없음"; exit 0; }
+          cp live-check.log ui-public.log var/public-shots/ 2>/dev/null || true
+          echo "$PUBLIC_DEMO_URL" > var/public-shots/URL.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          work=$(mktemp -d)
+          if git ls-remote --exit-code origin live-checks >/dev/null 2>&1; then
+            git fetch --depth 1 origin live-checks
+            git worktree add "$work" FETCH_HEAD
+            (cd "$work" && git switch -C live-checks)
+          else
+            git worktree add --detach "$work"
+            (cd "$work" && git switch --orphan live-checks)
+          fi
+          dest="$work/${GITHUB_SHA:0:8}-$GITHUB_RUN_ID"
+          mkdir -p "$dest"
+          cp -r var/public-shots/. "$dest/"
+          cd "$work"
+          git add -A
+          git commit -m "live-check: $PUBLIC_DEMO_URL @ ${GITHUB_SHA:0:8} (run $GITHUB_RUN_ID)" || { echo "변경 없음"; exit 0; }
+          git push origin live-checks
