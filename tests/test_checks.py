@@ -151,3 +151,10 @@ async def test_today_is_given_to_the_judge_and_to_the_rules(prompts: PromptRegis
     assert "<오늘>2026-11-20 (금) 11월 20일</오늘>" in llm.requests[0].messages[0]["content"]
     flags = check_facts("오늘 11월 20일 기준으로 안내드립니다.", [], extra_context="2026-11-20 (금) 11월 20일")
     assert flags == []
+
+
+def test_tool_json_zero_amounts_and_24h_times_are_known_facts() -> None:
+    tool = '{"return_fee": 0, "refund_amount": 124000, "payment_due_at": "2026-11-21 05:12", "items": [{"qty": 2}]}'
+    answer = "반품 배송비는 0원이고 124,000원이 환불됩니다. 입금은 11월 21일 오전 5시 12분까지입니다."
+    assert check_facts(answer, [(tool, True)]) == []
+    assert {f.surface for f in check_facts("반품 배송비는 500원입니다.", [(tool, True)])} == {"500원"}

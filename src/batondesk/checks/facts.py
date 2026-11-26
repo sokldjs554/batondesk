@@ -41,7 +41,8 @@ _PCT = re.compile(r"(\d+(?:\.\d+)?)\s*(?:%|퍼센트)")
 _CLOCK = re.compile(r"(오전|오후)\s*(\d{1,2})\s*시(?:\s*(\d{1,2})\s*분)?")
 _ORDER = re.compile(r"BM-\d{5}", re.I)
 _TRACKING = re.compile(r"HB\d{10}", re.I)
-_BARE_INT = re.compile(r"(?<![\w.\-])(\d{3,9})(?![\w.\-])")
+_JSON_INT = re.compile(r":\s*(\d{1,9})(?=\s*[,}\]])")
+_CLOCK_24H = re.compile(r"(?<!\d)([01]?\d|2[0-3]):([0-5]\d)(?!\d)")
 
 HARD_KINDS = ("amt", "pct", "date", "md", "order", "tracking", "clock")
 
@@ -121,8 +122,12 @@ def extract_facts(text: str, *, structured: bool = False) -> dict[str, str]:
     for m in _TRACKING.finditer(text):
         add(f"tracking:{m.group(0).upper()}", m.group(0))
 
+    for m in _CLOCK_24H.finditer(text):
+        add(f"clock:{int(m.group(1)):02d}:{m.group(2)}", m.group(0))
+
     if structured:
-        for m in _BARE_INT.finditer(_ISO_DATE.sub(" ", text)):
+        # 도구 결과(JSON)의 숫자 값은 단위가 없으므로 금액 후보로 본다. 0도 값이다("return_fee": 0 → "0원").
+        for m in _JSON_INT.finditer(text):
             add(f"amt:{int(m.group(1))}", m.group(1))
     return found
 
