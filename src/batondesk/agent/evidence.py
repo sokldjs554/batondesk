@@ -51,7 +51,9 @@ class EvidencePool:
         n = sum(1 for e in self._items.values() if e.id.startswith(prefix)) + 1
         return f"{prefix}{n}"
 
-    def add_chunk(self, chunk: Chunk, today: date, turn_seq: int, query: str, score: float) -> Evidence:
+    def add_chunk(
+        self, chunk: Chunk, today: date, turn_seq: int, query: str, score: float, *, expanded_from: str | None = None
+    ) -> Evidence:
         existing = self._by_chunk.get(chunk.chunk_id)
         if existing:
             return self._items[existing]
@@ -72,6 +74,8 @@ class EvidencePool:
                 "in_effect": chunk.effective_from <= today and (chunk.effective_to is None or today <= chunk.effective_to),
                 "query": query,
                 "score": round(score, 5),
+                # 검색 순위로 들어온 것이 아니라, 같은 공지의 다른 절이 걸려서 함께 들어온 경우 그 절의 ID
+                "expanded_from": expanded_from if expanded_from != chunk.chunk_id else None,
             },
         )
         self._items[ev.id] = ev

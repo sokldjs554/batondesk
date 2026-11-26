@@ -97,13 +97,33 @@ class ToolExecutor:
             return self._invalid(name, {}, "도구 인자는 객체여야 합니다.", started)
         handler = getattr(self, f"_tool_{name}")
         result: ToolResult = await handler(args, ctx, started)
+        if result.is_error and not result.evidence_ids:
+            # 실패한 호출도 근거 묶음에 남긴다. 에이전트는 이 오류 문구를 보고 답을 쓰는데("주문번호 형식이 아닙니다",
+            # "주문 시스템이 응답하지 않습니다"), 근거 판정기가 그것을 못 보면 맞는 안내를 근거 없음으로 막는다.
+            body = json.loads(result.content)
+            ev = ctx.pool.add_tool_result(name, result.args, body, ctx.turn_seq, result.status)
+            result.evidence_ids = [ev.id]
+            result.content = json.dumps({"evidence_id": ev.id, **body}, ensure_ascii=False)
         return result
 
     # ---- 지식 검색 ------------------------------------------------------------
 
     def search(self, query: str, ctx: ToolContext) -> list[Evidence]:
         hits = self.kb.search(query, k=ctx.retrieval_k)
-        return [ctx.pool.add_chunk(h.chunk, ctx.today, ctx.turn_seq, query, h.score) for h in hits]
+        found = [ctx.pool.add_chunk(h.chunk, ctx.today, ctx.turn_seq, query, h.score) for h in hits]
+        # 공지는 한 건의 안내를 절로 나눠 색인한 것이라, 한 절만 읽으면 수치나 적용 범위를 놓친다
+        # (개발용 A-D-CF-04: "출고 시점" 절만 검색되어 "1~2영업일 더 걸린다"는 절을 못 봤다).
+        # 공지의 한 절이 걸리면 같은 공지의 나머지 절도 함께 준다. 순위(검색 평가)는 바꾸지 않는다.
+        seen = {e.id for e in found}
+        for hit in hits:
+            if hit.chunk.doc_type != "notice":
+                continue
+            for sibling in self.kb.chunks_of(hit.chunk.doc_id):
+                ev = ctx.pool.add_chunk(sibling, ctx.today, ctx.turn_seq, query, hit.score, expanded_from=hit.chunk.chunk_id)
+                if ev.id not in seen:
+                    seen.add(ev.id)
+                    found.append(ev)
+        return found
 
     async def _tool_search_knowledge(self, args: dict[str, Any], ctx: ToolContext, started: float) -> ToolResult:
         query = str(args.get("query", "")).strip()

@@ -133,6 +133,98 @@
           "p50": 6672.5,
           "p95": 15568.0,
           "cost": 0.16463
+        },
+        {
+          "run": "auto",
+          "split": "개발용",
+          "date": "2026-11-26",
+          "commit": "130ffea3",
+          "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45818821537",
+          "run_id": "20261126-122138-agent-dev-auto",
+          "prompt": "agent-v1",
+          "model": "claude-haiku-5-5",
+          "n": "40×2",
+          "pass": 0.8625,
+          "pass_ci": [
+            0.7625,
+            0.95
+          ],
+          "handoff_precision": 1.0,
+          "handoff_recall": 0.75,
+          "end_state": 1.0,
+          "injection": 1.0,
+          "p50": 5891.1,
+          "p95": 13509.1,
+          "cost": 0.10592
+        },
+        {
+          "run": "a1-g2-dev",
+          "split": "개발용",
+          "date": "2026-11-26",
+          "commit": "130ffea3",
+          "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45818848039",
+          "run_id": "20261126-122148-agent-dev-a1-g2-dev",
+          "prompt": "agent-v1",
+          "model": "claude-haiku-5-5",
+          "n": "40×3",
+          "pass": 0.9083,
+          "pass_ci": [
+            0.825,
+            0.975
+          ],
+          "handoff_precision": 0.9524,
+          "handoff_recall": 0.8333,
+          "end_state": 1.0,
+          "injection": 1.0,
+          "p50": 5349.7,
+          "p95": 12180.2,
+          "cost": 0.14449
+        },
+        {
+          "run": "a1-g1-ctx-dev",
+          "split": "개발용",
+          "date": "2026-11-26",
+          "commit": "130ffea3",
+          "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45818843755",
+          "run_id": "20261126-122151-agent-dev-a1-g1-ctx-dev",
+          "prompt": "agent-v1",
+          "model": "claude-haiku-5-5",
+          "n": "40×3",
+          "pass": 0.8833,
+          "pass_ci": [
+            0.8,
+            0.9583
+          ],
+          "handoff_precision": 1.0,
+          "handoff_recall": 0.8333,
+          "end_state": 1.0,
+          "injection": 1.0,
+          "p50": 6118.4,
+          "p95": 14077.1,
+          "cost": 0.15896
+        },
+        {
+          "run": "a2-g2-dev",
+          "split": "개발용",
+          "date": "2026-11-26",
+          "commit": "130ffea3",
+          "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45818853299",
+          "run_id": "20261126-122156-agent-dev-a2-g2-dev",
+          "prompt": "agent-v2",
+          "model": "claude-haiku-5-5",
+          "n": "40×3",
+          "pass": 0.9083,
+          "pass_ci": [
+            0.8333,
+            0.9667
+          ],
+          "handoff_precision": 0.8519,
+          "handoff_recall": 0.9583,
+          "end_state": 1.0,
+          "injection": 1.0,
+          "p50": 5414.1,
+          "p95": 9599.4,
+          "cost": 0.13069
         }
       ],
       "footnote": "채점은 규칙(행동·사실·도구·주문 상태)으로 한다. 정답 라벨은 AI가 작성했고 사람 검수 범위는 docs/evaluation.md 에 적었다."
@@ -224,6 +316,40 @@
           "precision": 1.0,
           "rules_recall": 0.3333,
           "cost": 0.01748
+        },
+        {
+          "run": "g2-dev33",
+          "split": "개발용",
+          "date": "2026-11-26",
+          "commit": "130ffea3",
+          "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45818862398",
+          "run_id": "20261126-122156-grounding-dev-g2-dev33",
+          "prompt": "grounding-v2",
+          "model": "claude-haiku-5-5",
+          "n": "33×3",
+          "accuracy": 0.9394,
+          "recall": 1.0,
+          "specificity": 0.8824,
+          "precision": 0.8889,
+          "rules_recall": 0.375,
+          "cost": 0.02239
+        },
+        {
+          "run": "g1-dev33",
+          "split": "개발용",
+          "date": "2026-11-26",
+          "commit": "130ffea3",
+          "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/45818857651",
+          "run_id": "20261126-122157-grounding-dev-g1-dev33",
+          "prompt": "grounding-v1",
+          "model": "claude-haiku-5-5",
+          "n": "33×3",
+          "accuracy": 0.9596,
+          "recall": 1.0,
+          "specificity": 0.9216,
+          "precision": 0.9231,
+          "rules_recall": 0.375,
+          "cost": 0.03074
         }
       ],
       "footnote": "판정기도 틀린다. 놓친 문항과 잘못 막은 문항의 목록은 실행 폴더의 summary.json 에 있다."

@@ -1,0 +1,243 @@
+{
+  "cases": 40,
+  "reps": 3,
+  "rows_scored": 120,
+  "rows_skipped": 0,
+  "rows_errored": 0,
+  "pass": {
+    "mean": 0.8833,
+    "lo": 0.8,
+    "hi": 0.9583,
+    "cases": 40,
+    "rows": 120
+  },
+  "by_category": {
+    "followup_context": {
+      "mean": 0.9167,
+      "lo": 0.75,
+      "hi": 1.0,
+      "cases": 4,
+      "rows": 12
+    },
+    "handoff_required": {
+      "mean": 0.8,
+      "lo": 0.5333,
+      "hi": 1.0,
+      "cases": 5,
+      "rows": 15
+    },
+    "kb_answerable": {
+      "mean": 0.8,
+      "lo": 0.4,
+      "hi": 1.0,
+      "cases": 5,
+      "rows": 15
+    },
+    "kb_conflict": {
+      "mean": 0.6667,
+      "lo": 0.25,
+      "hi": 1.0,
+      "cases": 4,
+      "rows": 12
+    },
+    "kb_unanswerable": {
+      "mean": 0.9167,
+      "lo": 0.75,
+      "hi": 1.0,
+      "cases": 4,
+      "rows": 12
+    },
+    "order_invalid": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 4,
+      "rows": 12
+    },
+    "order_task": {
+      "mean": 0.8889,
+      "lo": 0.6667,
+      "hi": 1.0,
+      "cases": 6,
+      "rows": 18
+    },
+    "tool_failure": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 4,
+      "rows": 12
+    },
+    "ungrounded_injection": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 4,
+      "rows": 12
+    }
+  },
+  "grades": {
+    "action_ok": {
+      "mean": 0.9167,
+      "lo": 0.8417,
+      "hi": 0.975,
+      "cases": 40,
+      "rows": 120
+    },
+    "facts_ok": {
+      "mean": 0.9655,
+      "lo": 0.8966,
+      "hi": 1.0,
+      "cases": 29,
+      "rows": 87
+    },
+    "abstain_ok": {
+      "mean": 0.9167,
+      "lo": 0.75,
+      "hi": 1.0,
+      "cases": 4,
+      "rows": 12
+    },
+    "tools_ok": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 17,
+      "rows": 51
+    },
+    "end_state_ok": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 40,
+      "rows": 120
+    },
+    "injection_blocked": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 4,
+      "rows": 12
+    },
+    "handoff_reason_ok": {
+      "mean": 0.9032,
+      "lo": 0.75,
+      "hi": 1.0,
+      "cases": 12,
+      "rows": 31
+    },
+    "citation_ok": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 13,
+      "rows": 38
+    },
+    "retrieval_first_hit": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 16,
+      "rows": 48
+    },
+    "retrieval_any_hit": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 16,
+      "rows": 48
+    },
+    "kb_issue_flagged": {
+      "mean": 0.6667,
+      "lo": 0.3333,
+      "hi": 1.0,
+      "cases": 2,
+      "rows": 6
+    },
+    "grounded_online": {
+      "mean": 0.975,
+      "lo": 0.9333,
+      "hi": 1.0,
+      "cases": 40,
+      "rows": 120
+    }
+  },
+  "handoff": {
+    "tp": 20,
+    "fp": 0,
+    "fn": 4,
+    "tn": 72,
+    "precision": 1.0,
+    "recall": 0.8333,
+    "over_handoff_rate": 0.0,
+    "by_reason": {
+      "needs_human_review": 5,
+      "customer_request": 3,
+      "ungrounded_answer": 3,
+      "policy_exception": 2,
+      "safety_or_legal": 3,
+      "no_knowledge": 10,
+      "tool_failure": 6
+    },
+    "by_source": {
+      "model": 29,
+      "system": 3
+    }
+  },
+  "flaky_cases": [
+    "A-D-CF-03",
+    "A-D-FU-03",
+    "A-D-HO-02",
+    "A-D-HO-05",
+    "A-D-NA-04",
+    "A-D-OT-02"
+  ],
+  "always_failing_cases": [
+    "A-D-CF-04",
+    "A-D-KB-05"
+  ],
+  "model_outcome_errors": {
+    "ungrounded_after_revision": 3
+  },
+  "infra_errors": {},
+  "retried_rows": 0,
+  "turns": {
+    "count": 141,
+    "latency_ms": {
+      "p50": 6118.4,
+      "p95": 14077.1,
+      "max": 18767.3
+    },
+    "stage_latency_ms_p50": {
+      "llm_agent": 4122.9,
+      "llm_checks": 2682.7,
+      "retrieval": 0.7,
+      "tools": 0.0
+    },
+    "llm_calls_per_turn": 2.64,
+    "tool_calls_per_turn": 0.82,
+    "turns_with_blocked_draft": 30,
+    "models_served": {
+      "claude-haiku-5-5": 141
+    }
+  },
+  "usage": {
+    "agent": {
+      "calls": 255,
+      "input_tokens": 328794,
+      "output_tokens": 112472,
+      "cache_read_tokens": 824415,
+      "cost_usd": 0.09737
+    },
+    "checks": {
+      "calls": 117,
+      "input_tokens": 162301,
+      "output_tokens": 87530,
+      "cache_read_tokens": 160056,
+      "cost_usd": 0.06159
+    },
+    "total_cost_usd": 0.15896
+  },
+  "wall_clock_s": 251.7,
+  "engine": "live"
+}
