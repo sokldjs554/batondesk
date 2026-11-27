@@ -1,6 +1,6 @@
 /* BatonDesk 공통 스타일 — 디자인 체계 v2 (2026-11-27).
 
-   방향: 따뜻한 종이색 바탕, 짙은 남색 글자, 가는 선. 그림자와 굵은 테두리는 쓰지 않는다(떠 있는 것만 흐린 그림자).
+   방향: 연한 라벤더 바탕 + 위쪽에서 번지는 파스텔 빛(노랑·보라·살구), 짙은 남색 글자, 가는 선. 그림자와 굵은 테두리는 쓰지 않는다(떠 있는 것만 흐린 그림자).
    색은 뜻이 있을 때만 쓴다.
      코발트 = 고객이 한 말, 링크        라일락 = AI가 한 말
      버터   = 근거·출처                 코랄   = 보류·인계·실패
@@ -11,9 +11,9 @@
 
 :root {
   /* 바탕 */
-  --paper: #fcf5e8;
-  --paper-deep: #f5e9d2;
-  --white: #fffdf9;
+  --paper: #f4f1ff;
+  --paper-deep: #e6e1fa;
+  --white: #ffffff;
   /* 글자 */
   --ink: #1b1a44;
   --ink-soft: #4a4872;
@@ -26,7 +26,7 @@
   --primary: #3a3fd8;
   --primary-deep: #2a2eb0;
   --primary-tint: #e6e7ff;
-  --lilac: #ece8fd;
+  --lilac: #e4defb;
   --lilac-deep: #a99df3;
   --butter: #ffd45e;
   --butter-tint: #fff0c4;
@@ -66,11 +66,18 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
-  background: var(--paper);
+  overflow-x: clip;
+  background:
+    radial-gradient(900px 440px at 88% -120px, rgba(169, 157, 243, 0.34), transparent 70%),
+    radial-gradient(820px 420px at 6% -100px, rgba(255, 212, 94, 0.3), transparent 70%),
+    radial-gradient(700px 360px at 50% -60px, rgba(255, 183, 165, 0.22), transparent 70%),
+    var(--paper);
+  background-repeat: no-repeat;
   color: var(--ink);
   font-family: var(--font);
   font-size: var(--fs-base);
@@ -177,7 +184,7 @@ button {
 }
 
 .notice-text {
-  color: rgba(252, 245, 232, 0.86);
+  color: rgba(244, 241, 255, 0.86);
 }
 
 /* 출처 배지: 이 응답·이 데이터가 어디서 나왔는가(실제 모델 호출 / 저장된 기록 / 예시 / 규칙 엔진 / 꺼짐) */
@@ -241,7 +248,7 @@ button {
 .notice .badge {
   min-height: 22px;
   background: transparent;
-  border-color: rgba(252, 245, 232, 0.3);
+  border-color: rgba(244, 241, 255, 0.3);
   color: var(--paper);
 }
 
@@ -510,7 +517,7 @@ button {
 }
 
 .chip.on .who {
-  background: rgba(252, 245, 232, 0.16);
+  background: rgba(244, 241, 255, 0.16);
   color: var(--paper);
 }
 
@@ -3453,11 +3460,11 @@ body.embed .chat-head .btn-s {
 
 .band > h2 .h-lead,
 .band > .section-lead {
-  color: rgba(252, 245, 232, 0.72);
+  color: rgba(244, 241, 255, 0.72);
 }
 
 .band .flow::before {
-  background: rgba(252, 245, 232, 0.45);
+  background: rgba(244, 241, 255, 0.45);
 }
 
 .band .flow li::before {
@@ -3485,7 +3492,7 @@ body.embed .chat-head .btn-s {
 }
 
 .band .flow li span {
-  color: rgba(252, 245, 232, 0.72);
+  color: rgba(244, 241, 255, 0.72);
 }
 
 .band .flow li b {
@@ -3523,4 +3530,42 @@ body.embed .chat-head .btn-s {
 .hero > .try-steps {
   margin-top: 28px;
   max-width: 980px;
+}
+
+
+/* ---- 배경 v2: 첫 화면 위쪽에 번지는 파스텔 빛 ---------------------------------------------- */
+
+.hero {
+  position: relative;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -140px;
+  bottom: 40%;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background:
+    radial-gradient(520px 340px at 24% 30%, rgba(255, 212, 94, 0.5), transparent 70%),
+    radial-gradient(620px 400px at 78% 22%, rgba(169, 157, 243, 0.55), transparent 70%),
+    radial-gradient(480px 320px at 52% 72%, rgba(255, 183, 165, 0.42), transparent 70%);
+  filter: blur(8px);
+}
+
+/* 큰 그림 카드는 흰색으로 떠서 빛 위에서 또렷하게 */
+.stage .card {
+  border-color: var(--line);
+  box-shadow: 0 18px 50px rgba(42, 38, 130, 0.12);
+}
+
+/* 구간 바탕을 한 겹 번갈아 쓴다: 측정 결과 구간은 연한 라벤더 면 */
+.section.tinted {
+  padding: 56px 0 60px;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 0 0 100vmax rgba(255, 255, 255, 0.55);
+  clip-path: inset(0 -100vmax);
 }
