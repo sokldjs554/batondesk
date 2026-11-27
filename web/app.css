@@ -879,11 +879,13 @@ pre.code {
 /* ---- 첫 화면 -------------------------------------------------------------------- */
 
 .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-  gap: 56px;
-  align-items: center;
-  padding: 36px 0 8px;
+  padding: 32px 0 0;
+}
+
+.hero-text {
+  max-width: 880px;
+  margin: 0 auto;
+  text-align: center;
 }
 
 .hero h1 {
@@ -914,8 +916,8 @@ pre.code {
 }
 
 .hero-lead {
-  max-width: 33em;
-  margin-top: 20px;
+  max-width: 34em;
+  margin: 22px auto 0;
   color: var(--ink-soft);
   font-size: var(--fs-lg);
   line-height: 1.65;
@@ -924,15 +926,17 @@ pre.code {
 .hero-cta {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
-  margin-top: 28px;
+  margin-top: 30px;
 }
 
 .try-steps {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
-  margin: 32px 0 0;
+  max-width: 760px;
+  margin: 36px auto 0;
   padding: 0;
   list-style: none;
   counter-reset: try;
@@ -941,6 +945,7 @@ pre.code {
 .try-steps li {
   counter-increment: try;
   padding-top: 12px;
+  text-align: left;
   border-top: 1px solid var(--line-mid);
   color: var(--ink-soft);
   font-size: var(--fs-md);
@@ -3359,4 +3364,163 @@ body.embed .chat-head .btn-s {
     grid-column: 1;
     grid-row: auto;
   }
+}
+
+/* ---- 첫 화면 v2: 가운데 정렬 제목 + 큰 그림, 하나뿐인 어두운 띠 ------------------------------ */
+
+.hero h1 {
+  font-size: clamp(38px, 4.8vw, 64px);
+}
+
+.stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  gap: 20px;
+  margin-top: 44px;
+  align-items: stretch;
+}
+
+.stage .hero-demo,
+.stage .hero-trace {
+  padding: 26px;
+  align-content: start;
+}
+
+.hero-demo .msg.ai .bubble {
+  max-width: 100%;
+}
+
+.stage-title {
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.hero-trace .trace-plan {
+  margin-top: 4px;
+}
+
+.hero-trace .trace-plan li {
+  background: var(--paper);
+}
+
+.stage-note {
+  grid-column: 1 / -1;
+  text-align: center;
+}
+
+.section {
+  margin-top: 104px;
+}
+
+.section > h2,
+.section > .section-lead,
+.section > .results-caveat {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.section > h2 {
+  font-size: clamp(26px, 3.2vw, 38px);
+}
+
+.section > .section-lead {
+  max-width: 40em;
+}
+
+.section > .results-caveat {
+  max-width: 52em;
+}
+
+.section > .linkrow {
+  justify-content: center;
+}
+
+.legend-note {
+  text-align: center;
+}
+
+/* 어두운 띠: 페이지에서 이 구간 하나만 남색 바탕(전체 폭) */
+.section.band {
+  padding: 72px 0 80px;
+  background: var(--ink);
+  box-shadow: 0 0 0 100vmax var(--ink);
+  clip-path: inset(0 -100vmax);
+  color: var(--paper);
+}
+
+.band > h2 .h-lead,
+.band > .section-lead {
+  color: rgba(252, 245, 232, 0.72);
+}
+
+.band .flow::before {
+  background: rgba(252, 245, 232, 0.45);
+}
+
+.band .flow li::before {
+  border-color: var(--paper);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.band .flow li:nth-child(4)::before {
+  border-color: var(--butter);
+  background: var(--butter);
+  color: var(--ink);
+}
+
+.band .flow li:nth-child(5)::before {
+  border-color: var(--coral);
+  background: var(--coral);
+  color: var(--ink);
+}
+
+.band .flow li:nth-child(6)::before {
+  border-color: var(--paper);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.band .flow li span {
+  color: rgba(252, 245, 232, 0.72);
+}
+
+.band .flow li b {
+  color: var(--paper);
+}
+
+@media (max-width: 1080px) {
+  .stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding-top: 24px;
+  }
+  .stage {
+    margin-top: 40px;
+  }
+  .stage .hero-demo,
+  .stage .hero-trace {
+    padding: 18px;
+  }
+  .section {
+    margin-top: 72px;
+  }
+  .section.band {
+    padding: 48px 0 56px;
+  }
+  .hero-text .try-steps li {
+    text-align: left;
+  }
+}
+
+.hero > .try-steps {
+  margin-top: 28px;
+  max-width: 980px;
 }
