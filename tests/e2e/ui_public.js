@@ -55,6 +55,11 @@ fs.mkdirSync(OUT, { recursive: true });
     } else {
       check(L("첫 화면: 첫 버튼이 고객 화면으로 안내"), (await page.getAttribute("#cta-primary", "href")) === "/chat", await page.textContent("#cta-primary"));
     }
+    const fontsLoaded = await page.evaluate(async () => {
+      await document.fonts.ready;
+      return [...document.fonts].filter((f) => f.family.includes("Pretendard") && f.status === "loaded").length;
+    });
+    check(L("첫 화면: Pretendard 웹 글꼴이 내려와 쓰임"), fontsLoaded >= 1, `${fontsLoaded}개 조각`);
     check(L("첫 화면: 바닥글의 커밋이 배포본과 같음"), (await page.textContent("#footer-sha")).trim() === String(release.git_sha).slice(0, 7), await page.textContent("#footer-sha"));
     await noHScroll("첫 화면");
     await shot("01-landing-fold", false);

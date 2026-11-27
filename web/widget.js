@@ -21,17 +21,23 @@
   var src = origin + "/chat?embed=1" + (customer ? "&customer=" + encodeURIComponent(customer) : "");
 
   var style = document.createElement("style");
+  var font = "'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif";
   style.textContent = [
-    ".bd-launcher{position:fixed;right:20px;bottom:20px;z-index:2147483000;display:inline-flex;align-items:center;gap:10px;min-height:56px;padding:0 22px 0 16px;border-radius:999px;border:1.5px solid #1c1b4b;background:#3a3fd8;color:#fff;font:800 16px/1 -apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;box-shadow:4px 4px 0 #1c1b4b;cursor:pointer}",
-    ".bd-launcher:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 #1c1b4b}",
-    ".bd-launcher i{display:inline-block;width:28px;height:28px;border-radius:9px;background:#ffd667;border:1.5px solid #1c1b4b;position:relative}",
-    ".bd-launcher i::after{content:'';position:absolute;left:6px;right:6px;top:10px;height:5px;border-radius:5px;background:#1c1b4b}",
-    ".bd-panel{position:fixed;right:20px;bottom:90px;z-index:2147483001;width:400px;max-width:calc(100vw - 24px);height:min(680px,calc(100vh - 120px));display:none;flex-direction:column;border-radius:24px;border:1.5px solid #1c1b4b;background:#fff7ea;box-shadow:6px 6px 0 #1c1b4b;overflow:hidden}",
+    ".bd-launcher{position:fixed;right:20px;bottom:20px;z-index:2147483000;display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:0 20px 0 14px;border-radius:999px;border:1px solid #1b1a44;background:#1b1a44;color:#fcf5e8;font:600 16px/1 " + font + ";box-shadow:0 8px 24px rgba(27,26,68,.28);cursor:pointer}",
+    ".bd-launcher:hover{background:#2e2d6b}",
+    ".bd-launcher:focus-visible,.bd-close:focus-visible{outline:2px solid #3a3fd8;outline-offset:2px}",
+    ".bd-launcher i{display:inline-block;width:26px;height:26px;border-radius:8px;background:#fcf5e8;position:relative}",
+    ".bd-launcher i::before,.bd-launcher i::after{content:'';position:absolute;top:10px;height:6px;border-radius:3px}",
+    ".bd-launcher i::before{left:4px;width:10px;background:#ffd45e}",
+    ".bd-launcher i::after{right:4px;width:6px;background:#ff6b4a}",
+    ".bd-panel{position:fixed;right:20px;bottom:84px;z-index:2147483001;width:400px;max-width:calc(100vw - 24px);height:min(680px,calc(100vh - 110px));display:none;flex-direction:column;border-radius:16px;border:1px solid rgba(27,26,68,.24);background:#fffdf9;box-shadow:0 12px 36px rgba(27,26,68,.24);overflow:hidden}",
     ".bd-panel.bd-open{display:flex}",
-    ".bd-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 8px 8px 16px;background:#1c1b4b;color:#fff7ea;font:800 15px/1.2 -apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif}",
-    ".bd-close{min-width:44px;min-height:40px;border-radius:12px;border:1.5px solid #fff7ea;background:transparent;color:#fff7ea;font:700 14px/1 inherit;cursor:pointer}",
-    ".bd-frame{flex:1;width:100%;border:0;background:#fff7ea}",
+    ".bd-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:2px 6px 2px 16px;background:#1b1a44;color:#fcf5e8;font:600 15px/1.2 " + font + "}",
+    ".bd-close{min-width:44px;min-height:44px;border-radius:8px;border:0;background:transparent;color:#fcf5e8;font:500 14px/1 " + font + ";cursor:pointer}",
+    ".bd-close:hover{background:rgba(252,245,232,.12)}",
+    ".bd-frame{flex:1;width:100%;border:0;background:#fffdf9}",
     "@media (max-width:560px){.bd-panel{inset:0;right:0;bottom:0;width:100%;max-width:none;height:100%;border-radius:0;border:0;box-shadow:none}.bd-launcher{right:14px;bottom:14px}}",
+    "@media (prefers-reduced-motion:reduce){.bd-launcher{transition:none}}",
   ].join("");
   document.head.appendChild(style);
 

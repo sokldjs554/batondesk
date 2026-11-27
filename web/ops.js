@@ -306,11 +306,11 @@ function renderReview() {
 async function renderPrompts() {
   const box = clear($("#tab-prompts"));
   const data = await api("/v1/prompts");
-  const section = el("section", { style: { marginTop: "18px" } }, el("h2", { style: { fontSize: "24px" }, text: "프롬프트 버전" }), el("p", { class: "muted", style: { margin: "6px 0 12px" }, text: "프롬프트는 버전 파일로 관리합니다. 평가에 쓰인 버전은 잠겨서 내용을 바꿀 수 없고, 바꾸려면 새 버전을 만듭니다." }));
+  const section = el("section", { class: "ops-section" }, el("h2", { text: "프롬프트 버전" }), el("p", { class: "muted", text: "프롬프트는 버전 파일로 관리합니다. 평가에 쓰인 버전은 잠겨서 내용을 바꿀 수 없고, 바꾸려면 새 버전을 만듭니다." }));
   const list = el("div", { class: "prompt-list", id: "prompt-list" });
   for (const version of data.versions) {
     const active = data.active[version.kind] === version.id;
-    const viewer = el("div", { class: "hidden" });
+    const viewer = el("div", { class: "hidden viewer" });
     const toggle = el("button", {
       class: "btn btn-s",
       type: "button",
@@ -359,20 +359,21 @@ async function renderPrompts() {
   section.append(list);
   box.append(section);
 
-  const evalSection = el("section", { style: { marginTop: "30px" }, id: "eval-section" }, el("h2", { style: { fontSize: "24px" }, text: "평가 결과" }));
+  const evalSection = el("section", { class: "ops-section", id: "eval-section" }, el("h2", { text: "평가 결과" }));
   let evals = null;
   try {
     evals = await api("/v1/evals");
   } catch {
     evals = { available: false, note: "이 서버에는 평가 결과가 실려 있지 않습니다. 저장소의 평가 문서(docs/)에서 문항 수, 판정 기준, 반복 실행 결과를 확인할 수 있습니다.", sections: [] };
   }
-  if (evals.note) evalSection.append(el("p", { class: "muted", style: { margin: "6px 0 12px" }, text: evals.note }));
+  if (evals.note) evalSection.append(el("p", { class: "muted", text: evals.note }));
   if (!evals.available) {
     if (!evals.note) evalSection.append(el("div", { class: "empty", text: "평가 결과가 없습니다." }));
   } else {
     for (const section of evals.sections || []) evalSection.append(evalTable(section));
   }
   box.append(evalSection);
+  markScrollable(evalSection);
 }
 
 function formatCell(value, format) {
@@ -393,9 +394,9 @@ function evalTable(section) {
   const numeric = (format) => ["pct", "int", "ms", "usd", "ci"].includes(format);
   return el(
     "div",
-    { style: { marginTop: "18px" } },
-    el("h3", { style: { fontSize: "18px" }, text: section.title }),
-    section.description ? el("p", { class: "small muted", style: { margin: "4px 0 8px" }, text: section.description }) : null,
+    { class: "eval-block" },
+    el("h3", { text: section.title }),
+    section.description ? el("p", { class: "small muted", text: section.description }) : null,
     el(
       "div",
       { class: "table-wrap" },
@@ -406,8 +407,25 @@ function evalTable(section) {
         el("tbody", {}, (section.rows || []).map((row) => el("tr", {}, columns.map((col) => el("td", { class: numeric(col.format) ? "r" : null, text: formatCell(row[col.key], col.format) }))))),
       ),
     ),
+    el("p", { class: "scroll-hint hidden", text: "표가 넓어 옆으로 밀면 나머지 열이 보입니다. 맨 왼쪽 열(실행 이름)은 고정됩니다." }),
     section.footnote ? el("p", { class: "small muted", style: { marginTop: "6px" }, text: section.footnote }) : null,
   );
+}
+
+// 표가 보이는 폭보다 넓으면 오른쪽 끝을 어둡게 하고 안내 글을 보인다(밀어서 더 볼 수 있다는 표시).
+function markScrollable(root) {
+  for (const wrap of root.querySelectorAll(".table-wrap")) {
+    const update = () => {
+      const more = wrap.scrollWidth - wrap.clientWidth - wrap.scrollLeft > 4;
+      if (more) wrap.setAttribute("data-more", "");
+      else wrap.removeAttribute("data-more");
+      const hint = wrap.parentElement.querySelector(".scroll-hint");
+      if (hint) hint.classList.toggle("hidden", wrap.scrollWidth <= wrap.clientWidth + 4);
+    };
+    wrap.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    update();
+  }
 }
 
 // ---- 로그 --------------------------------------------------------------------------

@@ -224,7 +224,36 @@ function fresh() {
       }),
     ),
   );
+  renderStarters();
   updateChrome();
+}
+
+// 빈 대화의 빈자리에 바로 눌러 볼 문의 세 개를 둔다(전체 예시는 옆 '문의 예시·도구' 구역에 있다).
+// 지금 고객으로 보낼 수 있는 것만 고른다: 문서에 답이 있는 문의, 주문 조회, 상담원이 필요한 문의.
+const STARTER_GROUPS = ["문서에 답이 있는 문의", "이어지는 질문", "상담원이 필요한 문의"];
+
+function renderStarters() {
+  if (state.engine === "off") return;
+  const items = [];
+  for (const name of STARTER_GROUPS) {
+    const group = SCENARIOS.find((g) => g.group === name);
+    const item = group && group.items.find((i) => !i.c || i.c === state.customerId);
+    if (item) items.push(item);
+  }
+  if (items.length === 0) return;
+  log.append(
+    el(
+      "div",
+      { class: "starters", id: "starters" },
+      el("span", { class: "starters-label", text: "이런 문의로 시작해 보세요" }),
+      el("div", { class: "chips" }, items.map((item) => el("button", { class: "chip", type: "button", onclick: () => useScenario(item), text: item.t }))),
+    ),
+  );
+}
+
+function dropStarters() {
+  const node = $("#starters");
+  if (node) node.remove();
 }
 
 function startNew() {
@@ -287,6 +316,7 @@ async function ensureConversation() {
 
 function sync(messages) {
   const greeting = $("#greeting");
+  if ((messages || []).length) dropStarters();
   for (const message of messages || []) {
     if (state.rendered.has(message.seq)) continue;
     state.rendered.add(message.seq);
@@ -307,7 +337,8 @@ function sync(messages) {
   }
   if (greeting && state.readOnly) greeting.remove();
   renderFeedback();
-  log.scrollTop = log.scrollHeight;
+  // 저장된 기록은 처음부터 읽는 것이라 맨 위에서, 진행 중인 대화는 맨 아래에서 시작한다.
+  log.scrollTop = state.readOnly ? 0 : log.scrollHeight;
 }
 
 function renderFeedback() {
@@ -372,24 +403,35 @@ function updateChrome() {
   if (state.readOnly) {
     banner.className = "chat-banner readonly";
     const provenance = (conv && conv.meta && conv.meta.provenance) || {};
-    const parts = [];
     if (conv && conv.source === "recorded") {
       // 이 기록이 어디서 나왔는지: 실제 모델 호출인지, 어떤 모델·프롬프트·커밋인지, 고객·상담원 메시지를 누가 썼는지.
+      // 한 줄에는 핵심(모델·프롬프트·기록일·커밋)만 두고, 나머지 설명은 눌러서 펼친다.
       const model = provenance.agent_model || provenance.model;
       const commit = provenance.git_sha || provenance.commit;
-      parts.push(`저장된 상담 기록(읽기 전용)${provenance.kind ? " — " + provenance.kind : ""}`);
-      if (model) parts.push(`모델 ${model}`);
-      if (provenance.agent_prompt) parts.push(`프롬프트 ${provenance.agent_prompt}`);
-      if (provenance.recorded_at) parts.push(`기록 ${String(provenance.recorded_at).slice(0, 10)}`);
-      if (commit) parts.push(`커밋 ${String(commit).slice(0, 7)}`);
-      if (provenance.customer_messages) parts.push(`고객 메시지: ${provenance.customer_messages}`);
-      if (provenance.agent_messages && provenance.agent_messages !== "없음") parts.push(`상담원 메시지: ${provenance.agent_messages}`);
+      const facts = [];
+      if (model) facts.push(`모델 ${model}`);
+      if (provenance.agent_prompt) facts.push(`프롬프트 ${provenance.agent_prompt}`);
+      if (provenance.recorded_at) facts.push(`기록 ${String(provenance.recorded_at).slice(0, 10)}`);
+      if (commit) facts.push(`커밋 ${String(commit).slice(0, 7)}`);
+      const more = [];
+      if (provenance.kind) more.push(provenance.kind);
+      if (provenance.customer_messages) more.push(`고객 메시지: ${provenance.customer_messages}`);
+      if (provenance.agent_messages && provenance.agent_messages !== "없음") more.push(`상담원 메시지: ${provenance.agent_messages}`);
+      banner.append(el("span", { class: "ro-title", text: "저장된 상담 기록(읽기 전용)" }), el("span", { class: "ro-facts" }, facts.map((fact) => el("span", { text: fact }))));
+      if (more.length || provenance.run_url) {
+        banner.append(
+          el(
+            "details",
+            { class: "ro-more" },
+            el("summary", { text: "출처 자세히" }),
+            el("p", {}, more.join(" · "), provenance.run_url ? " · " : "", provenance.run_url ? el("a", { href: provenance.run_url, target: "_blank", rel: "noopener", text: "실행 로그" }) : null),
+          ),
+        );
+      }
     } else {
-      parts.push("운영 화면에서 연 대화입니다(읽기 전용).");
+      banner.append(el("span", { class: "ro-title", text: "운영 화면에서 연 대화입니다(읽기 전용)." }));
     }
-    banner.append(el("span", { text: parts.join(" · ") }));
-    if (provenance.run_url) banner.append(" ", el("a", { href: provenance.run_url, target: "_blank", rel: "noopener", text: "실행 로그" }));
-    banner.append(" ", el("button", { class: "linkbtn", type: "button", onclick: startNew, text: "새 대화 시작" }));
+    banner.append(el("button", { class: "linkbtn", type: "button", onclick: startNew, text: "새 대화 시작" }));
     canType = false;
     canHandoff = false;
   } else if (conv && conv.status === "closed") {
@@ -444,6 +486,7 @@ async function send(raw, { retry = false } = {}) {
     setComposerMessage(`메시지는 ${MAX_CHARS}자까지 보낼 수 있습니다. 지금 ${text.length}자입니다.`);
     return;
   }
+  dropStarters();
   log.querySelectorAll(".error-bubble").forEach((node) => node.parentElement.remove());
   if (!retry || !log.querySelector(".msg.customer.pending")) {
     log.append(el("div", { class: "msg customer pending" }, el("div", { class: "bubble", text })));

@@ -153,9 +153,9 @@ export function exampleBadge(text = "예시 주문 시스템") {
 
 const NAV = [
   { href: "/", key: "home", label: "소개" },
-  { href: "/chat", key: "chat", label: "고객 화면" },
-  { href: "/desk", key: "desk", label: "상담원 화면" },
-  { href: "/ops", key: "ops", label: "운영 화면" },
+  { href: "/chat", key: "chat", label: "고객", wide: " 화면" },
+  { href: "/desk", key: "desk", label: "상담원", wide: " 화면" },
+  { href: "/ops", key: "ops", label: "운영", wide: " 화면" },
 ];
 
 export async function mountChrome(active, { nav = true } = {}) {
@@ -163,7 +163,7 @@ export async function mountChrome(active, { nav = true } = {}) {
     "div",
     { class: "notice", role: "note", id: "notice" },
     el("span", { class: "notice-tag", text: "예시 데이터" }),
-    el("span", { text: NOTICE_TEXT }),
+    el("span", { class: "notice-text", text: NOTICE_TEXT }),
     el("span", { id: "engine-slot" }, el("span", { class: "badge badge-rule plain", text: "서버 확인 중…" })),
   );
   document.body.prepend(notice);
@@ -175,7 +175,10 @@ export async function mountChrome(active, { nav = true } = {}) {
       el(
         "nav",
         { class: "nav", "aria-label": "화면 이동" },
-        NAV.map((item) => el("a", { href: item.href, class: item.key === active ? "active" : null, text: item.label })),
+        // 좁은 화면에서는 " 화면"을 감춰 상표와 메뉴를 한 줄에 둔다(읽어 주는 글은 그대로 "고객 화면").
+        NAV.map((item) =>
+          el("a", { href: item.href, class: item.key === active ? "active" : null, "aria-current": item.key === active ? "page" : null }, item.label, item.wide ? el("span", { class: "nav-wide", text: item.wide }) : null),
+        ),
       ),
     );
     notice.after(top);

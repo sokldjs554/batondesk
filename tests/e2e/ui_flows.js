@@ -83,6 +83,13 @@ async function run(name, viewport) {
   }));
   check(L("첫 화면: 엔진 배지"), (await page.textContent("#engine-slot")).includes("규칙 엔진 (LLM 아님)"));
   check(L("첫 화면: 바닥글에 커밋·프롬프트"), (await page.textContent("#footer-prompt")) === ACTIVE_AGENT && (await page.textContent("#footer-sha")).length > 0);
+  // 웹 글꼴: 방문자 기기에 Pretendard 가 없어도 같은 글꼴로 그려지는지(글꼴 파일이 실제로 내려와 쓰였는가)
+  const fontStatus = await page.evaluate(async () => {
+    await document.fonts.ready;
+    const faces = [...document.fonts].filter((f) => f.family.includes("Pretendard") && f.status === "loaded");
+    return { loaded: faces.length, h1: getComputedStyle(document.querySelector(".hero h1")).fontFamily.split(",")[0] };
+  });
+  check(L("첫 화면: Pretendard 웹 글꼴이 실제로 내려와 쓰임"), fontStatus.loaded >= 1 && fontStatus.h1.includes("Pretendard"), JSON.stringify(fontStatus));
   check(L("첫 화면: 진입 카드 3개·흐름 7단계·구분 3개"), (await page.locator(".entry").count()) === 3 && (await page.locator(".flow li").count()) === 7 && (await page.locator(".legend .panel").count()) === 3);
   await noHScroll(page, L("첫 화면"));
   await smallTargets(page, L("첫 화면"));

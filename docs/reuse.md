@@ -46,3 +46,7 @@
 
 `minwon-rag`, `five-whys-agent`, `quarterguard`(상세 조사), `kodoc-ai`, `ko-search-clinic`, `medical-rag-qa`, `meeting-todo-agent`, `llm-data-analyst-agent`, `datatalk`, `PolicyGate`, `aiops-sentinel`, `careflow-backend`, `fitwitness`(README와 핵심 모듈), `chartwire`(문서 관례와 화면).
 조사는 얕은 복제(최신 커밋 1개)로 했기 때문에 각 저장소의 과거 기록은 보지 않았다.
+
+## 글꼴
+
+`web/fonts/pretendard/` 는 Pretendard Variable 1.3.9(npm `pretendard`, 길형진, SIL Open Font License 1.1)의 동적 부분집합(woff2 92조각)과 CSS, 라이선스 전문이다. 수정하지 않고 넣었다. 방문자는 화면에 쓰이는 글자의 조각만 내려받는다.
