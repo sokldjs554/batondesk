@@ -1,0 +1,18 @@
+  기다리는 중… 지금 배포본: 731369de0d97 / 기대: 683bb39da147
+PASS  배포된 커밋  683bb39da147ff24a0660702e2361a245cb9172d
+PASS  엔진 표시  실제 모델 호출 (claude-haiku-5-5)
+PASS  지식 문서  {'documents': 23, 'chunks': 72}
+PASS  프롬프트 버전  {'id': 'agent-v4', 'sha256': '8fbbd864a03e'}
+PASS  화면 /  200
+PASS  화면 /chat  200
+PASS  화면 /desk  200
+PASS  화면 /ops  200
+PASS  화면 /embed-demo  200
+PASS  화면 /review  200
+PASS  화면 /docs  200
+PASS  화면 /example-commerce/docs  200
+PASS  화면 /static/widget.js  200
+PASS  화면 /static/review-items.json  200
+PASS  지식 검색  return-policy#2
+PASS  예시 고객·주문  200
+PASS  저장된 상담 기록 목록  8건
