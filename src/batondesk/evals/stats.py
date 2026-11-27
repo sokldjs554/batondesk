@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import math
 import random
 from collections import defaultdict
 from collections.abc import Iterable, Mapping, Sequence
@@ -64,6 +65,28 @@ def paired_diff(
         "cases": len(shared),
         "improved": sum(1 for d in deltas if d > 0),
         "regressed": sum(1 for d in deltas if d < 0),
+    }
+
+
+def pass_hat_k(by_case: dict[str, list[float]], k: int) -> dict[str, float | int | None]:
+    """같은 문항을 k번 돌렸을 때 k번 모두 통과할 비율의 추정치(τ-bench 의 pass^k).
+
+    문항마다 n번 실행 중 c번 통과했다면 그 문항의 값은 C(c, k) / C(n, k) 이고, 문항 평균을 낸다.
+    k=1 이면 평균 통과율과 같고, k=n 이면 "n번 모두 통과한 문항의 비율"이다. 한 번 통과와 매번 통과는 다르다:
+    통과율 90%인 에이전트도 같은 문의를 세 번 받으면 한 번은 틀릴 수 있다. n < k 인 문항은 뺀다.
+    """
+    values = []
+    for runs in by_case.values():
+        n, c = len(runs), int(sum(1 for v in runs if v >= 1.0))
+        if n >= k:
+            values.append(math.comb(c, k) / math.comb(n, k))
+    if not values:
+        return {"k": k, "value": None, "cases": 0, "all_pass_cases": 0}
+    return {
+        "k": k,
+        "value": round(sum(values) / len(values), 4),
+        "cases": len(values),
+        "all_pass_cases": sum(1 for v in values if v == 1.0),
     }
 
 

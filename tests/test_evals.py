@@ -290,3 +290,15 @@ def test_regrade_reapplies_only_the_text_checks() -> None:
     assert again["grades"]["abstain_ok"] is True and again["passed"] is True
     broken = regrade_text_checks(case, {**row, "grades": {**row["grades"], "end_state_ok": False}})
     assert broken["passed"] is False, "글자 비교가 아닌 채점은 저장된 값을 그대로 쓴다"
+
+
+def test_pass_hat_k_counts_cases_that_pass_every_time() -> None:
+    """한 번 통과와 매번 통과는 다르다. 3회 중 2회 통과한 문항은 pass^1 에 2/3, pass^2 에 1/3, pass^3 에 0 을 보탠다."""
+    from batondesk.evals.stats import pass_hat_k
+
+    by_case = {"a": [1.0, 1.0, 1.0], "b": [1.0, 1.0, 0.0], "c": [0.0, 0.0, 0.0], "d": [1.0, 1.0, 1.0]}
+    assert pass_hat_k(by_case, 1)["value"] == round((1 + 2 / 3 + 0 + 1) / 4, 4)
+    assert pass_hat_k(by_case, 2)["value"] == round((1 + 1 / 3 + 0 + 1) / 4, 4)
+    every = pass_hat_k(by_case, 3)
+    assert every["value"] == 0.5 and every["all_pass_cases"] == 2 and every["cases"] == 4
+    assert pass_hat_k({"a": [1.0]}, 3)["value"] is None, "반복 횟수가 모자란 문항은 뺀다"

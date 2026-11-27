@@ -8,7 +8,7 @@ from typing import Any
 
 from batondesk.evals.data import AgentCase
 from batondesk.evals.graders import grade_case, regrade_text_checks
-from batondesk.evals.stats import cluster_ci, paired_diff
+from batondesk.evals.stats import cluster_ci, paired_diff, pass_hat_k
 
 CATEGORY_LABEL = {
     "kb_answerable": "문서에 답이 있는 문의",
@@ -169,7 +169,16 @@ def regrade(run_dir: Path, cases: list[AgentCase]) -> dict[str, Any]:
         for old, new in zip(scored, again, strict=True)
         if old["passed"] != new["passed"]
     ]
-    return {"run": run_dir.name, "as_graded": summary["pass"], "regraded": cluster_ci(_by_case(again)), "changed": changed}
+    reps = max(len(v) for v in _by_case(again).values())
+    return {
+        "run": run_dir.name,
+        "as_graded": summary["pass"],
+        "regraded": cluster_ci(_by_case(again)),
+        "changed": changed,
+        # 반복 실행의 신뢰성(pass^k): 당시 채점과 지금 기준 각각
+        "reliability_as_graded": {f"pass^{k}": pass_hat_k(_by_case(scored), k) for k in range(1, reps + 1)},
+        "reliability_regraded": {f"pass^{k}": pass_hat_k(_by_case(again), k) for k in range(1, reps + 1)},
+    }
 
 
 def compare(a_dir: Path, b_dir: Path) -> dict[str, Any]:
@@ -265,7 +274,14 @@ def _regraded_columns(run_dir: Path, cases: list[AgentCase]) -> dict[str, Any]:
     by_id = {c.id: c for c in cases}
     again = [regrade_text_checks(by_id[r["case_id"]], r) for r in rows if not r.get("skipped") and r["case_id"] in by_id]
     overall, injection = cluster_ci(_by_case(again)), cluster_ci(_by_case(again, "injection_blocked"))
-    return {"pass_now": overall["mean"], "pass_now_ci": [overall["lo"], overall["hi"]], "injection_now": injection["mean"]}
+    reps = max((len(v) for v in _by_case(again).values()), default=1)
+    every_time = pass_hat_k(_by_case(again), reps)
+    return {
+        "pass_now": overall["mean"],
+        "pass_now_ci": [overall["lo"], overall["hi"]],
+        "injection_now": injection["mean"],
+        "pass_every_rep_now": every_time["value"],
+    }
 
 
 def build_index(runs_dir: Path, cases_by_split: dict[str, list[AgentCase]] | None = None) -> dict[str, Any]:
@@ -352,6 +368,7 @@ def build_index(runs_dir: Path, cases_by_split: dict[str, list[AgentCase]] | Non
                 "title": "에이전트 전체 평가",
                 "description": "같은 문항을 반복 실행한 통과율. 구간은 문항 단위 부트스트랩 95% 구간. "
                 "'당시 채점'은 실행했을 때의 채점 규칙 그대로이고, '지금 기준'은 그 뒤 고친 채점 규칙(글자 비교)으로 같은 답을 다시 채점한 값이다. "
+                "'매번 통과한 문항'은 반복 실행에서 한 번도 틀리지 않은 문항의 비율이다(pass^k). "
                 "채점 규칙을 왜 고쳤는지는 docs/evaluation.md 7절에 있다.",
                 "columns": [
                     {"key": "run", "label": "실행", "format": "text"},
@@ -363,6 +380,7 @@ def build_index(runs_dir: Path, cases_by_split: dict[str, list[AgentCase]] | Non
                     {"key": "pass", "label": "통과율(당시 채점)", "format": "pct"},
                     {"key": "pass_now", "label": "통과율(지금 기준)", "format": "pct"},
                     {"key": "pass_now_ci", "label": "95% 구간", "format": "ci"},
+                    {"key": "pass_every_rep_now", "label": "매번 통과한 문항", "format": "pct"},
                     {"key": "handoff_precision", "label": "인계 정밀도", "format": "pct"},
                     {"key": "handoff_recall", "label": "인계 재현율", "format": "pct"},
                     {"key": "end_state", "label": "주문 상태 일치", "format": "pct"},

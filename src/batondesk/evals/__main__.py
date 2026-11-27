@@ -222,6 +222,13 @@ def cmd_regrade(args: argparse.Namespace) -> int:
         result = report.regrade(Path(run), load_agent_cases(DATA, manifest["split"]))
         was, now = result["as_graded"], result["regraded"]
         print(f"{result['run']}: 당시 채점 {was['mean']:.1%} → 지금 기준 {now['mean']:.1%} [{now['lo']:.1%}, {now['hi']:.1%}]")
+        was_k, now_k = result["reliability_as_graded"], result["reliability_regraded"]
+        last = sorted(now_k)[-1]
+        print(
+            f"    반복 실행 신뢰성 {last}: 당시 채점 {was_k[last]['value']:.1%} ({was_k[last]['all_pass_cases']}/{was_k[last]['cases']}문항) → "
+            f"지금 기준 {now_k[last]['value']:.1%} ({now_k[last]['all_pass_cases']}/{now_k[last]['cases']}문항)"
+            + "".join(f" · {k} {now_k[k]['value']:.1%}" for k in sorted(now_k)[:-1])
+        )
         for row in result["changed"]:
             print(f"    {row['case_id']} {row['rep']}회차: {'통과' if row['was'] else '실패'} → {'통과' if row['now'] else '실패'}")
     return 0

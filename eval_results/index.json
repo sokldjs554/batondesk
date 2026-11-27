@@ -4,7 +4,7 @@
   "sections": [
     {
       "title": "에이전트 전체 평가",
-      "description": "같은 문항을 반복 실행한 통과율. 구간은 문항 단위 부트스트랩 95% 구간. '당시 채점'은 실행했을 때의 채점 규칙 그대로이고, '지금 기준'은 그 뒤 고친 채점 규칙(글자 비교)으로 같은 답을 다시 채점한 값이다. 채점 규칙을 왜 고쳤는지는 docs/evaluation.md 7절에 있다.",
+      "description": "같은 문항을 반복 실행한 통과율. 구간은 문항 단위 부트스트랩 95% 구간. '당시 채점'은 실행했을 때의 채점 규칙 그대로이고, '지금 기준'은 그 뒤 고친 채점 규칙(글자 비교)으로 같은 답을 다시 채점한 값이다. '매번 통과한 문항'은 반복 실행에서 한 번도 틀리지 않은 문항의 비율이다(pass^k). 채점 규칙을 왜 고쳤는지는 docs/evaluation.md 7절에 있다.",
       "columns": [
         {
           "key": "run",
@@ -50,6 +50,11 @@
           "key": "pass_now_ci",
           "label": "95% 구간",
           "format": "ci"
+        },
+        {
+          "key": "pass_every_rep_now",
+          "label": "매번 통과한 문항",
+          "format": "pct"
         },
         {
           "key": "handoff_precision",
@@ -120,6 +125,7 @@
             0.975
           ],
           "injection_now": 1.0,
+          "pass_every_rep_now": 0.875,
           "handoff_precision": 1.0,
           "handoff_recall": 0.875,
           "end_state": 1.0,
@@ -150,6 +156,7 @@
             0.975
           ],
           "injection_now": 1.0,
+          "pass_every_rep_now": 0.85,
           "handoff_precision": 0.8846,
           "handoff_recall": 0.9583,
           "end_state": 1.0,
@@ -180,6 +187,7 @@
             0.975
           ],
           "injection_now": 1.0,
+          "pass_every_rep_now": 0.875,
           "handoff_precision": 1.0,
           "handoff_recall": 0.75,
           "end_state": 1.0,
@@ -210,6 +218,7 @@
             0.9833
           ],
           "injection_now": 1.0,
+          "pass_every_rep_now": 0.875,
           "handoff_precision": 0.9524,
           "handoff_recall": 0.8333,
           "end_state": 1.0,
@@ -240,6 +249,7 @@
             0.9667
           ],
           "injection_now": 1.0,
+          "pass_every_rep_now": 0.825,
           "handoff_precision": 1.0,
           "handoff_recall": 0.8333,
           "end_state": 1.0,
@@ -270,6 +280,7 @@
             0.9833
           ],
           "injection_now": 1.0,
+          "pass_every_rep_now": 0.85,
           "handoff_precision": 0.8519,
           "handoff_recall": 0.9583,
           "end_state": 1.0,
@@ -300,6 +311,7 @@
             0.9625
           ],
           "injection_now": 1.0,
+          "pass_every_rep_now": 0.85,
           "handoff_precision": 0.8667,
           "handoff_recall": 0.8125,
           "end_state": 1.0,
@@ -330,6 +342,7 @@
             1.0
           ],
           "injection_now": 1.0,
+          "pass_every_rep_now": 0.95,
           "handoff_precision": 0.9231,
           "handoff_recall": 1.0,
           "end_state": 1.0,
@@ -360,6 +373,7 @@
             0.9917
           ],
           "injection_now": 1.0,
+          "pass_every_rep_now": 0.9,
           "handoff_precision": 1.0,
           "handoff_recall": 0.875,
           "end_state": 1.0,
@@ -390,6 +404,7 @@
             0.9917
           ],
           "injection_now": 1.0,
+          "pass_every_rep_now": 0.9,
           "handoff_precision": 1.0,
           "handoff_recall": 0.9167,
           "end_state": 1.0,
@@ -420,6 +435,7 @@
             1.0
           ],
           "injection_now": 1.0,
+          "pass_every_rep_now": 0.95,
           "handoff_precision": 0.8889,
           "handoff_recall": 1.0,
           "end_state": 1.0,
@@ -450,6 +466,7 @@
             1.0
           ],
           "injection_now": 1.0,
+          "pass_every_rep_now": 0.95,
           "handoff_precision": 0.96,
           "handoff_recall": 1.0,
           "end_state": 1.0,
@@ -480,6 +497,7 @@
             0.974
           ],
           "injection_now": 1.0,
+          "pass_every_rep_now": 0.875,
           "handoff_precision": 0.9697,
           "handoff_recall": 0.9697,
           "end_state": 1.0,
@@ -510,6 +528,7 @@
             0.974
           ],
           "injection_now": 1.0,
+          "pass_every_rep_now": 0.875,
           "handoff_precision": 0.8889,
           "handoff_recall": 0.9697,
           "end_state": 1.0,
@@ -540,6 +559,7 @@
             1.0
           ],
           "injection_now": 1.0,
+          "pass_every_rep_now": 0.95,
           "handoff_precision": 0.9412,
           "handoff_recall": 1.0,
           "end_state": 1.0,

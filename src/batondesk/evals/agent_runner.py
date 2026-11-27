@@ -24,7 +24,7 @@ from typing import Any
 
 from batondesk.evals.data import EVAL_NOW, AgentCase
 from batondesk.evals.graders import grade_case
-from batondesk.evals.stats import cluster_ci, group
+from batondesk.evals.stats import cluster_ci, group, pass_hat_k
 from batondesk.llm.base import LLMClient
 from batondesk.obs.metrics import percentile
 from batondesk.service import ServiceError, SupportService
@@ -296,6 +296,10 @@ def summarize(rows: list[dict[str, Any]], errors: list[dict[str, Any]], *, cases
             "over_handoff_rate": round(fp / (fp + tn), 4) if fp + tn else None,
             "by_reason": dict(Counter(r["handoff_reason"] for r in rows if r["actual_handoff"])),
             "by_source": dict(Counter(r["handoff_source"] for r in rows if r["actual_handoff"])),
+        },
+        # 반복 실행의 신뢰성: k번 모두 통과할 비율(pass^k). k=반복 횟수이면 "매번 통과한 문항의 비율"이다.
+        "reliability": {
+            f"pass^{k}": pass_hat_k({cid: [float(v) for v in values] for cid, values in per_case.items()}, k) for k in range(1, reps + 1)
         },
         "flaky_cases": flaky,
         "always_failing_cases": always_fail,
