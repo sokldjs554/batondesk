@@ -4,8 +4,8 @@
 
 > 주문·고객·정책은 가상의 예시 쇼핑몰 "바통마켓"의 **예시 데이터**입니다. 실제 고객 정보나 주문 시스템을 쓰지 않습니다.
 
-**공개 데모: <https://batondesk.onrender.com>** — 무료 호스팅이라 15분 동안 접속이 없으면 잠들고, 첫 접속에 1분쯤 걸립니다.
-지금은 서버에 모델 키가 없어 **"모델 호출 꺼짐"** 상태입니다: 새 문의는 받지 않고, 실제 모델로 만들어 저장해 둔 상담 기록 8건과 평가 결과를 볼 수 있습니다.
+**공개 데모: <https://batondesk.onrender.com>** — 실제 모델(`claude-haiku-5-5`)에 직접 문의할 수 있습니다. 무료 호스팅이라 15분 동안 접속이 없으면 잠들고, 첫 접속에 1분쯤 걸립니다.
+하루 추정 비용 상한(1.5달러)과 시간당 요청 수 상한이 걸려 있어, 넘으면 새 문의를 받지 않고 저장된 상담 기록만 보여 줍니다.
 
 ![첫 화면](docs/images/desktop-01-landing-fold.png)
 
@@ -19,7 +19,7 @@
 | 프롬프트 버전 비교 | **실행함.** 에이전트 v1~v4, 근거 판정 v1~v4 를 같은 문항으로 비교. **평가용에서 v4 는 v1 보다 통과율이 높지 않았다**(아래) |
 | CI | GitHub Actions 에서 실행 중: 단위 테스트·화면 점검·이미지 빌드, 프롬프트·에이전트가 바뀌면 실제 모델 평가와 회귀 게이트 |
 | 실제 모델이 만든 저장 상담 기록 | 8건 (`data/recordings/`). 키 없이 뜬 서버에서도 읽기 전용으로 볼 수 있음 |
-| 공개 데모 | **배포됨**: <https://batondesk.onrender.com> (Render 무료, 2026-11-26 저장소 주인이 배포). push 마다 `live-gate` 가 배포된 커밋·API·PC/모바일 화면을 검사하고 캡처를 `live-checks` 브랜치에 남긴다. **서버에 모델 키가 없어 실시간 문의는 꺼져 있다** — 저장된 기록 8건만 볼 수 있다 |
+| 공개 데모 | **배포됨, 실제 모델 응답 확인**: <https://batondesk.onrender.com> (Render 무료. 2026-11-26 저장소 주인이 배포, 11-27 모델 키 입력). push 마다 `live-gate` 가 배포된 커밋·API·PC/모바일 화면을 검사하고 캡처를 `live-checks` 브랜치에 남긴다. 2026-11-27 검사에서 실제 모델에 보낸 문의 2건이 근거와 함께 답했다(6.0~6.6초) |
 | 사람 검수, 실제 사용자 평가 | **없음.** 문항·정답·채점 규칙·실패 분류를 모두 AI가 했다 |
 
 못 한 것의 전체 목록은 [docs/limitations.md](docs/limitations.md), 누가 무엇을 했는지는 [docs/how-this-was-built.md](docs/how-this-was-built.md) 에 있습니다.
@@ -47,6 +47,10 @@
 | ![운영](docs/images/desktop-44-rec-ops.png) | ![평가](docs/images/desktop-17-ops-evals.png) |
 
 왼쪽 위 화면의 붉은 상자가 근거 검사에 걸려 고객에게 나가지 않은 초안이다("국내 배송 기준"이라는 말이 근거에 없었다). 모델은 그 문장을 빼고 다시 썼다.
+
+**공개 데모에서 실제 모델에 문의한 화면** — 2026-11-27 배포 검사(`live-gate`, GitHub Actions 러너의 브라우저)가 찍었다. 커밋 `c0c7a36`.
+
+![공개 데모](docs/images/public-04-chat-live-answer.png)
 
 **규칙 엔진(LLM 아님)으로 띄운 서버** — 대화를 직접 해 보는 흐름과 오류 상태. 화면 상단 배지에 "규칙 엔진 (LLM 아님)"이라고 표시된다.
 
@@ -124,8 +128,7 @@ docker build -t batondesk . && docker run -p 8000:8000 batondesk
 
 공개 주소는 <https://batondesk.onrender.com> 이다. `render.yaml` 과 `Dockerfile` 로 Render 무료 웹 서비스 한 개에 올라가 있고, `main` 에 push 하면 다시 배포된다.
 
-- **지금 상태**: 서버에 `ANTHROPIC_API_KEY` 가 없어 "모델 호출 꺼짐"으로 떠 있다. 첫 화면은 저장된 상담 기록으로 안내한다.
-  실시간 문의를 켜려면 Render 대시보드 → 서비스 → Environment 에서 `ANTHROPIC_API_KEY` 를 넣는다. 하루 추정 비용 상한(기본 1.5달러)과 시간당 요청 수 상한이 걸려 있고, 넘으면 새 문의를 받지 않는다.
+- **지금 상태**: 실제 모델 호출이 켜져 있다(2026-11-27 확인). 하루 추정 비용 상한(기본 1.5달러)과 시간당 요청 수 상한이 걸려 있고, 넘으면 새 문의를 받지 않는다. 서버에 `ANTHROPIC_API_KEY` 가 없으면 "모델 호출 꺼짐"으로 뜨고 첫 화면이 저장된 상담 기록으로 안내한다.
 - **배포 검사**: push 마다 `live-gate` 워크플로가 (1) 공개 주소의 `/v1/release` 가 그 커밋을 서빙할 때까지 기다린 뒤 API 를 검사하고, (2) 실제 브라우저로 PC·모바일 화면을 열어 보고, (3) 결과와 캡처를 `live-checks` 브랜치의 `<커밋>-<실행 번호>/` 에 남긴다. 수동 실행에서 `with_model` 을 켜면 실제 모델에 문의 한 건을 보낸다.
 - 다른 곳에 직접 올리려면: <https://render.com/deploy?repo=https://github.com/sokldjs554/batondesk> 에서 Blueprint 로 연결한다.
 
