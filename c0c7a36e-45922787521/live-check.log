@@ -1,0 +1,17 @@
+PASS  배포된 커밋  c0c7a36ee3f1ee02d0a4fafb0b84fcd8f55e24a8
+PASS  엔진 표시  실제 모델 호출 (claude-haiku-5-5)
+PASS  지식 문서  {'documents': 23, 'chunks': 72}
+PASS  프롬프트 버전  {'id': 'agent-v4', 'sha256': '8fbbd864a03e'}
+PASS  화면 /  200
+PASS  화면 /chat  200
+PASS  화면 /desk  200
+PASS  화면 /ops  200
+PASS  화면 /embed-demo  200
+PASS  화면 /docs  200
+PASS  화면 /example-commerce/docs  200
+PASS  화면 /static/widget.js  200
+PASS  지식 검색  return-policy#2
+PASS  예시 고객·주문  200
+PASS  저장된 상담 기록 목록  8건
+PASS  대화 시작  200
+PASS  실제 모델 응답(반품 기한 7일, 출처 포함)  {'status': 200, 'text': '단순변심 반품은 상품을 받은 날부터 7일 이내에 신청하시면 됩니다. 받은 날은 기간에 포함하지 않으며, 신청만 7일 안에 하면 되고 상품이 그 기간 안에 도착할 필요는 없습니다.\n\n참고로 단순변심 반품 시 반품 배송', 'citations': ['K1', 'K2', 'K3'], 'turn': {'latency_ms': 6240.3, 'outcome': 'answered', 'grounding_verdict': 'grounded', 'revisions': 0, 'blocked_count': 0, 'engine': 'anthropic', 'model': 'claude-haiku-5-5', 'prompt_id': 'agent-v4', 'llm_calls': 2, 'tool_calls': 0, 'tool_errors': 0, 'cost_usd': 0.001663, 'error': None, 'stage_latency_ms': {'retrieval': 1.5, 'llm_agent': 3445.7, 'llm_checks': 2727.8, 'tools': 0.0}}}
