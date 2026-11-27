@@ -302,3 +302,52 @@ def test_pass_hat_k_counts_cases_that_pass_every_time() -> None:
     every = pass_hat_k(by_case, 3)
     assert every["value"] == 0.5 and every["all_pass_cases"] == 2 and every["cases"] == 4
     assert pass_hat_k({"a": [1.0]}, 3)["value"] is None, "반복 횟수가 모자란 문항은 뺀다"
+
+
+def test_cohen_kappa_separates_agreement_from_chance() -> None:
+    from batondesk.evals.stats import cohen_kappa
+
+    perfect = cohen_kappa([("a", "a"), ("b", "b"), ("a", "a"), ("b", "b")])
+    assert perfect["agreement"] == 1.0 and perfect["kappa"] == 1.0
+    # 둘 다 절반씩 a/b 를 고르고 절반만 맞으면 우연 수준이다: 일치율 50%, kappa 0
+    chance = cohen_kappa([("a", "a"), ("a", "b"), ("b", "a"), ("b", "b")])
+    assert chance["agreement"] == 0.5 and chance["kappa"] == 0.0
+    # 한쪽이 한 가지 답만 하면 kappa 를 계산할 수 없다(일치율은 낸다)
+    one_sided = cohen_kappa([("a", "a"), ("a", "a")])
+    assert one_sided["agreement"] == 1.0 and one_sided["kappa"] is None
+    assert cohen_kappa([])["n"] == 0
+
+
+def test_human_review_kit_matches_the_data_and_scores_labels() -> None:
+    """저장소의 검수 표본은 지금 평가 자료에서 만든 것과 같아야 하고, 정답을 그대로 따라 한 라벨은 일치율 100%가 나와야 한다."""
+    import subprocess
+    import sys
+
+    from batondesk.evals import human
+    from batondesk.settings import REPO_ROOT
+
+    check = subprocess.run([sys.executable, "scripts/build_human_review.py", "--check"], cwd=REPO_ROOT, capture_output=True, text=True)
+    assert check.returncode == 0, check.stderr
+
+    items = json.loads((REPO_ROOT / "web" / "review-items.json").read_text(encoding="utf-8"))
+    key = json.loads((REPO_ROOT / "data" / "human_review" / "key.json").read_text(encoding="utf-8"))
+    assert items["kit"] == key["kit"] and {i["id"] for i in items["items"]} == set(key["items"])
+    blob = json.dumps(items, ensure_ascii=False)
+    leaked = [k["source_id"] for k in key["items"].values() if k["source_id"].split("#")[0] in blob]
+    assert not leaked, f"가린 문항에 원래 문항 ID가 보인다: {leaked[:3]}"
+    assert '"gold"' not in blob and '"label"' not in blob, "가린 문항에 정답이 들어 있으면 안 된다"
+
+    echo = {"kit": key["kit"], "reviewer": "테스트", "labels": {bid: {"label": k["gold"], "note": ""} for bid, k in key["items"].items()}}
+    result = human.agreement(echo, key)
+    for suite in ("grounding", "resolution", "agent"):
+        block = result["suites"][suite]
+        assert block["labelled"] == block["sample"] and block["human_vs_reference"]["agreement"] == 1.0 and not block["disagreements"]
+    flipped = {
+        **echo,
+        "labels": {**echo["labels"], "A01": {"label": "wrong" if key["items"]["A01"]["gold"] == "correct" else "correct", "note": "x"}},
+    }
+    agent = human.agreement(flipped, key)["suites"]["agent"]
+    assert agent["human_vs_reference"]["agree"] == agent["sample"] - 1
+    assert len(agent["grader_passed_but_human_says_wrong"]) + len(agent["grader_failed_but_human_says_correct"]) == 1
+    with pytest.raises(ValueError, match="표본"):
+        human.agreement({**echo, "kit": "다른표본"}, key)

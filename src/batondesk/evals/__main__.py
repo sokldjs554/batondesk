@@ -234,6 +234,17 @@ def cmd_regrade(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_human(args: argparse.Namespace) -> int:
+    from batondesk.evals import human
+
+    result = human.run(Path(args.labels), Path(args.key))
+    print(human.text_report(result))
+    if args.out:
+        Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.out).write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return 0
+
+
 def cmd_gate(args: argparse.Namespace) -> int:
     problems = report.check_agent_gate(Path(args.run), json.loads(Path(args.gate).read_text(encoding="utf-8")))
     for problem in problems:
@@ -332,6 +343,11 @@ def main() -> int:
     regrade = sub.add_parser("regrade", help="저장된 에이전트 실행의 글자 비교 채점을 지금 기준으로 다시 계산")
     regrade.add_argument("runs", nargs="+")
     regrade.set_defaults(func=cmd_regrade)
+    human_cmd = sub.add_parser("human", help="사람이 가린 채 매긴 라벨과 정답·판정기·채점 규칙의 일치도")
+    human_cmd.add_argument("labels", help="/review 화면이 내보낸 JSON 파일")
+    human_cmd.add_argument("--key", default=str(REPO_ROOT / "data" / "human_review" / "key.json"))
+    human_cmd.add_argument("--out", default=None)
+    human_cmd.set_defaults(func=cmd_human)
     compare = sub.add_parser("compare", help="두 실행을 같은 문항끼리 비교")
     compare.add_argument("a")
     compare.add_argument("b")

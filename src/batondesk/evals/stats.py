@@ -97,3 +97,20 @@ def group(rows: Sequence[Mapping[str, Any]], key: str, value: str) -> dict[str, 
         if v is not None:
             out[str(row[key])].append(float(v))
     return dict(out)
+
+
+def cohen_kappa(pairs: Sequence[tuple[str, str]]) -> dict[str, float | int | None]:
+    """두 판정자의 일치도. 단순 일치율과, 우연히 맞을 확률을 뺀 Cohen's kappa.
+
+    kappa = (관찰 일치율 − 우연 일치율) / (1 − 우연 일치율). 한쪽이 한 가지 답만 했으면 분모가 0이 되어 None 이다.
+    표본이 작으면(수십 건) kappa 의 폭이 넓다. 건수와 함께 읽는다.
+    """
+    n = len(pairs)
+    if n == 0:
+        return {"n": 0, "agree": 0, "agreement": None, "kappa": None}
+    agree = sum(1 for a, b in pairs if a == b)
+    observed = agree / n
+    labels = {x for pair in pairs for x in pair}
+    expected = sum((sum(1 for a, _ in pairs if a == label) / n) * (sum(1 for _, b in pairs if b == label) / n) for label in labels)
+    kappa = None if expected >= 1.0 else round((observed - expected) / (1 - expected), 4)
+    return {"n": n, "agree": agree, "agreement": round(observed, 4), "kappa": kappa}

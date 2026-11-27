@@ -36,14 +36,14 @@
 
 | 항목 | 상태 |
 |---|---|
-| 백엔드, 에이전트 그래프, 판정 API, 예시 주문 시스템 | 구현. 테스트 149건 통과(모델 대역 사용) |
-| 화면(고객·상담원·운영·위젯) | 구현. 브라우저 점검 154항목 통과(PC 1440×900, 모바일 390×844) |
+| 백엔드, 에이전트 그래프, 판정 API, 예시 주문 시스템 | 구현. 테스트 152건 통과(모델 대역 사용) |
+| 화면(고객·상담원·운영·위젯) | 구현. 브라우저 점검 172항목 통과(PC 1440×900, 모바일 390×844) |
 | 실제 모델 평가 | **실행함.** `claude-haiku-5-5`, GitHub Actions. 평가 실행 25건(개발용 20, 평가용 5), 모델 호출 6,547회, 추정 비용 합계 약 2.4달러. 원자료가 `eval_results/runs/` 에 있음 |
 | 프롬프트 버전 비교 | **실행함.** 에이전트 v1~v4, 근거 판정 v1~v4 를 같은 문항으로 비교. **평가용에서 v4 는 v1 보다 통과율이 높지 않았다**(위 표) |
 | CI | GitHub Actions 에서 실행 중: 단위 테스트·화면 점검·이미지 빌드, 프롬프트·에이전트가 바뀌면 실제 모델 평가와 회귀 게이트 |
 | 실제 모델이 만든 저장 상담 기록 | 8건 (`data/recordings/`). 키 없이 뜬 서버에서도 읽기 전용으로 볼 수 있음 |
 | 공개 데모 | **배포됨, 실제 모델 응답 확인**: <https://batondesk.onrender.com> (Render 무료. 2026-11-26 저장소 주인이 배포, 11-27 모델 키 입력). push 마다 `live-gate` 가 배포된 커밋·API·PC/모바일 화면을 검사하고 캡처를 `live-checks` 브랜치에 남긴다. 2026-11-27 검사에서 실제 모델에 보낸 문의 2건이 근거와 함께 답했다(6.0~6.6초) |
-| 사람 검수, 실제 사용자 평가 | **없음.** 문항·정답·채점 규칙·실패 분류를 모두 AI가 했다 |
+| 사람 검수, 실제 사용자 평가 | **없음.** 문항·정답·채점 규칙·실패 분류를 모두 AI가 했다. 정답을 가리고 사람이 직접 매기는 화면([/review](https://batondesk.onrender.com/review), 64건)과 일치도 계산은 준비되어 있고, 매긴 결과는 아직 없다 — [docs/human-review.md](docs/human-review.md) |
 
 못 한 것의 전체 목록은 [docs/limitations.md](docs/limitations.md), 누가 무엇을 했는지는 [docs/how-this-was-built.md](docs/how-this-was-built.md) 에 있습니다.
 
@@ -131,8 +131,8 @@ ANTHROPIC_API_KEY=… batondesk serve             # 실제 모델
 <http://localhost:8000> → 고객 화면(`/chat`) → 상담원 화면(`/desk`) → 운영 화면(`/ops`). API 문서는 `/docs`.
 
 ```bash
-pytest                                             # 테스트 149건
-tests/e2e/run.sh                                   # 브라우저 화면 점검 154항목(서버 3종)
+pytest                                             # 테스트 152건
+tests/e2e/run.sh                                   # 브라우저 화면 점검 172항목(서버 3종)
 python -m batondesk.evals retrieval --split test   # 검색 평가
 docker build -t batondesk . && docker run -p 8000:8000 batondesk
 ```
@@ -177,6 +177,7 @@ data/recordings/  실제 모델로 만든 상담 기록 8건     eval_results/  
 | [테스트 방법](docs/testing.md) | 무엇을 어떻게 확인하는가 |
 | [조사 기록](docs/research.md) | 국내외 상담 제품, 지표 정의, 참고한 화면과 이유 |
 | [재사용 범위](docs/reuse.md) | 기존 저장소 조사, 가져온 코드와 바꾼 점 |
+| [사람 검수](docs/human-review.md) | 정답을 가리고 직접 매기는 방법, 무엇과 견주는가, 결과(아직 없음) |
 | [한계](docs/limitations.md) | 하지 못한 것 |
 | [만들어진 방식](docs/how-this-was-built.md) | 누가 무엇을 했나, 재현 체크리스트 |
 | [변경 기록](CHANGELOG.md) | |

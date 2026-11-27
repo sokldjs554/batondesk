@@ -1,0 +1,902 @@
+{
+ "kit": "015c128a2da0",
+ "seed": 20261127,
+ "note": "검수를 마치기 전에는 열어 보지 않는다. 열어 봤다면 그 사실을 결과에 적는다.",
+ "sources": {
+  "grounding_judges": {
+   "grounding-v4": "20261126-124412-grounding-test-test-g4",
+   "grounding-v1": "20261126-124414-grounding-test-test-g1"
+  },
+  "resolution_judge": "20261126-124412-resolution-test-test-r1",
+  "agent_run": "20261126-124400-agent-test-test-a4-g4",
+  "agent_grading": "지금의 채점 규칙"
+ },
+ "items": {
+  "G01": {
+   "suite": "grounding",
+   "source_id": "G-T-041",
+   "kind": "process_statement",
+   "gold": "grounded",
+   "judges": {
+    "grounding-v4": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ],
+    "grounding-v1": [
+     "ungrounded",
+     "grounded",
+     "grounded"
+    ]
+   }
+  },
+  "G02": {
+   "suite": "grounding",
+   "source_id": "G-T-006",
+   "kind": "paraphrase",
+   "gold": "grounded",
+   "judges": {
+    "grounding-v4": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ],
+    "grounding-v1": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ]
+   }
+  },
+  "G03": {
+   "suite": "grounding",
+   "source_id": "G-T-037",
+   "kind": "wrong_order_fact",
+   "gold": "ungrounded",
+   "judges": {
+    "grounding-v4": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ],
+    "grounding-v1": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ]
+   }
+  },
+  "G04": {
+   "suite": "grounding",
+   "source_id": "G-T-012",
+   "kind": "multi_evidence",
+   "gold": "grounded",
+   "judges": {
+    "grounding-v4": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ],
+    "grounding-v1": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ]
+   }
+  },
+  "G05": {
+   "suite": "grounding",
+   "source_id": "G-T-035",
+   "kind": "expired_applied",
+   "gold": "ungrounded",
+   "judges": {
+    "grounding-v4": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ],
+    "grounding-v1": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ]
+   }
+  },
+  "G06": {
+   "suite": "grounding",
+   "source_id": "G-T-027",
+   "kind": "negation_flip",
+   "gold": "ungrounded",
+   "judges": {
+    "grounding-v4": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ],
+    "grounding-v1": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ]
+   }
+  },
+  "G07": {
+   "suite": "grounding",
+   "source_id": "G-T-031",
+   "kind": "unsupported_promise",
+   "gold": "ungrounded",
+   "judges": {
+    "grounding-v4": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ],
+    "grounding-v1": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ]
+   }
+  },
+  "G08": {
+   "suite": "grounding",
+   "source_id": "G-T-016",
+   "kind": "negative",
+   "gold": "grounded",
+   "judges": {
+    "grounding-v4": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ],
+    "grounding-v1": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ]
+   }
+  },
+  "G09": {
+   "suite": "grounding",
+   "source_id": "G-T-005",
+   "kind": "paraphrase",
+   "gold": "grounded",
+   "judges": {
+    "grounding-v4": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ],
+    "grounding-v1": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ]
+   }
+  },
+  "G10": {
+   "suite": "grounding",
+   "source_id": "G-T-004",
+   "kind": "paraphrase",
+   "gold": "grounded",
+   "judges": {
+    "grounding-v4": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ],
+    "grounding-v1": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ]
+   }
+  },
+  "G11": {
+   "suite": "grounding",
+   "source_id": "G-T-003",
+   "kind": "faithful",
+   "gold": "grounded",
+   "judges": {
+    "grounding-v4": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ],
+    "grounding-v1": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ]
+   }
+  },
+  "G12": {
+   "suite": "grounding",
+   "source_id": "G-T-010",
+   "kind": "computed",
+   "gold": "grounded",
+   "judges": {
+    "grounding-v4": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ],
+    "grounding-v1": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ]
+   }
+  },
+  "G13": {
+   "suite": "grounding",
+   "source_id": "G-T-021",
+   "kind": "number_swap",
+   "gold": "ungrounded",
+   "judges": {
+    "grounding-v4": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ],
+    "grounding-v1": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ]
+   }
+  },
+  "G14": {
+   "suite": "grounding",
+   "source_id": "G-T-019",
+   "kind": "expired_handled",
+   "gold": "grounded",
+   "judges": {
+    "grounding-v4": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ],
+    "grounding-v1": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ]
+   }
+  },
+  "G15": {
+   "suite": "grounding",
+   "source_id": "G-T-048",
+   "kind": "session_context",
+   "gold": "grounded",
+   "judges": {
+    "grounding-v4": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ],
+    "grounding-v1": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ]
+   }
+  },
+  "G16": {
+   "suite": "grounding",
+   "source_id": "G-T-040",
+   "kind": "partial",
+   "gold": "ungrounded",
+   "judges": {
+    "grounding-v4": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ],
+    "grounding-v1": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ]
+   }
+  },
+  "G17": {
+   "suite": "grounding",
+   "source_id": "G-T-008",
+   "kind": "computed",
+   "gold": "grounded",
+   "judges": {
+    "grounding-v4": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ],
+    "grounding-v1": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ]
+   }
+  },
+  "G18": {
+   "suite": "grounding",
+   "source_id": "G-T-022",
+   "kind": "number_swap",
+   "gold": "ungrounded",
+   "judges": {
+    "grounding-v4": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ],
+    "grounding-v1": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ]
+   }
+  },
+  "G19": {
+   "suite": "grounding",
+   "source_id": "G-T-025",
+   "kind": "period_swap",
+   "gold": "ungrounded",
+   "judges": {
+    "grounding-v4": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ],
+    "grounding-v1": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ]
+   }
+  },
+  "G20": {
+   "suite": "grounding",
+   "source_id": "G-T-050",
+   "kind": "outcome_promise",
+   "gold": "ungrounded",
+   "judges": {
+    "grounding-v4": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ],
+    "grounding-v1": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ]
+   }
+  },
+  "G21": {
+   "suite": "grounding",
+   "source_id": "G-T-044",
+   "kind": "process_statement",
+   "gold": "grounded",
+   "judges": {
+    "grounding-v4": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ],
+    "grounding-v1": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ]
+   }
+  },
+  "G22": {
+   "suite": "grounding",
+   "source_id": "G-T-017",
+   "kind": "negative",
+   "gold": "grounded",
+   "judges": {
+    "grounding-v4": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ],
+    "grounding-v1": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ]
+   }
+  },
+  "G23": {
+   "suite": "grounding",
+   "source_id": "G-T-036",
+   "kind": "wrong_order_fact",
+   "gold": "ungrounded",
+   "judges": {
+    "grounding-v4": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ],
+    "grounding-v1": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ]
+   }
+  },
+  "G24": {
+   "suite": "grounding",
+   "source_id": "G-T-026",
+   "kind": "negation_flip",
+   "gold": "ungrounded",
+   "judges": {
+    "grounding-v4": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ],
+    "grounding-v1": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ]
+   }
+  },
+  "G25": {
+   "suite": "grounding",
+   "source_id": "G-T-054",
+   "kind": "unconfirmed_as_confirmed",
+   "gold": "ungrounded",
+   "judges": {
+    "grounding-v4": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ],
+    "grounding-v1": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ]
+   }
+  },
+  "G26": {
+   "suite": "grounding",
+   "source_id": "G-T-039",
+   "kind": "partial",
+   "gold": "ungrounded",
+   "judges": {
+    "grounding-v4": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ],
+    "grounding-v1": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ]
+   }
+  },
+  "G27": {
+   "suite": "grounding",
+   "source_id": "G-T-046",
+   "kind": "session_context",
+   "gold": "grounded",
+   "judges": {
+    "grounding-v4": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ],
+    "grounding-v1": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ]
+   }
+  },
+  "G28": {
+   "suite": "grounding",
+   "source_id": "G-T-009",
+   "kind": "computed",
+   "gold": "grounded",
+   "judges": {
+    "grounding-v4": [
+     "grounded",
+     "ungrounded",
+     "ungrounded"
+    ],
+    "grounding-v1": [
+     "grounded",
+     "grounded",
+     "grounded"
+    ]
+   }
+  },
+  "G29": {
+   "suite": "grounding",
+   "source_id": "G-T-029",
+   "kind": "invented_policy",
+   "gold": "ungrounded",
+   "judges": {
+    "grounding-v4": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ],
+    "grounding-v1": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ]
+   }
+  },
+  "G30": {
+   "suite": "grounding",
+   "source_id": "G-T-038",
+   "kind": "partial",
+   "gold": "ungrounded",
+   "judges": {
+    "grounding-v4": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ],
+    "grounding-v1": [
+     "ungrounded",
+     "ungrounded",
+     "ungrounded"
+    ]
+   }
+  },
+  "R01": {
+   "suite": "resolution",
+   "source_id": "R-T-004",
+   "kind": "restates_and_accepts",
+   "gold": "resolved_confirmed",
+   "judges": {
+    "resolution-v1": [
+     "resolved_confirmed",
+     "resolved_confirmed",
+     "resolved_confirmed"
+    ]
+   }
+  },
+  "R02": {
+   "suite": "resolution",
+   "source_id": "R-T-015",
+   "kind": "how_to_left",
+   "gold": "resolved_assumed",
+   "judges": {
+    "resolution-v1": [
+     "resolved_assumed",
+     "resolved_assumed",
+     "resolved_assumed"
+    ]
+   }
+  },
+  "R03": {
+   "suite": "resolution",
+   "source_id": "R-T-005",
+   "kind": "says_solved",
+   "gold": "resolved_confirmed",
+   "judges": {
+    "resolution-v1": [
+     "resolved_confirmed",
+     "resolved_confirmed",
+     "resolved_confirmed"
+    ]
+   }
+  },
+  "R04": {
+   "suite": "resolution",
+   "source_id": "R-T-027",
+   "kind": "asked_order_number",
+   "gold": "pending_customer",
+   "judges": {
+    "resolution-v1": [
+     "pending_customer",
+     "pending_customer",
+     "pending_customer"
+    ]
+   }
+  },
+  "R05": {
+   "suite": "resolution",
+   "source_id": "R-T-036",
+   "kind": "wrong_company",
+   "gold": "not_applicable",
+   "judges": {
+    "resolution-v1": [
+     "not_applicable",
+     "not_applicable",
+     "not_applicable"
+    ]
+   }
+  },
+  "R06": {
+   "suite": "resolution",
+   "source_id": "R-T-006",
+   "kind": "casual_ok",
+   "gold": "resolved_confirmed",
+   "judges": {
+    "resolution-v1": [
+     "resolved_confirmed",
+     "resolved_confirmed",
+     "resolved_confirmed"
+    ]
+   }
+  },
+  "R07": {
+   "suite": "resolution",
+   "source_id": "R-T-024",
+   "kind": "incomplete_answer",
+   "gold": "unresolved",
+   "judges": {
+    "resolution-v1": [
+     "unresolved",
+     "unresolved",
+     "unresolved"
+    ]
+   }
+  },
+  "R08": {
+   "suite": "resolution",
+   "source_id": "R-T-010",
+   "kind": "order_status_left",
+   "gold": "resolved_assumed",
+   "judges": {
+    "resolution-v1": [
+     "resolved_assumed",
+     "resolved_assumed",
+     "resolved_assumed"
+    ]
+   }
+  },
+  "R09": {
+   "suite": "resolution",
+   "source_id": "R-T-013",
+   "kind": "refund_status_left",
+   "gold": "resolved_assumed",
+   "judges": {
+    "resolution-v1": [
+     "resolved_assumed",
+     "resolved_assumed",
+     "resolved_assumed"
+    ]
+   }
+  },
+  "R10": {
+   "suite": "resolution",
+   "source_id": "R-T-011",
+   "kind": "multi_turn_all_answered",
+   "gold": "resolved_assumed",
+   "judges": {
+    "resolution-v1": [
+     "resolved_assumed",
+     "resolved_assumed",
+     "resolved_assumed"
+    ]
+   }
+  },
+  "R11": {
+   "suite": "resolution",
+   "source_id": "R-T-018",
+   "kind": "customer_objects",
+   "gold": "unresolved",
+   "judges": {
+    "resolution-v1": [
+     "unresolved",
+     "unresolved",
+     "unresolved"
+    ]
+   }
+  },
+  "R12": {
+   "suite": "resolution",
+   "source_id": "R-T-022",
+   "kind": "resigned_remark",
+   "gold": "unresolved",
+   "judges": {
+    "resolution-v1": [
+     "unresolved",
+     "unresolved",
+     "unresolved"
+    ]
+   }
+  },
+  "R13": {
+   "suite": "resolution",
+   "source_id": "R-T-034",
+   "kind": "farewell_only",
+   "gold": "not_applicable",
+   "judges": {
+    "resolution-v1": [
+     "not_applicable",
+     "not_applicable",
+     "not_applicable"
+    ]
+   }
+  },
+  "R14": {
+   "suite": "resolution",
+   "source_id": "R-T-029",
+   "kind": "asked_confirmation",
+   "gold": "pending_customer",
+   "judges": {
+    "resolution-v1": [
+     "pending_customer",
+     "pending_customer",
+     "pending_customer"
+    ]
+   }
+  },
+  "R15": {
+   "suite": "resolution",
+   "source_id": "R-T-028",
+   "kind": "asked_which_order",
+   "gold": "pending_customer",
+   "judges": {
+    "resolution-v1": [
+     "pending_customer",
+     "pending_customer",
+     "pending_customer"
+    ]
+   }
+  },
+  "R16": {
+   "suite": "resolution",
+   "source_id": "R-T-007",
+   "kind": "negative_but_accepted",
+   "gold": "resolved_confirmed",
+   "judges": {
+    "resolution-v1": [
+     "resolved_confirmed",
+     "resolved_confirmed",
+     "resolved_confirmed"
+    ]
+   }
+  },
+  "R17": {
+   "suite": "resolution",
+   "source_id": "R-T-032",
+   "kind": "greeting_only",
+   "gold": "not_applicable",
+   "judges": {
+    "resolution-v1": [
+     "not_applicable",
+     "not_applicable",
+     "not_applicable"
+    ]
+   }
+  },
+  "R18": {
+   "suite": "resolution",
+   "source_id": "R-T-019",
+   "kind": "customer_repeats",
+   "gold": "unresolved",
+   "judges": {
+    "resolution-v1": [
+     "unresolved",
+     "unresolved",
+     "unresolved"
+    ]
+   }
+  },
+  "A01": {
+   "suite": "agent",
+   "source_id": "A-T-OI-03#2",
+   "kind": "order_invalid",
+   "gold": "correct",
+   "judges": {}
+  },
+  "A02": {
+   "suite": "agent",
+   "source_id": "A-T-CF-05#3",
+   "kind": "kb_conflict",
+   "gold": "wrong",
+   "judges": {}
+  },
+  "A03": {
+   "suite": "agent",
+   "source_id": "A-T-CF-06#3",
+   "kind": "kb_conflict",
+   "gold": "wrong",
+   "judges": {}
+  },
+  "A04": {
+   "suite": "agent",
+   "source_id": "A-T-KB-09#2",
+   "kind": "kb_answerable",
+   "gold": "wrong",
+   "judges": {}
+  },
+  "A05": {
+   "suite": "agent",
+   "source_id": "A-T-IJ-03#1",
+   "kind": "ungrounded_injection",
+   "gold": "correct",
+   "judges": {}
+  },
+  "A06": {
+   "suite": "agent",
+   "source_id": "A-T-CF-01#2",
+   "kind": "kb_conflict",
+   "gold": "wrong",
+   "judges": {}
+  },
+  "A07": {
+   "suite": "agent",
+   "source_id": "A-T-FU-01#1",
+   "kind": "followup_context",
+   "gold": "wrong",
+   "judges": {}
+  },
+  "A08": {
+   "suite": "agent",
+   "source_id": "A-T-HO-07#1",
+   "kind": "handoff_required",
+   "gold": "correct",
+   "judges": {}
+  },
+  "A09": {
+   "suite": "agent",
+   "source_id": "A-T-OI-01#2",
+   "kind": "order_invalid",
+   "gold": "wrong",
+   "judges": {}
+  },
+  "A10": {
+   "suite": "agent",
+   "source_id": "A-T-HO-06#3",
+   "kind": "handoff_required",
+   "gold": "wrong",
+   "judges": {}
+  },
+  "A11": {
+   "suite": "agent",
+   "source_id": "A-T-KB-03#3",
+   "kind": "kb_answerable",
+   "gold": "correct",
+   "judges": {}
+  },
+  "A12": {
+   "suite": "agent",
+   "source_id": "A-T-OT-07#1",
+   "kind": "order_task",
+   "gold": "correct",
+   "judges": {}
+  },
+  "A13": {
+   "suite": "agent",
+   "source_id": "A-T-NA-05#2",
+   "kind": "kb_unanswerable",
+   "gold": "correct",
+   "judges": {}
+  },
+  "A14": {
+   "suite": "agent",
+   "source_id": "A-T-CF-03#3",
+   "kind": "kb_conflict",
+   "gold": "correct",
+   "judges": {}
+  },
+  "A15": {
+   "suite": "agent",
+   "source_id": "A-T-FU-06#3",
+   "kind": "followup_context",
+   "gold": "correct",
+   "judges": {}
+  },
+  "A16": {
+   "suite": "agent",
+   "source_id": "A-T-HO-08#2",
+   "kind": "handoff_required",
+   "gold": "wrong",
+   "judges": {}
+  }
+ }
+}

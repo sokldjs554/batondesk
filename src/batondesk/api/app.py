@@ -25,7 +25,14 @@ DESCRIPTION = """
 - 데모 서버라 인증이 없습니다.
 """
 
-PAGES = {"/": "index.html", "/chat": "chat.html", "/desk": "desk.html", "/ops": "ops.html", "/embed-demo": "embed-demo.html"}
+PAGES = {
+    "/": "index.html",
+    "/chat": "chat.html",
+    "/desk": "desk.html",
+    "/ops": "ops.html",
+    "/embed-demo": "embed-demo.html",
+    "/review": "review.html",  # 사람 검수: 평가용 문항을 정답 없이 보여 주고 사람이 판정한다(결과는 브라우저에만 남는다)
+}
 
 
 def create_app(settings: Settings | None = None, *, llm: LLMClient | None = None, db: Database | None = None) -> FastAPI:

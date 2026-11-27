@@ -197,6 +197,7 @@ export async function mountChrome(active, { nav = true } = {}) {
       el("span", {}, "커밋 ", el("span", { class: "mono", id: "footer-sha", text: String(release.git_sha).slice(0, 7) })),
       el("span", {}, "에이전트 프롬프트 ", el("span", { class: "mono", id: "footer-prompt", text: release.prompts.agent.id })),
       el("span", { text: `지식 문서 ${release.knowledge_base.documents}건` }),
+      el("a", { href: "/review", text: "사람 검수" }),
       el("a", { href: "/docs", text: "API 문서" }),
       el("a", { href: REPO_URL, text: "GitHub" }),
     );

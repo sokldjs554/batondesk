@@ -2388,3 +2388,260 @@ body.embed .notice .badge {
     padding-right: 16px;
   }
 }
+
+/* ---- 사람 검수 화면 (/review) -------------------------------------------------------- */
+
+.review-page {
+  max-width: 920px;
+}
+
+.review-head h1 {
+  font-size: clamp(26px, 4vw, 36px);
+  margin-top: 6px;
+}
+
+#review-root {
+  margin-top: 22px;
+  display: grid;
+  gap: 16px;
+}
+
+.review-intro,
+.review-item,
+.review-choose {
+  padding: 22px 24px;
+}
+
+.review-intro {
+  display: grid;
+  gap: 14px;
+}
+
+.review-steps {
+  margin: 0;
+  padding-left: 22px;
+  display: grid;
+  gap: 4px;
+}
+
+.review-name,
+.review-memo {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-s);
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+}
+
+.review-suites {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.review-suite {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  justify-items: start;
+  text-align: left;
+  padding: 14px 16px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-m);
+  background: var(--lilac);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.review-suite.static {
+  cursor: default;
+  background: var(--white);
+}
+
+button.review-suite:hover {
+  box-shadow: var(--lift-s);
+  transform: translate(-1px, -1px);
+}
+
+.review-actions,
+.review-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.review-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+
+.review-item {
+  display: grid;
+  gap: 18px;
+}
+
+.review-block h3 {
+  font-size: 15px;
+  color: var(--ink-soft);
+  margin-bottom: 8px;
+}
+
+.review-conv,
+.review-evidence {
+  display: grid;
+  gap: 10px;
+}
+
+.review-line {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.review-line p {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: var(--radius-m);
+  background: var(--lilac);
+  white-space: pre-wrap;
+}
+
+.review-line.role-customer p {
+  background: var(--primary-tint);
+}
+
+.review-line.role-other p {
+  background: var(--paper-deep);
+}
+
+.review-ev {
+  padding: 12px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--butter-tint);
+}
+
+.review-ev-title {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.review-ev p {
+  margin: 0;
+}
+
+.review-ev pre.code {
+  margin: 6px 0 0;
+  max-height: 260px;
+  overflow: auto;
+  font-size: 12.5px;
+}
+
+.ev-id {
+  flex: none;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--butter);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.review-answer {
+  padding: 14px 16px;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-m);
+  background: var(--white);
+  box-shadow: var(--lift-s);
+  white-space: pre-wrap;
+  font-size: 17px;
+}
+
+.review-rubric {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 4px;
+}
+
+.review-choose {
+  display: grid;
+  gap: 12px;
+}
+
+.review-choose h2 {
+  font-size: 20px;
+}
+
+.review-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.review-choice {
+  min-height: 48px;
+  flex: 1 1 180px;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.review-choice .key {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.review-choice.picked {
+  background: var(--butter);
+  box-shadow: var(--lift-s);
+}
+
+.review-export {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-s);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  resize: vertical;
+}
+
+@media (max-width: 720px) {
+  .review-suites {
+    grid-template-columns: 1fr;
+  }
+
+  .review-line {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .review-answer {
+    font-size: 16px;
+  }
+
+  .review-intro,
+  .review-item,
+  .review-choose {
+    padding: 16px;
+  }
+}

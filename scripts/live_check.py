@@ -72,7 +72,18 @@ def main() -> int:
     check("엔진 표시", release["engine"]["engine"] in ("live", "off"), release["engine"]["label"])
     check("지식 문서", release["knowledge_base"]["documents"] >= 20, release["knowledge_base"])
     check("프롬프트 버전", bool(release["prompts"]["agent"]["id"]), release["prompts"]["agent"])
-    for page in ("/", "/chat", "/desk", "/ops", "/embed-demo", "/docs", "/example-commerce/docs", "/static/widget.js"):
+    for page in (
+        "/",
+        "/chat",
+        "/desk",
+        "/ops",
+        "/embed-demo",
+        "/review",
+        "/docs",
+        "/example-commerce/docs",
+        "/static/widget.js",
+        "/static/review-items.json",
+    ):
         status, _ = call(base, page)
         check(f"화면 {page}", status == 200, status)
     status, search = call(base, "/v1/kb/search", {"query": "단순변심 반품 배송비", "k": 3})

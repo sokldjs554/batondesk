@@ -271,6 +271,48 @@ async function run(name, viewport) {
   check(L("읽기 전용 보기: 입력 영역 숨김 + 실행 과정 표시"), (await ro.locator("#composer").isHidden()) && (await ro.locator("#btn-handoff").isHidden()) && (await ro.textContent("#chat-banner")).includes("읽기 전용") && (await ro.locator("#pane-trace .step").first().isVisible()));
   await shot(ro, "19-chat-readonly");
 
+  // 7b. 사람 검수 화면: 정답 없이 문항을 보여 주고, 고른 답을 브라우저에만 저장했다가 글자로 내보낸다
+  const rv = await context.newPage();
+  watch(rv, "review");
+  await rv.goto(`${BASE}/review`);
+  await rv.waitForSelector(".review-suite");
+  await rv.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith("bd.review.")).forEach((k) => localStorage.removeItem(k)));
+  await rv.reload();
+  await rv.waitForSelector(".review-suite");
+  check(L("검수: 묶음 세 개와 건수"), (await rv.locator("button.review-suite").count()) === 3 && (await rv.textContent(".review-suites")).includes("0 / 30"));
+  await shot(rv, "50-review-intro");
+  await rv.fill("#reviewer", "점검용");
+  await rv.click('button.review-suite[data-suite="grounding"]');
+  await rv.waitForSelector("#choices");
+  const itemText = await rv.textContent("#review-root");
+  check(L("검수: 근거·대화·답변이 보이고 정답은 보이지 않음"), itemText.includes("판정할 답변") && itemText.includes("근거") && !/G-T-\d{3}|ungrounded|grounded/.test(itemText));
+  await noHScroll(rv, L("검수 문항"));
+  await smallTargets(rv, L("검수 문항"));
+  await shot(rv, "51-review-grounding");
+  await rv.click('#choices [data-value="grounded"]');
+  await rv.waitForFunction(() => document.querySelector("#progress").textContent.includes("2 / 30"));
+  await rv.reload();
+  await rv.waitForSelector("#progress");
+  check(L("검수: 새로 고쳐도 이어서 진행"), (await rv.textContent("#progress")).includes("2 / 30"));
+  await rv.click("#btn-home");
+  await rv.click('button.review-suite[data-suite="resolution"]');
+  await rv.waitForSelector("#choices");
+  check(L("검수: 해결 판정은 다섯 가지 중 하나"), (await rv.locator("#choices .review-choice").count()) === 5);
+  await rv.click("#btn-home");
+  await rv.click('button.review-suite[data-suite="agent"]');
+  await rv.waitForSelector("#choices");
+  check(L("검수: 에이전트 응대에는 기준과 응대 기록이 함께 보임"), (await rv.textContent("#review-root")).includes("기대한 행동") && (await rv.locator(".review-line").count()) >= 2);
+  await shot(rv, "52-review-agent");
+  await rv.click("#btn-home");
+  await rv.click("#btn-result");
+  await rv.waitForSelector("#export");
+  const exported = JSON.parse(await rv.inputValue("#export"));
+  check(L("검수: 결과에 표본 번호·검수자·고른 답이 들어 있음"), exported.kit.length === 12 && exported.reviewer === "점검용" && Object.keys(exported.labels).length === 1 && Object.values(exported.labels)[0].label === "grounded");
+  await noHScroll(rv, L("검수 결과"));
+  await shot(rv, "53-review-result");
+  await rv.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith("bd.review.")).forEach((k) => localStorage.removeItem(k)));
+  await rv.close();
+
   // 8. 임베드
   const emb = await context.newPage();
   watch(emb, "embed");
