@@ -109,6 +109,44 @@ function kpi(cls, label, value, unit, sub, def, extra) {
   );
 }
 
+// 화면 맨 위의 한 문장: 숫자를 읽기 전에 결론을 먼저 말한다.
+function outcomeSentence(m) {
+  const r = m.resolution;
+  const resolved = r.resolved_confirmed + r.resolved_assumed;
+  if (r.denominator === 0) return el("p", { class: "ops-sentence", text: "이 조건에 해당하는 집계 대상 대화가 아직 없습니다." });
+  const latency = m.turns.latency_ms.p50;
+  return el(
+    "p",
+    { class: "ops-sentence" },
+    `집계 대상 ${int(r.denominator)}건 중 `,
+    el("b", { text: `${int(resolved)}건이 해결로 끝났고` }),
+    `, ${int(r.handed_off)}건은 상담원에게 넘어갔습니다.`,
+    latency === null ? "" : ` AI 응답은 중앙값 ${ms(latency)}에 나갔습니다.`,
+  );
+}
+
+// 해결 내역: 한 줄 누적 막대. 막대의 색 뜻은 아래 범례에 숫자와 함께 적는다.
+function outcomeBar(r) {
+  const parts = [
+    ["확인된 해결", r.resolved_confirmed, "seg-confirmed"],
+    ["가정된 해결", r.resolved_assumed, "seg-assumed"],
+    ["미해결", r.unresolved, "seg-unresolved"],
+    ["상담원 인계", r.handed_off, "seg-handoff"],
+  ];
+  const total = parts.reduce((sum, [, n]) => sum + n, 0);
+  const box = el("section", { class: "panel box outcome-box" }, el("h3", { text: "해결 내역" }));
+  if (total === 0) {
+    box.append(el("div", { class: "empty", text: "집계할 대화가 없습니다." }));
+    return box;
+  }
+  box.append(
+    el("div", { class: "outcome-bar", role: "img", "aria-label": parts.map(([label, n]) => `${label} ${n}건`).join(", ") }, parts.filter(([, n]) => n > 0).map(([label, n, cls]) => el("i", { class: cls, style: { flexGrow: String(n) }, title: `${label} ${n}건` }))),
+    el("ul", { class: "outcome-legend" }, parts.map(([label, n, cls]) => el("li", {}, el("i", { class: cls }), el("span", { text: label }), el("b", { class: "num", text: `${int(n)}건` })))),
+    el("p", { class: "small muted", text: `분모 제외 ${int(r.excluded)}건(인사뿐인 대화, 고객의 답을 기다리는 대화, 판정하지 못한 대화)은 막대에 넣지 않았습니다.` }),
+  );
+  return box;
+}
+
 function barRow(label, value, max, text, color) {
   const width = max > 0 ? Math.max(2, (value / max) * 100) : 0;
   return el("div", { class: "bar-row" }, el("span", { text: label }), el("div", { class: "bar-track" }, el("span", { class: `bar-fill ${color || ""}`, style: { width: `${width}%` } })), el("span", { class: "val", text }));
@@ -136,15 +174,6 @@ function renderOverview() {
       r.rate === null ? null : "%",
       r.rate === null ? "집계할 대화 없음" : `해결 ${int(resolvedCount)}건 ÷ 집계 대상 ${int(r.denominator)}건`,
       "(확인된 해결 + 가정된 해결) ÷ (해결 + 미해결 + 상담원 인계). 인사뿐인 대화, 고객의 답을 기다리는 대화, 판정하지 못한 대화는 분모에서 뺍니다.",
-      el(
-        "div",
-        { class: "mini-stats" },
-        el("span", { class: "pill pill-ok", text: `확인된 해결 ${r.resolved_confirmed}` }),
-        el("span", { class: "pill", text: `가정된 해결 ${r.resolved_assumed}` }),
-        el("span", { class: "pill pill-warn", text: `미해결 ${r.unresolved}` }),
-        el("span", { class: "pill pill-bad", text: `상담원 인계 ${r.handed_off}` }),
-        el("span", { class: "pill pill-ink", text: `분모 제외 ${r.excluded}` }),
-      ),
     ),
     kpi(
       "kpi-b",
@@ -171,7 +200,7 @@ function renderOverview() {
       "고객 메시지를 받은 때부터 AI 응답을 저장할 때까지, 서버 안에서 잰 시간입니다(네트워크 왕복 제외).",
     ),
   );
-  box.append(grid);
+  box.append(outcomeSentence(m), grid, outcomeBar(r));
   if (noData) {
     box.append(el("div", { class: "empty", style: { marginTop: "18px" } }, "이 조건에 해당하는 대화가 아직 없습니다. ", el("a", { href: "/chat", text: "고객 화면" }), "에서 문의를 보내면 여기에 집계됩니다."));
   }

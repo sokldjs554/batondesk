@@ -2167,7 +2167,7 @@ button.source-chip.tool:hover {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   gap: 20px;
-  margin-top: 8px;
+  margin-top: 16px;
   align-items: start;
 }
 
@@ -3208,5 +3208,155 @@ body.embed .chat-head .btn-s {
   .chat-card {
     height: 84vh;
     height: 84dvh;
+  }
+}
+
+/* 응답 과정 구역이 비어 있을 때: 한 문의가 지나는 단계를 보여 준다 */
+.trace-plan {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trace-plan li {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  background: var(--paper);
+}
+
+.trace-plan .step-kind {
+  justify-self: start;
+  text-align: center;
+}
+
+.trace-plan b {
+  display: block;
+  font-size: var(--fs-md);
+}
+
+.trace-plan span:not(.step-kind) {
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+}
+
+/* ---- 운영 화면: 한 문장 요약과 해결 내역 막대 ---------------------------------------------- */
+
+.ops-sentence {
+  margin-top: 20px;
+  font-size: var(--fs-xl);
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+}
+
+.ops-sentence b {
+  font-weight: 700;
+  background: linear-gradient(transparent 66%, var(--butter) 66%);
+}
+
+.kpi-grid {
+  margin-top: 16px;
+}
+
+.outcome-box {
+  margin-top: 16px;
+}
+
+.outcome-bar {
+  display: flex;
+  gap: 2px;
+  height: 16px;
+  overflow: hidden;
+  border-radius: var(--r-pill);
+}
+
+.outcome-bar i,
+.outcome-legend i {
+  display: block;
+}
+
+.outcome-bar i {
+  min-width: 6px;
+}
+
+.seg-confirmed {
+  background: var(--primary);
+}
+
+.seg-assumed {
+  background: var(--lilac-deep);
+}
+
+.seg-unresolved {
+  background: var(--butter);
+  box-shadow: inset 0 0 0 1px var(--butter-line);
+}
+
+.seg-handoff {
+  background: var(--coral-deep);
+}
+
+.outcome-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 22px;
+  margin: 12px 0 8px;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-md);
+}
+
+.outcome-legend li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.outcome-legend li i {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+/* ---- 상담원 화면: 요약을 위로 -------------------------------------------------------------- */
+
+.desk-top {
+  margin-top: 8px;
+}
+
+.desk-top .summary-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 4px 28px;
+  align-items: start;
+}
+
+.desk-top .summary-card > h3 {
+  grid-column: 1 / -1;
+}
+
+.desk-top .summary-card .sum-text {
+  grid-column: 1;
+  grid-row: 2 / span 3;
+}
+
+.desk-top .summary-card > :not(h3):not(.sum-text) {
+  grid-column: 2;
+}
+
+@media (max-width: 1080px) {
+  .desk-top .summary-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .desk-top .summary-card .sum-text,
+  .desk-top .summary-card > :not(h3):not(.sum-text) {
+    grid-column: 1;
+    grid-row: auto;
   }
 }

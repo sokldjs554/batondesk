@@ -33,13 +33,13 @@
 
         <aside class="demo-col" id="demo-col" aria-label="데모 도구">
           <div class="tabs demo-tabs" id="demo-tabs" role="tablist" aria-label="데모 도구 구역">
-            <button class="tab on" type="button" role="tab" data-pane="tools" aria-selected="true">문의 예시·도구</button>
-            <button class="tab" type="button" role="tab" data-pane="trace" aria-selected="false">응답 과정<span class="cnt hidden" id="trace-dot">새 기록</span></button>
+            <button class="tab on" type="button" role="tab" data-pane="trace" aria-selected="true">응답 과정<span class="cnt hidden" id="trace-dot">새 기록</span></button>
+            <button class="tab" type="button" role="tab" data-pane="tools" aria-selected="false">문의 예시·도구</button>
             <button class="tab" type="button" role="tab" data-pane="recordings" aria-selected="false">저장된 기록<span class="cnt hidden" id="rec-count"></span></button>
           </div>
           <div class="last-turn hidden" id="last-turn"></div>
 
-          <div class="demo-pane" id="pane-tools">
+          <div class="demo-pane hidden" id="pane-tools">
             <section class="panel demo-box">
               <h2>예시 고객과 주문</h2>
               <p class="hint">고객을 바꾸면 새 대화가 시작됩니다. 주문을 누르면 주문번호가 입력창에 들어갑니다.</p>
@@ -64,10 +64,10 @@
             </section>
           </div>
 
-          <div class="demo-pane hidden" id="pane-trace">
+          <div class="demo-pane" id="pane-trace">
             <section class="panel demo-box">
-              <h2>이번 응답이 만들어진 과정</h2>
-              <div id="trace"><div class="empty">문의를 보내면 검색한 문서, 모델·도구 호출, 근거 검사 결과가 여기에 표시됩니다.</div></div>
+              <h2>AI가 이번 문의에 한 일</h2>
+              <div id="trace"></div>
             </section>
           </div>
 

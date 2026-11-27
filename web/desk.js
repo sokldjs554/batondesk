@@ -279,7 +279,11 @@ function renderDetail() {
   const turn = (conv.turns || []).find((t) => t.turn_seq === d.turn_seq);
   const traceBox = el("section", { class: "panel box" }, el("details", {}, el("summary", { class: "linkbtn", style: { display: "inline-flex", alignItems: "center" }, text: "인계된 턴의 실행 기록 펼치기" }), turn ? el("div", { style: { marginTop: "10px" } }, traceView(turn)) : el("div", { class: "empty", style: { marginTop: "10px" }, text: "고객이 버튼으로 요청한 인계라 AI 실행 기록이 없습니다." })));
 
-  clear($("#detail")).append(el("div", { class: "desk-detail" }, el("div", { class: "stack" }, summary, conversationBox, actions), el("div", { class: "stack" }, evidenceBox, toolBox, draftBox, traceBox)));
+  // 위: 인계 요약(왜 넘어왔나)을 한 줄 너비로. 아래 왼쪽: 대화와 응대(읽고 바로 답한다), 오른쪽: 근거·도구·초안.
+  clear($("#detail")).append(
+    el("div", { class: "desk-top" }, summary),
+    el("div", { class: "desk-detail" }, el("div", { class: "stack" }, conversationBox, actions), el("div", { class: "stack" }, evidenceBox, toolBox, draftBox, traceBox)),
+  );
 
   const replyBox = $("#reply-text");
   if (replyBox) replyBox.value = state.draft;

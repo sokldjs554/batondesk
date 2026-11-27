@@ -140,6 +140,25 @@ async function init() {
   if (params.get("pane") === "recordings" || state.engine === "off") showPane("recordings");
 }
 
+// 문의를 보내기 전에도 이 자리에 무엇이 채워지는지 보인다(문의를 보내면 실제 실행 과정으로 바뀐다).
+function tracePlaceholder() {
+  const steps = [
+    ["검색", "지식 문서 검색", "질문과 관련된 정책·공지를 찾습니다."],
+    ["모델", "에이전트 모델", "문서와 대화를 보고 답을 쓰거나, 주문 조회가 필요하면 도구를 부릅니다."],
+    ["도구", "예시 주문 시스템", "주문·배송 상태를 조회합니다. 취소·반품은 고객 확인 뒤에만 실행합니다."],
+    ["검사", "근거 일치 검사", "답의 모든 말이 근거에 있는지 확인합니다. 어긋나면 고객에게 보내지 않습니다."],
+    ["인계", "보류 또는 인계", "다시 써도 맞지 않거나 사람의 판단이 필요하면 상담원에게 넘깁니다."],
+  ];
+  clear($("#trace")).append(
+    el("p", { class: "small muted", text: "문의를 보내면 이 자리에 실제로 실행된 단계가 시간·토큰과 함께 나타납니다. 아래는 한 문의가 지나는 단계입니다." }),
+    el(
+      "ol",
+      { class: "trace-plan" },
+      steps.map(([kind, name, text]) => el("li", {}, el("span", { class: `step-kind${kind === "모델" ? " k-llm" : kind === "도구" ? " k-tool" : kind === "검사" ? " k-check" : kind === "인계" ? " k-warn" : ""}`, text: kind }), el("div", {}, el("b", { text: name }), el("span", { text })))),
+    ),
+  );
+}
+
 function showPane(name) {
   for (const tab of document.querySelectorAll("#demo-tabs .tab")) {
     const on = tab.dataset.pane === name;
@@ -153,7 +172,7 @@ function showPane(name) {
 
 function currentPane() {
   const tab = document.querySelector("#demo-tabs .tab.on");
-  return tab ? tab.dataset.pane : "tools";
+  return tab ? tab.dataset.pane : "trace";
 }
 
 function bind() {
@@ -205,7 +224,7 @@ function resetState() {
   state.turns = new Map();
   state.readOnly = false;
   clear(log);
-  clear($("#trace")).append(el("div", { class: "empty", text: "문의를 보내면 검색한 문서, 모델·도구 호출, 근거 검사 결과가 여기에 표시됩니다." }));
+  tracePlaceholder();
   clear($("#last-turn")).classList.add("hidden");
   $("#trace-dot").classList.add("hidden");
 }
@@ -676,6 +695,9 @@ async function showTrace(turnSeq, { scroll }) {
     showPane("trace");
     if (window.matchMedia("(max-width: 1080px)").matches) $("#demo-col").scrollIntoView({ behavior: "smooth", block: "start" });
     else $("#demo-col").scrollTop = 0;
+  } else if (window.matchMedia("(min-width: 1081px)").matches && !state.embed) {
+    // 넓은 화면에서는 대화와 나란히 AI가 한 일을 바로 보여 준다.
+    showPane("trace");
   } else if (currentPane() !== "trace") {
     $("#trace-dot").classList.remove("hidden");
     strip.classList.remove("hidden");

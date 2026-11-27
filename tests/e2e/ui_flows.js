@@ -107,7 +107,10 @@ async function run(name, viewport) {
   check(L("(a) 문서 질문에 AI 답변과 출처 표시"), (await page.locator("#chat-log .msg.ai:not(#greeting) .source-chip").count()) >= 1);
   check(L("(a) 실행 과정 패널이 채워짐"), (await page.locator("#trace .step").count()) >= 3);
   check(L("(a) 해결 여부 버튼 표시"), (await page.locator("#fb-yes").count()) === 1);
-  check(L("(a) 방금 응답 요약 줄 표시"), (await page.locator("#last-turn").isVisible()) && (await page.textContent("#last-turn")).includes("근거와 맞음") && !(await page.textContent("#last-turn")).includes("null"));
+  // 넓은 화면에서는 '응답 과정' 구역이 자동으로 열려 있어 요약 줄을 따로 보이지 않는다(구역이 이미 같은 내용을 보여 준다). 좁은 화면에서는 다른 구역을 보고 있어도 한 줄로 보인다.
+  const paneOpen = await page.locator("#pane-trace").isVisible();
+  check(L("(a) 방금 응답 요약: 과정 구역이 열려 있거나, 아니면 요약 줄이 보임"), (paneOpen || (await page.locator("#last-turn").isVisible())) && (await page.textContent("#last-turn")).includes("근거와 맞음") && !(await page.textContent("#last-turn")).includes("null"));
+  check(L("(a) 응답이 나오면 넓은 화면은 '응답 과정'이 자동으로 열림"), name === "mobile" || paneOpen);
   await page.locator("#chat-log .msg.ai:not(#greeting) .linkbtn").first().click();
   await page.waitForFunction(() => !document.querySelector("#pane-trace").classList.contains("hidden"));
   check(L("(a) '이 응답이 만들어진 과정'을 누르면 과정 구역이 열림"), (await page.locator("#pane-trace .step").first().isVisible()));
@@ -134,7 +137,8 @@ async function run(name, viewport) {
   await noHScroll(page, L("고객 화면"));
   await smallTargets(page, L("고객 화면"));
 
-  // 4. 장애 재현 → 인계 카드
+  // 4. 장애 재현 → 인계 카드 (넓은 화면에서는 답이 나오면 '응답 과정' 구역이 자동으로 열리므로 도구 구역을 다시 연다)
+  await page.click('#demo-tabs [data-pane="tools"]');
   await page.click('#fault-seg [data-fault="error"]');
   await page.waitForFunction(() => document.querySelector('#fault-seg [data-fault="error"]').classList.contains("on"));
   await page.click("#btn-new");
@@ -144,10 +148,12 @@ async function run(name, viewport) {
   check(L("(c) 실행 과정에 도구 실패 표시"), (await page.textContent("#trace")).includes("시스템 오류"));
   await page.locator("#chat-log .handoff-card summary").click();
   await shot(page, "06-chat-fault-handoff");
+  await page.click('#demo-tabs [data-pane="tools"]');
   await page.click('#fault-seg [data-fault="none"]');
   await page.waitForFunction(() => document.querySelector('#fault-seg [data-fault="none"]').classList.contains("on"));
 
   // 5. 고객이 상담원 연결 → 상담원 화면에서 맡고 답하고 종료
+  await page.click('#demo-tabs [data-pane="tools"]');
   await page.click('#cust-row [data-customer="C-1002"]');
   await page.waitForSelector("#greeting");
   await page.click("#btn-handoff");
