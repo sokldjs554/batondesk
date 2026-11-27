@@ -319,3 +319,14 @@ def test_release_commit_falls_back_to_the_hosting_env(monkeypatch: pytest.Monkey
     for baked in (None, "", "unknown"):
         assert Settings(git_sha=baked, _env_file=None).resolved_git_sha == "a" * 40  # type: ignore[call-arg]
     assert Settings(git_sha="b" * 40, _env_file=None).resolved_git_sha == "b" * 40  # type: ignore[call-arg]
+
+
+def test_static_files_revalidate_but_fonts_are_cached(client: TestClient) -> None:
+    """캐시 지시가 없으면 브라우저가 옛 스타일시트를 계속 쓴다(화면을 고쳐도 안 바뀐 것처럼 보인다)."""
+    css = client.get("/static/app.css")
+    assert css.status_code == 200 and css.headers["cache-control"] == "no-cache"
+    assert client.get("/static/chat.js").headers["cache-control"] == "no-cache"
+    font = client.get("/static/fonts/pretendard/pretendard.css")
+    assert font.status_code == 200
+    woff = client.get("/static/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.0.woff2")
+    assert woff.status_code == 200 and "max-age" in woff.headers["cache-control"]
