@@ -890,7 +890,7 @@ pre.code {
 }
 
 .hero-text {
-  max-width: 880px;
+  max-width: 1040px;
   margin: 0 auto;
   text-align: center;
 }
@@ -3381,7 +3381,7 @@ body.embed .chat-head .btn-s {
 /* ---- 첫 화면 v2: 가운데 정렬 제목 + 큰 그림, 하나뿐인 어두운 띠 ------------------------------ */
 
 .hero h1 {
-  font-size: clamp(38px, 4.8vw, 64px);
+  font-size: clamp(30px, 4.2vw, 56px);
 }
 
 .stage {
@@ -3573,4 +3573,22 @@ body.embed .chat-head .btn-s {
   background: rgba(255, 255, 255, 0.55);
   box-shadow: 0 0 0 100vmax rgba(255, 255, 255, 0.55);
   clip-path: inset(0 -100vmax);
+}
+
+/* 좁은 화면: 긴 제목 줄은 알약이 줄을 바꿔 가며 이어지게 한다 */
+@media (max-width: 640px) {
+  .hero h1 [class^="mark-"] {
+    display: inline;
+    margin: 0;
+    padding: 0.04em 0.22em 0.1em;
+    transform: none;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    line-height: 1.5;
+  }
+}
+
+/* 제목은 구절 단위로만 줄을 바꾼다 */
+.nb {
+  white-space: nowrap;
 }
