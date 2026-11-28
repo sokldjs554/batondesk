@@ -1,7 +1,10 @@
 """운영 지표 집계.
 
 지표 정의(화면에도 같은 문구로 보여 준다):
-- AI 관여 대화: 고객이 AI에게 메시지를 한 번 이상 보낸 대화.
+- AI 관여 대화: AI 턴이 한 번 이상 처리됐거나 상담원 인계 이력이 있는 대화.
+  고객이 바로 인계한 대화는 포함하고, 턴과 인계가 없는 빈 대화는 제외한다.
+- 대화당 전달 응답 수 = AI 관여 대화에 저장된 role=ai 메시지 수 ÷ AI 관여 대화 수.
+  초기 화면 안내·보류 초안·모델 호출·상담원·시스템 메시지는 세지 않는다.
 - 해결률 = (확인된 해결 + 가정된 해결) ÷ (해결 + 미해결 + 상담원 인계).
   인사뿐인 대화, 고객 답을 기다리는 대화, 판정하지 못한 대화는 분모에서 뺀다.
 - 인계율 = 상담원에게 넘어간 대화 ÷ AI 관여 대화.
@@ -48,6 +51,10 @@ def compute_metrics(repo: Repo, source: str | None = None) -> dict[str, Any]:
     handoffs = [h for h in repo.db.all("SELECT * FROM handoffs ORDER BY created_at") if h["conversation_id"] in ids]
 
     involved = [c for c in conversations if c["turn_count"] >= 1 or any(h["conversation_id"] == c["id"] for h in handoffs)]
+    involved_ids = {c["id"] for c in involved}
+    delivered_responses = sum(
+        1 for m in repo.db.all("SELECT conversation_id FROM messages WHERE role = 'ai'") if m["conversation_id"] in involved_ids
+    )
     statuses = Counter((c["resolution"] or {}).get("status", "unknown") for c in involved)
     resolved = statuses["resolved_confirmed"] + statuses["resolved_assumed"]
     denominator = resolved + statuses["unresolved"] + statuses["handed_off"]
@@ -111,6 +118,11 @@ def compute_metrics(repo: Repo, source: str | None = None) -> dict[str, Any]:
             "open": sum(1 for c in conversations if c["status"] == "open"),
             "handed_off": sum(1 for c in conversations if c["status"] == "handed_off"),
             "closed": sum(1 for c in conversations if c["status"] == "closed"),
+        },
+        "responses": {
+            "delivered": delivered_responses,
+            "denominator": len(involved),
+            "per_conversation": round(delivered_responses / len(involved), 4) if involved else None,
         },
         "resolution": {
             "by_status": dict(statuses),

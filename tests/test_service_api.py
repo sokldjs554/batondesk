@@ -151,10 +151,33 @@ def test_metrics_follow_the_definitions(client: TestClient, llm: QueueLLM) -> No
     assert m["grounding"]["blocked_drafts"] == 1 and m["grounding"]["turns_with_revision"] == 1
     assert m["turns"]["total"] == 2 and m["turns"]["latency_ms"]["p50"] is not None
     assert m["llm"]["calls"] == 6 and m["llm"]["by_prompt"] == {ACTIVE["agent"]: 2}
+    # 전달된 AI 메시지는 2개다. 근거 보류 초안 1개와 모델 호출 6번은 응답 수가 아니다.
+    assert m["responses"] == {"delivered": 2, "denominator": 3, "per_conversation": 0.6667}
     assert m["flagged"][0]["conversation_id"] == b and "14일" in m["flagged"][0]["blocked"][0]["message"]
-    assert client.get("/v1/metrics/summary?source=recorded").json()["conversations"]["total"] == 0
+    recorded = client.get("/v1/metrics/summary?source=recorded").json()
+    assert recorded["conversations"]["total"] == 0
+    assert recorded["responses"] == {"delivered": 0, "denominator": 0, "per_conversation": None}
     events = client.get("/v1/events?type=grounding.blocked").json()["events"]
     assert len(events) == 1 and events[0]["conversation_id"] == b
+
+
+def test_response_metric_distinguishes_empty_conversation_and_direct_handoff(client: TestClient) -> None:
+    assert client.get("/v1/metrics/summary").json()["responses"] == {
+        "delivered": 0, "denominator": 0, "per_conversation": None,
+    }
+    cid = _start(client)
+    # 채팅 화면의 초기 자동 안내는 저장된 AI 메시지가 아니다.
+    assert client.get(f"/v1/conversations/{cid}").json()["messages"] == []
+    empty = client.get("/v1/metrics/summary").json()
+    assert empty["conversations"]["total"] == 1
+    assert empty["responses"] == {"delivered": 0, "denominator": 0, "per_conversation": None}
+
+    handoff = client.post(f"/v1/conversations/{cid}/handoff").json()["handoff"]
+    client.post(f"/v1/handoffs/{handoff['id']}/reply", json={"agent_name": "민지", "text": "확인하겠습니다."})
+    direct = client.get("/v1/metrics/summary").json()
+    assert direct["conversations"]["ai_involved"] == 1
+    assert direct["turns"]["total"] == 0
+    assert direct["responses"] == {"delivered": 0, "denominator": 1, "per_conversation": 0.0}
 
 
 def test_kb_issue_and_tool_failure_are_surfaced_to_ops(client: TestClient, llm: QueueLLM) -> None:

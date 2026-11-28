@@ -273,10 +273,16 @@ function renderOverview() {
       ["대화 수 (AI 관여)", `${int(c.total)} (${int(c.ai_involved)})`],
       ["진행 중 / 상담원 응대 중 / 종료", `${int(c.open)} / ${int(c.handed_off)} / ${int(c.closed)}`],
       ["AI 응답", Object.entries(t.by_outcome).map(([k, v]) => `${OUTCOME_LABEL[k] || k} ${v}`).join(" · ") || "—"],
+      ["대화당 응답 수", m.responses.per_conversation === null ? "—" : `${m.responses.per_conversation.toFixed(2)}개`],
       ["처리 오류가 난 턴", int(t.errors)],
       ["검색 결과가 0건이었던 턴", int(m.retrieval.zero_hit_turns)],
       ["답변에 인용된 근거 (문서 / 주문 조회)", `${int(m.retrieval.cited_kb)} / ${int(m.retrieval.cited_tool)}`],
     ]),
+    el("p", {
+      class: "small muted",
+      style: { marginTop: "10px" },
+      text: `전달 AI 응답 ${int(m.responses.delivered)}개 ÷ AI 관여 대화 ${int(m.responses.denominator)}건. 직접 인계는 포함하고 빈 대화는 제외합니다. 초기 자동 안내·보류 초안·상담원·시스템 메시지는 세지 않습니다.`,
+    }),
   );
 
   const budget = m.engine.budget;

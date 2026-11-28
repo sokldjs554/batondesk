@@ -1,0 +1,269 @@
+{
+  "experiment": "20261129-response-metric",
+  "started_at_utc": "2026-11-28T17:46:43+00:00",
+  "base_commit": "76ff5597e158b99002d041ea8f4090e8b9637b8d",
+  "runtime": {
+    "llm_mode": "scripted",
+    "engine": "rule-engine",
+    "load_recordings": false,
+    "database": "temporary, initially empty"
+  },
+  "api_checks": [
+    {
+      "stage": "empty",
+      "source": "all",
+      "total_conversations": 0,
+      "responses": {
+        "delivered": 0,
+        "denominator": 0,
+        "per_conversation": null
+      }
+    },
+    {
+      "stage": "empty_conversation",
+      "source": "all",
+      "total_conversations": 1,
+      "responses": {
+        "delivered": 0,
+        "denominator": 0,
+        "per_conversation": null
+      }
+    },
+    {
+      "stage": "direct_handoff_with_human_reply",
+      "source": "all",
+      "total_conversations": 1,
+      "responses": {
+        "delivered": 0,
+        "denominator": 1,
+        "per_conversation": 0.0
+      }
+    },
+    {
+      "stage": "two_delivered_responses",
+      "source": "all",
+      "total_conversations": 2,
+      "responses": {
+        "delivered": 2,
+        "denominator": 2,
+        "per_conversation": 1.0
+      }
+    },
+    {
+      "stage": "additional_empty_conversation_excluded",
+      "source": "all",
+      "total_conversations": 3,
+      "responses": {
+        "delivered": 2,
+        "denominator": 2,
+        "per_conversation": 1.0
+      }
+    },
+    {
+      "stage": "rule_engine_filter",
+      "source": "rule-engine",
+      "total_conversations": 3,
+      "responses": {
+        "delivered": 2,
+        "denominator": 2,
+        "per_conversation": 1.0
+      }
+    },
+    {
+      "stage": "recorded_filter_empty",
+      "source": "recorded",
+      "total_conversations": 0,
+      "responses": {
+        "delivered": 0,
+        "denominator": 0,
+        "per_conversation": null
+      }
+    }
+  ],
+  "ui_checks": [
+    {
+      "viewport": "desktop",
+      "stage": "empty",
+      "source": "all",
+      "display": "—",
+      "caption": "전달 AI 응답 0개 ÷ AI 관여 대화 0건. 직접 인계는 포함하고 빈 대화는 제외합니다. 초기 자동 안내·보류 초안·상담원·시스템 메시지는 세지 않습니다.",
+      "dimensions": {
+        "scroll_width": 1440,
+        "client_width": 1440
+      }
+    },
+    {
+      "viewport": "mobile",
+      "stage": "empty",
+      "source": "all",
+      "display": "—",
+      "caption": "전달 AI 응답 0개 ÷ AI 관여 대화 0건. 직접 인계는 포함하고 빈 대화는 제외합니다. 초기 자동 안내·보류 초안·상담원·시스템 메시지는 세지 않습니다.",
+      "dimensions": {
+        "scroll_width": 390,
+        "client_width": 390
+      }
+    },
+    {
+      "viewport": "desktop",
+      "stage": "empty_conversation",
+      "source": "all",
+      "display": "—",
+      "caption": "전달 AI 응답 0개 ÷ AI 관여 대화 0건. 직접 인계는 포함하고 빈 대화는 제외합니다. 초기 자동 안내·보류 초안·상담원·시스템 메시지는 세지 않습니다.",
+      "dimensions": {
+        "scroll_width": 1440,
+        "client_width": 1440
+      }
+    },
+    {
+      "viewport": "mobile",
+      "stage": "empty_conversation",
+      "source": "all",
+      "display": "—",
+      "caption": "전달 AI 응답 0개 ÷ AI 관여 대화 0건. 직접 인계는 포함하고 빈 대화는 제외합니다. 초기 자동 안내·보류 초안·상담원·시스템 메시지는 세지 않습니다.",
+      "dimensions": {
+        "scroll_width": 390,
+        "client_width": 390
+      }
+    },
+    {
+      "viewport": "desktop",
+      "stage": "direct_handoff_with_human_reply",
+      "source": "all",
+      "display": "0.00개",
+      "caption": "전달 AI 응답 0개 ÷ AI 관여 대화 1건. 직접 인계는 포함하고 빈 대화는 제외합니다. 초기 자동 안내·보류 초안·상담원·시스템 메시지는 세지 않습니다.",
+      "dimensions": {
+        "scroll_width": 1440,
+        "client_width": 1440
+      }
+    },
+    {
+      "viewport": "mobile",
+      "stage": "direct_handoff_with_human_reply",
+      "source": "all",
+      "display": "0.00개",
+      "caption": "전달 AI 응답 0개 ÷ AI 관여 대화 1건. 직접 인계는 포함하고 빈 대화는 제외합니다. 초기 자동 안내·보류 초안·상담원·시스템 메시지는 세지 않습니다.",
+      "dimensions": {
+        "scroll_width": 390,
+        "client_width": 390
+      }
+    },
+    {
+      "viewport": "desktop",
+      "stage": "two_delivered_responses",
+      "source": "all",
+      "display": "1.00개",
+      "caption": "전달 AI 응답 2개 ÷ AI 관여 대화 2건. 직접 인계는 포함하고 빈 대화는 제외합니다. 초기 자동 안내·보류 초안·상담원·시스템 메시지는 세지 않습니다.",
+      "dimensions": {
+        "scroll_width": 1440,
+        "client_width": 1440
+      }
+    },
+    {
+      "viewport": "mobile",
+      "stage": "two_delivered_responses",
+      "source": "all",
+      "display": "1.00개",
+      "caption": "전달 AI 응답 2개 ÷ AI 관여 대화 2건. 직접 인계는 포함하고 빈 대화는 제외합니다. 초기 자동 안내·보류 초안·상담원·시스템 메시지는 세지 않습니다.",
+      "dimensions": {
+        "scroll_width": 390,
+        "client_width": 390
+      }
+    },
+    {
+      "viewport": "desktop",
+      "stage": "additional_empty_conversation_excluded",
+      "source": "all",
+      "display": "1.00개",
+      "caption": "전달 AI 응답 2개 ÷ AI 관여 대화 2건. 직접 인계는 포함하고 빈 대화는 제외합니다. 초기 자동 안내·보류 초안·상담원·시스템 메시지는 세지 않습니다.",
+      "dimensions": {
+        "scroll_width": 1440,
+        "client_width": 1440
+      }
+    },
+    {
+      "viewport": "mobile",
+      "stage": "additional_empty_conversation_excluded",
+      "source": "all",
+      "display": "1.00개",
+      "caption": "전달 AI 응답 2개 ÷ AI 관여 대화 2건. 직접 인계는 포함하고 빈 대화는 제외합니다. 초기 자동 안내·보류 초안·상담원·시스템 메시지는 세지 않습니다.",
+      "dimensions": {
+        "scroll_width": 390,
+        "client_width": 390
+      }
+    },
+    {
+      "viewport": "desktop",
+      "stage": "rule_engine_filter",
+      "source": "rule-engine",
+      "display": "1.00개",
+      "caption": "전달 AI 응답 2개 ÷ AI 관여 대화 2건. 직접 인계는 포함하고 빈 대화는 제외합니다. 초기 자동 안내·보류 초안·상담원·시스템 메시지는 세지 않습니다.",
+      "dimensions": {
+        "scroll_width": 1440,
+        "client_width": 1440
+      }
+    },
+    {
+      "viewport": "mobile",
+      "stage": "rule_engine_filter",
+      "source": "rule-engine",
+      "display": "1.00개",
+      "caption": "전달 AI 응답 2개 ÷ AI 관여 대화 2건. 직접 인계는 포함하고 빈 대화는 제외합니다. 초기 자동 안내·보류 초안·상담원·시스템 메시지는 세지 않습니다.",
+      "dimensions": {
+        "scroll_width": 390,
+        "client_width": 390
+      }
+    },
+    {
+      "viewport": "desktop",
+      "stage": "recorded_filter_empty",
+      "source": "recorded",
+      "display": "—",
+      "caption": "전달 AI 응답 0개 ÷ AI 관여 대화 0건. 직접 인계는 포함하고 빈 대화는 제외합니다. 초기 자동 안내·보류 초안·상담원·시스템 메시지는 세지 않습니다.",
+      "dimensions": {
+        "scroll_width": 1440,
+        "client_width": 1440
+      }
+    },
+    {
+      "viewport": "mobile",
+      "stage": "recorded_filter_empty",
+      "source": "recorded",
+      "display": "—",
+      "caption": "전달 AI 응답 0개 ÷ AI 관여 대화 0건. 직접 인계는 포함하고 빈 대화는 제외합니다. 초기 자동 안내·보류 초안·상담원·시스템 메시지는 세지 않습니다.",
+      "dimensions": {
+        "scroll_width": 390,
+        "client_width": 390
+      }
+    }
+  ],
+  "screenshots": [
+    "desktop-empty.png",
+    "desktop-direct-handoff.png",
+    "desktop-answered-overview.png",
+    "mobile-answered-overview.png",
+    "mobile-answered-panel.png",
+    "mobile-recorded-empty.png"
+  ],
+  "page_errors": {
+    "desktop": [],
+    "mobile": []
+  },
+  "console_errors": {
+    "desktop": [],
+    "mobile": []
+  },
+  "browser": {
+    "product": "Chrome Headless Shell (official Chrome for Testing)",
+    "version": "151.0.7922.34",
+    "headless": true
+  },
+  "status": "passed",
+  "finished_at_utc": "2026-11-28T17:46:55+00:00",
+  "limits": [
+    "Full Chrome 151 could not start because profile singleton socket creation is blocked in this managed environment; official Chrome Headless Shell was used for rendering and interaction.",
+    "Scripted rule engine; no live model quality or live customer traffic measured.",
+    "Delivered means a final customer-facing AI message saved by the server, not proof of viewing.",
+    "Source filtering exercised rule-engine and empty recorded populations in the browser; mixed live/recorded counts are covered by unit tests.",
+    "Observed UI at 1440x900 and 390x844 only."
+  ]
+}
