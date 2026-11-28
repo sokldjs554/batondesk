@@ -1,0 +1,21 @@
+{
+  "base_commit": "76ff5597e158b99002d041ea8f4090e8b9637b8d",
+  "execution_state": "before: clean base commit; after: uncommitted task worktree",
+  "before_source_sha256": {
+    "src/batondesk/checks/facts.py": "3ba048fe729a99476360c63198c1615ff4fdd64e6c728216495e886ea2e993e0"
+  },
+  "after_source_sha256": {
+    "src/batondesk/checks/facts.py": "912b843a699a54c6feeccb4363dcd0a30daf9fcfa31dae56f6ba19781dc7425e",
+    "tests/test_checks.py": "5414ff2f21c30c934753ca5f6ae670a729ecf2ba6c6d19aa13d22cc7f474f79b"
+  },
+  "artifact_sha256": {
+    "after/errors.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "after/manifest.json": "0091c651d93f21898131da9bb71172afb1cf602aa0ae42c6e7cc78e67b487e65",
+    "after/results.jsonl": "005b9613bd96694c5a8348e1289eb2ccc30efb55e00b8de033e93b1f3392ffcd",
+    "after/summary.json": "17f8c963fc06ede62d35b74ee0dcd70d916a131d9717fc9a4bd0ef11571b1de3",
+    "before/errors.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "before/manifest.json": "86ade472f23b29a2bef6cb79f17c9c327113cf82fb17f571589a4dd14e99bd37",
+    "before/results.jsonl": "e817922a7d5848fb05b999c1de0da0c6caaa80b42eeace430461d5d618726dd5",
+    "before/summary.json": "b2c72e0222b2900a82183d065cf0f701f250524975070550c09680bd78b66c96"
+  }
+}

@@ -52,7 +52,140 @@ def test_wrong_number_is_flagged_and_right_number_is_not() -> None:
     evidence = [(POLICY.text, False), (ORDER.text, True)]
     assert check_facts("7일 이내에 신청하시면 되고 반품비는 3,000원, 환불 예상 금액은 36,000원입니다.", evidence) == []
     flags = {f.fact: f.hard for f in check_facts("14일 이내에 신청하시면 되고 반품비는 5,000원입니다.", evidence)}
-    assert flags == {"dur:14d": False, "amt:5000": True}
+    assert flags == {"dur:14d": True, "amt:5000": True}
+
+
+@pytest.mark.parametrize(
+    ("answer", "evidence", "unsupported"),
+    [
+        ("반품은 14일 이내입니다.", "반품은 7일 이내입니다.", "dur:14d"),
+        ("반품은 보름 이내입니다.", "반품은 일주일 이내입니다.", "dur:15d"),
+        ("환불은 3~8영업일 걸립니다.", "환불은 3~7영업일 걸립니다.", "dur:8bd"),
+        ("환불은 3영업일~8영업일 걸립니다.", "환불은 3~7영업일 걸립니다.", "dur:8bd"),
+        ("처리는 3~8일 걸립니다.", "처리는 3~7일 걸립니다.", "dur:8d"),
+        ("처리는 3일~8일 걸립니다.", "처리는 3~7일 걸립니다.", "dur:8d"),
+        ("접수는 48시간 이내입니다.", "접수는 24시간 이내입니다.", "dur:48h"),
+        ("보증은 한 달입니다.", "보증은 3개월입니다.", "dur:1mo"),
+        ("보증은 2년입니다.", "보증은 1년입니다.", "dur:2y"),
+    ],
+)
+def test_unsupported_policy_durations_are_hard(answer: str, evidence: str, unsupported: str) -> None:
+    flags = check_facts(answer, [(evidence, False)])
+    assert [(f.fact, f.hard) for f in flags] == [(unsupported, True)]
+
+
+@pytest.mark.parametrize(
+    ("answer", "evidence"),
+    [
+        ("반품은 일주일 이내입니다.", "반품은 7일 이내입니다."),
+        ("반품은 7일 이내입니다.", "반품은 일주일 이내입니다."),
+        ("환불은 3~7영업일 걸립니다.", "환불은 3~7영업일 걸립니다."),
+        ("처리는 3~7일 걸립니다.", "처리는 3~7일 걸립니다."),
+        ("보증은 1개월입니다.", "보증은 한 달입니다."),
+    ],
+)
+def test_supported_policy_duration_aliases_and_ranges_are_not_flagged(answer: str, evidence: str) -> None:
+    assert check_facts(answer, [(evidence, False)]) == []
+
+
+@pytest.mark.parametrize(
+    ("answer", "expected"),
+    [
+        ("반품 기한이 이틀 남았습니다.", {"dur:2d"}),
+        ("반품 기한이 2일남았습니다.", {"dur:2d"}),
+        ("반품 기한이 2일이 남았습니다.", {"dur:2d"}),
+        ("반품 기한이 2일 정도 남았습니다.", {"dur:2d"}),
+        ("받으신 지 2일이 지났습니다.", {"dur:2d"}),
+        ("받으신 지 2일이 경과했습니다.", {"dur:2d"}),
+        ("기한이 하루 지난 상태입니다.", {"dur:1d"}),
+        ("남은 기간은 2일입니다.", {"dur:2d"}),
+        ("남은 기간은 이틀입니다.", {"dur:2d"}),
+        ("환불까지 2~3영업일 남았습니다.", {"dur:2bd", "dur:3bd"}),
+        ("환불까지 2영업일~3영업일 남았습니다.", {"dur:2bd", "dur:3bd"}),
+        ("기한까지 2~3일 남았습니다.", {"dur:2d", "dur:3d"}),
+        ("기한까지 2일~3일 남았습니다.", {"dur:2d", "dur:3d"}),
+    ],
+)
+def test_derived_durations_still_raise_soft_flags(answer: str, expected: set[str]) -> None:
+    flags = check_facts(answer, [(POLICY.text, False), (ORDER.text, True)])
+    assert {f.fact for f in flags} == expected
+    assert not any(f.hard for f in flags)
+
+
+@pytest.mark.parametrize(
+    "answer",
+    [
+        "반품은 14일 이내이고 오늘 기준 이틀 남았습니다.",
+        "오늘 기준 이틀 남았고 반품은 14일 이내입니다.",
+        "반품 기한이 14일 남았습니다. 반품은 14일 이내입니다.",
+        "반품은 14일 이내이고 기한은 14일 남았습니다.",
+        "남은 기간은 14일이며 반품은 14일 이내입니다.",
+    ],
+)
+def test_derived_duration_does_not_excuse_another_policy_occurrence(answer: str) -> None:
+    flags = check_facts(answer, [(POLICY.text, False)])
+    assert {f.fact for f in flags if f.hard} == {"dur:14d"}
+
+
+@pytest.mark.parametrize("limit", ["이내에", "안에", "내에"])
+def test_past_duration_word_does_not_excuse_a_policy_deadline(limit: str) -> None:
+    flags = check_facts(f"지난 14일 {limit} 산 제품은 반품 가능합니다.", [(POLICY.text, False)])
+    assert [(f.fact, f.hard) for f in flags] == [("dur:14d", True)]
+
+
+@pytest.mark.parametrize(
+    "condition", ["지나면", "지났으면", "지난 경우", "지나고 나면", "경과하면", "경과했으면", "경과한 경우", "경과할 때"]
+)
+def test_elapsed_condition_is_a_policy_cutoff(condition: str) -> None:
+    flags = check_facts(f"상품을 받은 지 14일이 {condition} 반품할 수 없습니다.", [(POLICY.text, False)])
+    assert [(f.fact, f.hard) for f in flags] == [("dur:14d", True)]
+
+
+def test_countdown_does_not_excuse_same_value_in_conditional_policy() -> None:
+    answer = "기한이 14일 남았습니다. 상품을 받은 지 14일이 지나면 반품할 수 없습니다."
+    flags = check_facts(answer, [(POLICY.text, False)])
+    assert [(f.fact, f.hard) for f in flags] == [("dur:14d", True)]
+
+
+@pytest.mark.parametrize(
+    ("answer", "surface"),
+    [
+        ("보름 남았습니다. 반품은 15일 이내입니다.", "15일"),
+        ("15일 남았습니다. 반품은 보름 이내입니다.", "보름"),
+    ],
+)
+def test_hard_duration_flag_uses_the_policy_surface_when_alias_value_is_repeated(answer: str, surface: str) -> None:
+    flags = check_facts(answer, [(POLICY.text, False)])
+    assert [(f.fact, f.surface, f.hard) for f in flags] == [("dur:15d", surface, True)]
+
+
+@pytest.mark.parametrize("date", ["2026-11-17", "2026년 11월 17일", "11월 17일", "11월17일"])
+def test_calendar_dates_do_not_create_hard_duration_flags(date: str) -> None:
+    facts = extract_facts(f"{date}에 받으셨고 반품은 7일 이내입니다.")
+    assert {f for f in facts if f.startswith("dur:")} == {"dur:7d"}
+    flags = check_facts(f"{date}에 받으셨고 기한까지 이틀 남았습니다.", [(f"배송일: {date}", False)])
+    assert [(f.fact, f.hard) for f in flags] == [("dur:2d", False)]
+
+
+@pytest.mark.parametrize("label", ["환불 예정일은", "배송일은", "날짜는"])
+def test_bare_calendar_day_stays_soft_without_inferring_month_or_year(label: str) -> None:
+    flags = check_facts(f"{label} 20일입니다.", [(f"{label} 2026-11-20입니다.", False)])
+    assert [(f.fact, f.hard) for f in flags] == [("dur:20d", False)]
+
+
+@pytest.mark.parametrize(
+    ("answer", "fact"),
+    [
+        ("반품 기간은 20일입니다.", "dur:20d"),
+        ("환불 예정일은 20일 후입니다.", "dur:20d"),
+        ("환불 예정일은 20영업일입니다.", "dur:20bd"),
+        ("환불 예정일은 40일입니다.", "dur:40d"),
+        ("환불 예정일은 20일입니다. 반품 기간은 20일입니다.", "dur:20d"),
+    ],
+)
+def test_calendar_context_does_not_excuse_policy_durations(answer: str, fact: str) -> None:
+    flags = check_facts(answer, [(POLICY.text, False), ("환불 예정일은 2026-11-20입니다.", False)])
+    assert [(f.fact, f.hard) for f in flags] == [(fact, True)]
 
 
 def test_facts_the_customer_stated_are_not_flagged() -> None:
@@ -95,6 +228,36 @@ async def test_judge_failure_falls_back_to_rules_and_fails_closed(prompts: Promp
     assert steps[0]["type"] == "check_error"
     right, _ = await _checker(QueueLLM([boom]), prompts).check("반품비는 3,000원입니다.", [POLICY])
     assert right.verdict == "grounded" and right.mode == "rules_only"
+
+
+@pytest.mark.parametrize("judge_fails", [False, True])
+@pytest.mark.parametrize(
+    ("answer", "grounded"),
+    [
+        ("반품은 14일 이내입니다.", False),
+        ("반품은 7일 이내입니다.", True),
+        ("반품 기한이 이틀 남았습니다.", True),
+        ("반품 기한이 2일 남았습니다.", True),
+        ("상품을 받은 지 14일이 지나면 반품할 수 없습니다.", False),
+    ],
+)
+async def test_policy_durations_and_countdowns_in_rules_fallback(
+    prompts: PromptRegistry, answer: str, grounded: bool, judge_fails: bool
+) -> None:
+    def boom(_: LLMRequest) -> LLMResponse:
+        raise LLMError("rate limited", kind="rate_limit")
+
+    checker = _checker(QueueLLM([boom]) if judge_fails else None, prompts)
+    result, steps = await checker.check(answer, [POLICY, ORDER], use_llm=judge_fails)
+    assert result.mode == "rules_only" and result.grounded is grounded
+    assert bool(steps) is judge_fails
+
+
+async def test_bare_refund_calendar_day_is_not_blocked_in_rules_only_mode(prompts: PromptRegistry) -> None:
+    evidence = Evidence(id="K2", kind="kb", title="환불 안내", turn_seq=1, text="환불 예정일은 2026-11-20입니다.")
+    result, _ = await _checker(None, prompts).check("환불 예정일은 20일입니다.", [evidence], use_llm=False)
+    assert result.grounded and result.mode == "rules_only"
+    assert [(flag["fact"], flag["hard"]) for flag in result.fact_flags] == [("dur:20d", False)]
 
 
 async def test_truncated_judge_output_is_not_trusted(prompts: PromptRegistry) -> None:

@@ -1,0 +1,33 @@
+{"id": "G-D-001", "kind": "faithful", "rep": 1, "truth_ungrounded": false, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-002", "kind": "faithful", "rep": 1, "truth_ungrounded": false, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-003", "kind": "paraphrase", "rep": 1, "truth_ungrounded": false, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-004", "kind": "paraphrase", "rep": 1, "truth_ungrounded": false, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-005", "kind": "computed", "rep": 1, "truth_ungrounded": false, "rules_hard": false, "rules_any": true, "fact_flags": ["4일"]}
+{"id": "G-D-006", "kind": "computed", "rep": 1, "truth_ungrounded": false, "rules_hard": true, "rules_any": true, "fact_flags": ["8,000원"]}
+{"id": "G-D-007", "kind": "multi_evidence", "rep": 1, "truth_ungrounded": false, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-008", "kind": "multi_evidence", "rep": 1, "truth_ungrounded": false, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-009", "kind": "negative", "rep": 1, "truth_ungrounded": false, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-010", "kind": "negative", "rep": 1, "truth_ungrounded": false, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-011", "kind": "expired_handled", "rep": 1, "truth_ungrounded": false, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-012", "kind": "expired_handled", "rep": 1, "truth_ungrounded": false, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-013", "kind": "number_swap", "rep": 1, "truth_ungrounded": true, "rules_hard": true, "rules_any": true, "fact_flags": ["5,000원"]}
+{"id": "G-D-014", "kind": "number_swap", "rep": 1, "truth_ungrounded": true, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-015", "kind": "period_swap", "rep": 1, "truth_ungrounded": true, "rules_hard": false, "rules_any": true, "fact_flags": ["5영업일"]}
+{"id": "G-D-016", "kind": "negation_flip", "rep": 1, "truth_ungrounded": true, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-017", "kind": "negation_flip", "rep": 1, "truth_ungrounded": true, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-018", "kind": "invented_policy", "rep": 1, "truth_ungrounded": true, "rules_hard": true, "rules_any": true, "fact_flags": ["500원"]}
+{"id": "G-D-019", "kind": "unsupported_promise", "rep": 1, "truth_ungrounded": true, "rules_hard": true, "rules_any": true, "fact_flags": ["5,000원"]}
+{"id": "G-D-020", "kind": "unsupported_promise", "rep": 1, "truth_ungrounded": true, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-021", "kind": "expired_applied", "rep": 1, "truth_ungrounded": true, "rules_hard": true, "rules_any": true, "fact_flags": ["11월 24일"]}
+{"id": "G-D-022", "kind": "wrong_order_fact", "rep": 1, "truth_ungrounded": true, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-023", "kind": "partial", "rep": 1, "truth_ungrounded": true, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-024", "kind": "partial", "rep": 1, "truth_ungrounded": true, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-025", "kind": "process_statement", "rep": 1, "truth_ungrounded": false, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-026", "kind": "process_statement", "rep": 1, "truth_ungrounded": false, "rules_hard": true, "rules_any": true, "fact_flags": ["2026-11-19", "2026-11-19"]}
+{"id": "G-D-027", "kind": "process_statement", "rep": 1, "truth_ungrounded": false, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-028", "kind": "session_context", "rep": 1, "truth_ungrounded": false, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-029", "kind": "process_statement", "rep": 1, "truth_ungrounded": false, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-030", "kind": "unconfirmed_as_confirmed", "rep": 1, "truth_ungrounded": true, "rules_hard": true, "rules_any": true, "fact_flags": ["153,000원"]}
+{"id": "G-D-031", "kind": "outcome_promise", "rep": 1, "truth_ungrounded": true, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-032", "kind": "outcome_promise", "rep": 1, "truth_ungrounded": true, "rules_hard": false, "rules_any": false, "fact_flags": []}
+{"id": "G-D-033", "kind": "unconfirmed_as_confirmed", "rep": 1, "truth_ungrounded": true, "rules_hard": true, "rules_any": true, "fact_flags": ["11월 23일"]}

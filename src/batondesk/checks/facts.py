@@ -3,9 +3,10 @@
 LLM 판정과 별개로 도는 규칙 검사다. 상담에서 가장 비싼 오류는 숫자가 틀리는 것이고
 (반품 7일을 14일로, 6,000원을 3,000원으로), 숫자는 규칙으로 싸고 확실하게 잡을 수 있다.
 
-한계(일부러 남긴 것): 근거의 값으로 계산해 나온 숫자("이틀 남았습니다")는 근거에 그 글자가
-없으므로 "찾지 못함"으로 나온다. 그래서 이 검사 결과만으로 답변을 막지 않고, LLM 판정에
-단서로 넘긴다. LLM 판정을 쓸 수 없을 때만 굳은 사실 불일치로 답변을 막는다.
+근거에 없는 기간도 기본적으로 굳은 사실 불일치다. 다만 "이틀 남았습니다"처럼 각 등장
+위치에서 남은/지난 기간으로 읽히는 값은 계산 여부를 LLM이 확인하도록 약한 단서로 남긴다.
+"예정일은 20일"처럼 날짜로도 읽히는 값도 약한 단서다. 계산·생략된 월/년을 검증하는 규칙은
+아니다. LLM 판정을 쓸 수 없을 때 굳은 사실 불일치로 막는다.
 """
 
 from __future__ import annotations
@@ -28,9 +29,9 @@ _WORD_DURATIONS = {
 _MONEY_MAN = re.compile(r"(\d+)\s*만\s*(?:(\d)\s*천)?\s*원")
 _MONEY_CHEON = re.compile(r"(?<![\d만])(\d)\s*천\s*원")
 _MONEY = re.compile(r"(\d[\d,]*)\s*원")
-_BDAY_RANGE = re.compile(r"(\d+)\s*[~∼\-–]\s*(\d+)\s*영업일")
+_BDAY_RANGE = re.compile(r"(\d+)\s*(?:영업일\s*)?[~∼\-–]\s*(\d+)\s*영업일")
 _BDAY = re.compile(r"(\d+)\s*영업일")
-_DAY_RANGE = re.compile(r"(\d+)\s*[~∼\-–]\s*(\d+)\s*일(?!\s*[전후]?\s*영업)")
+_DAY_RANGE = re.compile(r"(\d+)\s*(?:일\s*)?[~∼\-–]\s*(\d+)\s*일(?!\s*[전후]?\s*영업)")
 _DAY = re.compile(r"(?<![\d월\-])(\d+)\s*일(?![자요])")
 _HOUR = re.compile(r"(\d+)\s*시간")
 _MONTH = re.compile(r"(\d+)\s*개월")
@@ -43,7 +44,19 @@ _ORDER = re.compile(r"BM-\d{5}", re.I)
 _TRACKING = re.compile(r"HB\d{10}", re.I)
 _JSON_INT = re.compile(r":\s*(\d{1,9})(?=\s*[,}\]])")
 _CLOCK_24H = re.compile(r"(?<!\d)([01]?\d|2[0-3]):([0-5]\d)(?!\d)")
+_DERIVED_DURATION_AFTER = re.compile(
+    r"\s*(?:(?:정도|가량|쯤)\s*)?(?:(?:이|가|은|는|만|밖에)\s*)?(?:더\s*)?"
+    r"(?:남(?:았|아|은|는|게|습니다|지)|지(?:났|난|나)|경과)"
+)
+_DERIVED_DURATION_BEFORE = re.compile(r"(?:남은|경과한|지난)\s*(?:(?:기간|시간|기한|일수)(?:은|는|이|가)?\s*)?(?:약\s*)?$")
+_DURATION_LIMIT_AFTER = re.compile(r"\s*(?:이내|안에|내에)")
+_DURATION_CONDITION_AFTER = re.compile(
+    r"\s*(?:으?면|고\s*나면|게\s*되면|(?:하|했|되|됐)으?면|(?:하는|한|할|했을|되는|된|될|을)?\s*(?:경우|때|시))"
+)
+_CALENDAR_DAY_BEFORE = re.compile(r"(?:예정일|배송일|도착일|수령일|환불일|마감일|날짜)(?:은|는|이|가)?\s*[:：]?\s*$")
+_CALENDAR_DAY_AFTER = re.compile(r"\s*(?:입니다|이에요|이고|이며|[.,!?;]|$)")
 
+# 기간은 같은 값도 등장 위치에 따라 계산값/정책값이 다를 수 있으므로 별도로 판별한다.
 HARD_KINDS = ("amt", "pct", "date", "md", "order", "tracking", "clock")
 
 
@@ -56,6 +69,46 @@ class FactFlag:
 
     def as_dict(self) -> dict[str, object]:
         return {"fact": self.fact, "kind": self.kind, "surface": self.surface, "hard": self.hard}
+
+
+def _duration_mentions(text: str) -> list[tuple[str, re.Match[str]]]:
+    """정규화한 기간과 모든 등장 위치. 날짜/범위 마스킹은 원문의 위치를 보존한다."""
+    found: list[tuple[str, re.Match[str]]] = []
+    masked = text
+    for pattern in (_ISO_DATE, _KR_DATE):
+        masked = pattern.sub(lambda m: " " * len(m.group(0)), masked)
+    for pattern, unit, groups in (
+        (_BDAY_RANGE, "bd", (1, 2)),
+        (_BDAY, "bd", (1,)),
+        (_DAY_RANGE, "d", (1, 2)),
+        (_DAY, "d", (1,)),
+        (_HOUR, "h", (1,)),
+        (_MONTH, "mo", (1,)),
+        (_YEAR_SPAN, "y", (1,)),
+    ):
+        for m in pattern.finditer(masked):
+            found.extend((f"dur:{int(m.group(group))}{unit}", m) for group in groups)
+        masked = pattern.sub(lambda m: " " * len(m.group(0)), masked)
+    for word, key in _WORD_DURATIONS.items():
+        found.extend((key, m) for m in re.finditer(re.escape(word), masked))
+    return found
+
+
+def _is_hard_duration(text: str, mention: re.Match[str]) -> bool:
+    """계산 사실과 조건부 정책을 구분하고, 명시적 날짜 문맥의 짧은 일자는 보류한다."""
+    after = _DERIVED_DURATION_AFTER.match(text, mention.end())
+    if _DURATION_LIMIT_AFTER.match(text, mention.end()) or (after and _DURATION_CONDITION_AFTER.match(text, after.end())):
+        return True
+    day = _DAY.fullmatch(mention.group(0))
+    if (
+        day
+        and 1 <= int(day.group(1)) <= 31
+        and _CALENDAR_DAY_BEFORE.search(text[: mention.start()])
+        and _CALENDAR_DAY_AFTER.match(text, mention.end())
+    ):
+        # "20일"을 근거의 어느 월/년과 묶을지 추측하지 않는다. 약한 단서는 계속 남긴다.
+        return False
+    return not (after or _DERIVED_DURATION_BEFORE.search(text[: mention.start()]))
 
 
 def extract_facts(text: str, *, structured: bool = False) -> dict[str, str]:
@@ -87,30 +140,9 @@ def extract_facts(text: str, *, structured: bool = False) -> dict[str, str]:
     masked = _MONEY_CHEON.sub(" ", masked)
     for m in _MONEY.finditer(masked):
         add(f"amt:{int(m.group(1).replace(',', ''))}", m.group(0))
-    masked = _MONEY.sub(" ", masked)
 
-    for m in _BDAY_RANGE.finditer(masked):
-        add(f"dur:{int(m.group(1))}bd", m.group(0))
-        add(f"dur:{int(m.group(2))}bd", m.group(0))
-    masked = _BDAY_RANGE.sub(" ", masked)
-    for m in _BDAY.finditer(masked):
-        add(f"dur:{int(m.group(1))}bd", m.group(0))
-    masked = _BDAY.sub(" ", masked)
-    for m in _DAY_RANGE.finditer(masked):
-        add(f"dur:{int(m.group(1))}d", m.group(0))
-        add(f"dur:{int(m.group(2))}d", m.group(0))
-    masked = _DAY_RANGE.sub(" ", masked)
-    for m in _DAY.finditer(masked):
-        add(f"dur:{int(m.group(1))}d", m.group(0))
-    for m in _HOUR.finditer(masked):
-        add(f"dur:{int(m.group(1))}h", m.group(0))
-    for m in _MONTH.finditer(masked):
-        add(f"dur:{int(m.group(1))}mo", m.group(0))
-    for m in _YEAR_SPAN.finditer(masked):
-        add(f"dur:{int(m.group(1))}y", m.group(0))
-    for word, key in _WORD_DURATIONS.items():
-        if word in text:
-            add(key, word)
+    for key, m in _duration_mentions(text):
+        add(key, m.group(0))
 
     for m in _PCT.finditer(text):
         add(f"pct:{float(m.group(1)):g}", m.group(0))
@@ -140,10 +172,14 @@ def check_facts(answer: str, evidence_texts: list[tuple[str, bool]], extra_conte
     known: set[str] = set(extract_facts(extra_context))
     for text, structured in evidence_texts:
         known.update(extract_facts(text, structured=structured))
+    # 중복 값을 합치기 전에 매 등장 위치를 본다. "14일 남음"이 별도의 "14일 이내"를 면제하지 않는다.
+    hard_durations = {fact: m.group(0) for fact, m in _duration_mentions(answer) if _is_hard_duration(answer, m)}
     flags = []
     for fact, surface in extract_facts(answer).items():
         if fact in known:
             continue
         kind = fact.split(":", 1)[0]
-        flags.append(FactFlag(fact=fact, kind=kind, surface=surface, hard=kind in HARD_KINDS))
+        flags.append(
+            FactFlag(fact=fact, kind=kind, surface=hard_durations.get(fact, surface), hard=kind in HARD_KINDS or fact in hard_durations)
+        )
     return flags

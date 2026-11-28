@@ -1,0 +1,34 @@
+{
+  "split": "dev",
+  "items": 33,
+  "reps": 1,
+  "labels": {
+    "grounded": 17,
+    "ungrounded": 16
+  },
+  "rows_scored": 33,
+  "rows_errored": 0,
+  "rules_hard_only": {
+    "tp": 7,
+    "fp": 2,
+    "fn": 9,
+    "tn": 15,
+    "accuracy": 0.6667,
+    "precision": 0.7778,
+    "recall": 0.4375,
+    "specificity": 0.8824,
+    "f1": 0.56
+  },
+  "rules_any_flag": {
+    "tp": 7,
+    "fp": 3,
+    "fn": 9,
+    "tn": 14,
+    "accuracy": 0.6364,
+    "precision": 0.7,
+    "recall": 0.4375,
+    "specificity": 0.8235,
+    "f1": 0.5385
+  },
+  "wall_clock_s": 0.0
+}
