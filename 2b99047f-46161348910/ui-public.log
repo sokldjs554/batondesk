@@ -1,0 +1,33 @@
+배포본: 커밋 2b99047f · 엔진 live (실제 모델 호출 (claude-haiku-5-5)) · 프롬프트 agent-v4 · 저장 기록 8건
+PASS  [public/desktop] 첫 화면: 문제 설명과 사용 순서가 첫 화면 안에 있음
+PASS  [public/desktop] 첫 화면: 엔진 배지가 서버 상태와 같음  — 실제 모델 호출 · claude-haiku-5-5
+PASS  [public/desktop] 첫 화면: 예시 데이터 고지
+PASS  [public/desktop] 첫 화면: 첫 버튼이 고객 화면으로 안내  — 고객 화면에서 문의해 보기
+PASS  [public/desktop] 첫 화면: Pretendard 웹 글꼴이 내려와 쓰임  — 15개 조각
+PASS  [public/desktop] 첫 화면: 바닥글의 커밋이 배포본과 같음  — 2b99047
+PASS  [public/desktop] 첫 화면: 가로 스크롤 없음  — 1440 / 1440
+PASS  [public/desktop] 고객 화면: 실제 모델로 만든 저장 기록 목록  — 8건
+PASS  [public/desktop] 기록 보기: 읽기 전용 + 출처(모델·프롬프트·커밋)  — 저장된 상담 기록(읽기 전용)모델 claude-haiku-5-5프롬프트 agent-v4기록 2026-11-26커밋 f22724e출처 자세히실제 모델 호출 기록 · 고객 메시지: 스크립트에 정해 둔 글 · 실행 로그새 대화 시작
+PASS  [public/desktop] 기록 보기: 가로 스크롤 없음  — 1440 / 1440
+PASS  [public/desktop] 상담원 화면이 뜸
+PASS  [public/desktop] 상담원 화면: 가로 스크롤 없음  — 1440 / 1440
+PASS  [public/desktop] 운영 화면: 지표 카드
+PASS  [public/desktop] 운영 화면: 가로 스크롤 없음  — 1440 / 1440
+PASS  [public/desktop] 운영 화면: 프롬프트 버전 목록과 평가 결과 표
+PASS  [public/desktop] 콘솔 오류 없음
+PASS  [public/mobile] 첫 화면: 문제 설명과 사용 순서가 첫 화면 안에 있음
+PASS  [public/mobile] 첫 화면: 엔진 배지가 서버 상태와 같음  — 실제 모델 호출 · claude-haiku-5-5
+PASS  [public/mobile] 첫 화면: 예시 데이터 고지
+PASS  [public/mobile] 첫 화면: 첫 버튼이 고객 화면으로 안내  — 고객 화면에서 문의해 보기
+PASS  [public/mobile] 첫 화면: Pretendard 웹 글꼴이 내려와 쓰임  — 15개 조각
+PASS  [public/mobile] 첫 화면: 바닥글의 커밋이 배포본과 같음  — 2b99047
+PASS  [public/mobile] 첫 화면: 가로 스크롤 없음  — 390 / 390
+PASS  [public/mobile] 고객 화면: 실제 모델로 만든 저장 기록 목록  — 8건
+PASS  [public/mobile] 기록 보기: 읽기 전용 + 출처(모델·프롬프트·커밋)  — 저장된 상담 기록(읽기 전용)모델 claude-haiku-5-5프롬프트 agent-v4기록 2026-11-26커밋 f22724e출처 자세히실제 모델 호출 기록 · 고객 메시지: 스크립트에 정해 둔 글 · 실행 로그새 대화 시작
+PASS  [public/mobile] 기록 보기: 가로 스크롤 없음  — 390 / 390
+PASS  [public/mobile] 상담원 화면이 뜸
+PASS  [public/mobile] 상담원 화면: 가로 스크롤 없음  — 390 / 390
+PASS  [public/mobile] 운영 화면: 지표 카드
+PASS  [public/mobile] 운영 화면: 가로 스크롤 없음  — 390 / 390
+PASS  [public/mobile] 운영 화면: 프롬프트 버전 목록과 평가 결과 표
+PASS  [public/mobile] 콘솔 오류 없음
