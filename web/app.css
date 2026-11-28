@@ -3592,3 +3592,118 @@ body.embed .chat-head .btn-s {
 .nb {
   white-space: nowrap;
 }
+
+/* ---- 첫 화면 정리: 이름표 같은 구간 제목, 목록형 화면 안내, 표처럼 읽히는 순서 ---------------- */
+
+.section > h2 {
+  font-weight: 700;
+}
+
+.entry-list {
+  max-width: 880px;
+  margin: 28px auto 0;
+  border-top: 1px solid var(--line-mid);
+}
+
+.entry-list .entry {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr) auto;
+  gap: 8px 28px;
+  align-items: baseline;
+  padding: 20px 4px;
+  border-bottom: 1px solid var(--line-mid);
+  transition: background-color 0.12s ease;
+}
+
+.entry-list .entry:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.entry-list .entry h3 {
+  font-size: var(--fs-lg);
+}
+
+.entry-list .entry p {
+  color: var(--ink-soft);
+  font-size: var(--fs-md);
+  line-height: 1.6;
+}
+
+.entry-list .entry .go {
+  margin: 0;
+  padding: 0;
+  font-size: var(--fs-md);
+  white-space: nowrap;
+}
+
+/* 순서: 번호는 글자로, 한 줄에 이름과 설명 */
+.flow {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  max-width: 880px;
+  margin: 28px auto 0;
+  border-top: 1px solid rgba(244, 241, 255, 0.28);
+}
+
+.flow::before {
+  display: none;
+}
+
+.flow li {
+  display: grid;
+  grid-template-columns: 40px 240px minmax(0, 1fr);
+  gap: 4px 16px;
+  align-items: baseline;
+  min-height: 0;
+  padding: 14px 4px;
+  border-bottom: 1px solid rgba(244, 241, 255, 0.28);
+}
+
+.flow li::before,
+.band .flow li::before,
+.band .flow li:nth-child(4)::before,
+.band .flow li:nth-child(5)::before,
+.band .flow li:nth-child(6)::before {
+  content: counter(flow, decimal-leading-zero);
+  position: static;
+  display: block;
+  width: auto;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: rgba(244, 241, 255, 0.6);
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.flow li b {
+  display: block;
+  margin: 0;
+  font-size: var(--fs-chat);
+}
+
+.band .flow li:nth-child(4) b {
+  color: var(--butter);
+}
+
+.band .flow li:nth-child(5) b {
+  color: var(--coral-soft);
+}
+
+@media (max-width: 720px) {
+  .entry-list .entry {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .entry-list .entry p {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .flow li {
+    grid-template-columns: 32px minmax(0, 1fr);
+    padding: 12px 0;
+  }
+  .flow li span {
+    grid-column: 2;
+  }
+}

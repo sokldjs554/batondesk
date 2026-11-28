@@ -133,7 +133,7 @@ ANTHROPIC_API_KEY=… batondesk serve             # 실제 모델
 <http://localhost:8000> → 고객 화면(`/chat`) → 상담원 화면(`/desk`) → 운영 화면(`/ops`). API 문서는 `/docs`.
 
 ```bash
-pytest                                             # 테스트 152건
+pytest                                             # 테스트 153건
 tests/e2e/run.sh                                   # 브라우저 화면 점검 176항목(서버 3종)
 python -m batondesk.evals retrieval --split test   # 검색 평가
 docker build -t batondesk . && docker run -p 8000:8000 batondesk
