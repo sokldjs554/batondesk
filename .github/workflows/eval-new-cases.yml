@@ -1,0 +1,61 @@
+name: eval-new-cases
+
+on:
+  push:
+    branches: [task/customer-cases-20261129]
+    paths:
+      - data/evals/agent/dev.jsonl
+      - .github/workflows/eval-new-cases.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: eval-new-cases-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      BATONDESK_GIT_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e .
+      - name: 등록된 키 확인
+        run: test -n "$ANTHROPIC_API_KEY"
+      - name: 개발 문항 형식과 동결 파일 확인
+        run: |
+          python scripts/validate_eval_data.py
+          python -m batondesk.evals check-frozen
+          python - <<'PY'
+          from batondesk.evals.data import load_agent_cases
+          from batondesk.settings import REPO_ROOT
+          cases = load_agent_cases(REPO_ROOT / "data/evals", "dev")
+          ids = [case.id for case in cases]
+          selected = {f"A-D-CU-{number:02d}" for number in range(1, 6)}
+          assert len(ids) == len(set(ids))
+          assert selected <= set(ids)
+          print(f"개발 문항 {len(ids)}건, 새 문항 {len(selected)}건 확인")
+          PY
+      - name: 새 문항 다섯 개를 각각 세 번 평가
+        run: |
+          python -m batondesk.evals agent --split dev --engine live --reps 3 --concurrency 2 \
+            --case A-D-CU-01 --case A-D-CU-02 --case A-D-CU-03 --case A-D-CU-04 --case A-D-CU-05 \
+            --label customer-cases-20261129 --out var/customer-cases-live
+      - name: 실행 결과 보관
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: customer-cases-${{ github.run_id }}
+          path: var/customer-cases-live/
+          if-no-files-found: warn
+          retention-days: 90

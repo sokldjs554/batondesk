@@ -39,7 +39,7 @@ def _run(**overrides: Any) -> dict[str, Any]:
 
 def test_agent_cases_are_well_formed() -> None:
     dev, test = load_agent_cases(DATA, "dev"), load_agent_cases(DATA, "test")
-    assert (len(dev), len(test)) == (40, 64)
+    assert (len(dev), len(test)) == (45, 64)
     ids = [c.id for c in dev + test]
     assert len(ids) == len(set(ids))
     assert {c.category for c in dev} == {c.category for c in test}, "두 자료는 같은 분류로 구성한다"
