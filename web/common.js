@@ -196,7 +196,7 @@ export async function mountChrome(active, { nav = true } = {}) {
   clear(footer);
   if (release) {
     footer.append(
-      el("span", { text: "BatonDesk — 고객 상담 AI 에이전트 데모" }),
+      el("span", { text: "BatonDesk — 쇼핑몰 고객센터 AI" }),
       el("span", {}, "커밋 ", el("span", { class: "mono", id: "footer-sha", text: String(release.git_sha).slice(0, 7) })),
       el("span", {}, "에이전트 프롬프트 ", el("span", { class: "mono", id: "footer-prompt", text: release.prompts.agent.id })),
       el("span", { text: `지식 문서 ${release.knowledge_base.documents}건` }),
