@@ -1,0 +1,14 @@
+{
+  "run_url": "https://github.com/sokldjs554/batondesk/actions/runs/46172067378",
+  "run_id": 46172067378,
+  "artifact_id": 15273887538,
+  "artifact_sha256": "8af839a6d51026d6a818288c4d10deba45a7250147256533bb98d4ce0a065445",
+  "commit": "3e1352466e6f1ca41165a6fa8c574edf7be67607",
+  "files": {
+    "errors.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "results.jsonl": "16cb9f09bd796a1b7216005bd2b413262983e38c5c1853bd6e871c5399223fcc",
+    "manifest.json": "de4c70bdad09ca0872e67dc75c0428f2ab203016f4fab8a6df3085fca46693bc",
+    "summary.json": "2791d0ad4b6220cd1eba09831249ade3377466984ef1521748f9fa1cdbeceeaa",
+    "trajectories.jsonl.gz": "d95a47adc5c0d2ad98da0e4bf1f4def5f178e4238969ce37aedceb72fea387c7"
+  }
+}

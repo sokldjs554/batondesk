@@ -1,0 +1,209 @@
+{
+  "cases": 5,
+  "reps": 3,
+  "rows_scored": 15,
+  "rows_skipped": 0,
+  "rows_errored": 0,
+  "pass": {
+    "mean": 1.0,
+    "lo": 1.0,
+    "hi": 1.0,
+    "cases": 5,
+    "rows": 15
+  },
+  "by_category": {
+    "followup_context": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 1,
+      "rows": 3
+    },
+    "handoff_required": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 1,
+      "rows": 3
+    },
+    "kb_answerable": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 1,
+      "rows": 3
+    },
+    "order_task": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 2,
+      "rows": 6
+    }
+  },
+  "grades": {
+    "action_ok": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 5,
+      "rows": 15
+    },
+    "facts_ok": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 3,
+      "rows": 9
+    },
+    "abstain_ok": {
+      "mean": null,
+      "lo": null,
+      "hi": null,
+      "cases": 0,
+      "rows": 0
+    },
+    "tools_ok": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 5,
+      "rows": 15
+    },
+    "end_state_ok": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 5,
+      "rows": 15
+    },
+    "injection_blocked": {
+      "mean": null,
+      "lo": null,
+      "hi": null,
+      "cases": 0,
+      "rows": 0
+    },
+    "handoff_reason_ok": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 1,
+      "rows": 3
+    },
+    "citation_ok": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 3,
+      "rows": 9
+    },
+    "retrieval_first_hit": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 4,
+      "rows": 12
+    },
+    "retrieval_any_hit": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 4,
+      "rows": 12
+    },
+    "kb_issue_flagged": {
+      "mean": null,
+      "lo": null,
+      "hi": null,
+      "cases": 0,
+      "rows": 0
+    },
+    "grounded_online": {
+      "mean": 1.0,
+      "lo": 1.0,
+      "hi": 1.0,
+      "cases": 5,
+      "rows": 15
+    }
+  },
+  "handoff": {
+    "tp": 3,
+    "fp": 0,
+    "fn": 0,
+    "tn": 12,
+    "precision": 1.0,
+    "recall": 1.0,
+    "over_handoff_rate": 0.0,
+    "by_reason": {
+      "needs_human_review": 3
+    },
+    "by_source": {
+      "model": 3
+    }
+  },
+  "reliability": {
+    "pass^1": {
+      "k": 1,
+      "value": 1.0,
+      "cases": 5,
+      "all_pass_cases": 5
+    },
+    "pass^2": {
+      "k": 2,
+      "value": 1.0,
+      "cases": 5,
+      "all_pass_cases": 5
+    },
+    "pass^3": {
+      "k": 3,
+      "value": 1.0,
+      "cases": 5,
+      "all_pass_cases": 5
+    }
+  },
+  "flaky_cases": [],
+  "always_failing_cases": [],
+  "model_outcome_errors": {},
+  "infra_errors": {},
+  "retried_rows": 0,
+  "turns": {
+    "count": 18,
+    "latency_ms": {
+      "p50": 4893.4,
+      "p95": 9685.1,
+      "max": 10166.5
+    },
+    "stage_latency_ms_p50": {
+      "llm_agent": 4128.3,
+      "llm_checks": 1406.7,
+      "retrieval": 1.1,
+      "tools": 0.0
+    },
+    "llm_calls_per_turn": 2.17,
+    "tool_calls_per_turn": 0.5,
+    "turns_with_blocked_draft": 0,
+    "models_served": {
+      "claude-haiku-5-5": 18
+    }
+  },
+  "usage": {
+    "agent": {
+      "calls": 27,
+      "input_tokens": 31399,
+      "output_tokens": 11676,
+      "cache_read_tokens": 132100,
+      "cost_usd": 0.01162
+    },
+    "checks": {
+      "calls": 12,
+      "input_tokens": 16736,
+      "output_tokens": 3341,
+      "cache_read_tokens": 34122,
+      "cost_usd": 0.00407
+    },
+    "total_cost_usd": 0.01569
+  },
+  "wall_clock_s": 49.7,
+  "engine": "live"
+}
